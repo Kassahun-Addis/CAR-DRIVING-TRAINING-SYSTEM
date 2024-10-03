@@ -1,119 +1,9 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'CAR DRIVING TRAINING SYSTEM')</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">                                                                                                                       
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-    <!-- Include Bootstrap CSS -->
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Include jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<!-- Include Popper.js (for Bootstrap dropdowns) -->
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-
-<!-- Include Bootstrap JS -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Include Font Awesome for icons -->
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> -->
 
 
-    <style>
-        /* Add your styles here */
-        body {
-            font-family: 'Figtree', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .header {
-            background-color: #4caf50;
-            color: white;
-            padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .sidebar {
-            width: 230px;
-            background-color: #f5f5f5;
-            padding: 15px;
-            position: fixed;
-            height: 100%;
-            overflow-y: auto;
-        }
-        .sidebar a {
-            display: block;
-            padding: 10px;
-            color: #333;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background-color: #ddd;
-        }
-     
-        
-        .form-section {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .btn-primary {
-            background-color: #ff9800; /* Orange */
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-        .btn-secondary {
-            background-color: #e0e0e0; /* Light gray */
-            color: black;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-        .btn-link {
-            background-color: transparent;
-            color: black;
-            padding: 10px 15px;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            text-decoration: none;
-        }
-        .required:after {
-            content: " *";
-            color: red;
-        }
-        .container {
-            padding-left: 10px;
-            padding-right: -10px;
-        }
-
-
-
-
-         /* Ensure the header is fixed */
+<style>
+   /* Ensure the header is fixed */
 .header {
     position: fixed;
     top: 0;
@@ -127,11 +17,43 @@
     margin-top: 65px; /* Adjust this based on your header height */
     position: relative; /* Ensure main content stays below sidebar */
     z-index: 1; /* Lower z-index to ensure it stays below sidebar */
-    margin-left: 250px; /* Keep fixed margin for larger screens */
-    margin-right: 40px; /* Keep fixed margin for larger screens */
 }
 
-/* Hide menu toggle button on large devices */
+/* Sidebar styles */
+#sidebar {
+    transform: translateX(0); /* Default visible */
+    transition: transform 0.3s ease; /* Smooth transition */
+    z-index: 100; /* Increase z-index to ensure it overrides other content */
+}
+
+/* Overlay for mobile menu */
+#overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none; /* Initially hidden */
+    z-index: 90; /* Ensure the overlay is between sidebar and main content */
+}
+
+.hidden {
+    display: none; /* Ensure hidden elements are not displayed */
+}
+
+    /* Hide sidebar off-screen on small devices */
+    @media (max-width: 768px) {
+        #sidebar {
+            transform: translateX(-100%); /* Hide sidebar off-screen */
+        }
+        #sidebar.active {
+            transform: translateX(0); /* Show sidebar */
+        }
+        #menu-toggle {
+            display: block; /* Show menu toggle button on small devices */
+            background:blue;
+        }
+    }
+
+    /* Hide menu toggle button on large devices */
     @media (min-width: 769px) {
         #menu-toggle {
             display: none; /* Hide menu toggle button on large devices */
@@ -144,9 +66,11 @@
         inset: 0;
         background: rgba(0, 0, 0, 0.5);
         display: none; /* Initially hidden */
-        z-index: 90; /* Ensure overlay appears above other content */
+        z-index: 40; /* Ensure overlay appears above other content */
     }
 
+
+ 
     .hidden {
         display: none; /* Ensure hidden elements are not displayed */
     }
@@ -155,28 +79,18 @@
     #sidebar {
         transform: translateX(0); /* Default visible */
         transition: transform 0.3s ease; /* Smooth transition */
-        z-index: 100;
-
     }
 
-  /* Hide sidebar off-screen on small devices */
-  @media (max-width: 768px) {
+    /* Hide sidebar off-screen on small devices */
+    @media (max-width: 768px) {
         #sidebar {
             transform: translateX(-100%); /* Hide sidebar off-screen */
+            background: bg-gray-800;
         }
         #sidebar.active {
             transform: translateX(0); /* Show sidebar */
+            
         }
-        #menu-toggle {
-            display: block; /* Show menu toggle button on small devices */
-            background:blue;
-        }
-       
-        .main-content {
-            margin: 75px 5px 5px 5px;
-            padding: 0;
-       }
-
     }
 
     ul.mt-0 {
@@ -184,12 +98,12 @@
     padding-left: 0;
     list-style-type: none;
 }
+
 </style>
-</head>
-<body>
-  <!-- Header Section -->
+
+<!-- Header Section -->
 <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
-    <h2 class="text-2xl font-bold">CAR Draiving Training System</h2>
+    <h2 class="text-2xl font-bold">CAR DRIVING TRAINING SYSTEM</h2>
     <div class="flex items-center">
         <a href="#" class="text-white relative mr-4">
             <i class="fas fa-bell"></i>
@@ -206,7 +120,8 @@
         </button>
     </div>
 </header>
-  <!-- Sidebar Section -->
+
+<!-- Sidebar Section -->
 <div id="sidebar" class="sidebar bg-gray-800 text-white w-64 h-screen fixed z-10 shadow-lg">
     <ul class="mt-0 space-y-1 pl-0 list-none">
         <li><a href="/" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
@@ -220,16 +135,8 @@
     </ul>
 </div>
 
-<div class="main-content">
-<div class = "dashboared">
-<h2 style = "background: red">Here is sample pie chart, graph....</h2>
-</div>
-</div>
-
-    <!-- Overlay for mobile menu -->
+<!-- Overlay for mobile menu -->
 <div id="overlay" class="overlay"></div>
-
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -268,8 +175,3 @@
         });
     });
 </script>
-
-</body>
-</html>
-
-
