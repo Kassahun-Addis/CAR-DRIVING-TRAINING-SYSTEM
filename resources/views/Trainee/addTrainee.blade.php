@@ -15,12 +15,8 @@
             <div class="row">
                 <div class="col-12 col-md-6">
                     <div class="form-group">
-                        <label for="asset_name" class="required">Trainee Name</label>
+                        <label for="asset_name" class="required">Full Name</label>
                         <input type="text" class="form-control" id="asset_name" name="asset_name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="category" class="required">DOB</label>
-                        <input type="date" class="form-control" id="category" name="category" required>
                     </div>
                     <div class="form-group">
                         <label for="purchase_price" class="required">Gender</label>
@@ -31,9 +27,47 @@
                         </select> 
                     </div>
                     <div class="form-group">
-                        <label for="department" class="required">Address</label>
+                        <label for="asset_name" class="required">Nationality</label>
+                        <input type="text" class="form-control" id="asset_name" name="asset_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department" class="required">City</label>
                         <input type="text" class="form-control" id="department" name="department" required>
                     </div>
+                    <div class="form-group">
+                        <label for="department" class="required">Sub City</label>
+                        <input type="text" class="form-control" id="department" name="department" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department" class="required">Woreda</label>
+                        <input type="text" class="form-control" id="department" name="department" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="asset_name" class="required">House No</label>
+                        <input type="number" class="form-control" id="asset_name" name="asset_name" required>
+                    </div> 
+                    <div class="form-group">
+                        <label for="asset_name" class="required">Phone No</label>
+                        <input type="number" class="form-control" id="asset_name" name="asset_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="asset_name" class="required">P.O.Box</label>
+                        <input type="number" class="form-control" id="asset_name" name="asset_name" required>
+                    </div>                     
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label for="asset_name" class="required">Birth Place</label>
+                        <input type="text" class="form-control" id="asset_name" name="asset_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category" class="required">DOB</label>
+                        <input type="date" class="form-control" id="category" name="category" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="asset_name" class="required">Existing Driving License No</label>
+                        <input type="text" class="form-control" id="asset_name" name="asset_name">
+                    </div> 
                     <div class="form-group">
                         <label for="status" class="required">Liscence Type</label>
                         <select class="form-control" id="status" name="status" required>
@@ -43,32 +77,32 @@
                             <option value="inactive">Truck</option>
                         </select>
                     </div>
-                </div>
-                    <div class="col-12 col-md-6">
                     <div class="form-group">
-                        <label for="status" class="required">Status</label>
-                        <select class="form-control" id="status" name="status" required>
+                        <label for="serial_no">Education Level</label>
+                        <input type="text" class="form-control" id="serial_no" name="serial_no">
+                    </div>
+                    <div class="form-group">
+                        <label for="asset_name" class="required">Any Case(Disease)</label>
+                        <input type="text" class="form-control" id="asset_name" name="asset_name">
+                    </div>          
+                    <div class="form-group">
+                    <label for="department" class="required">Blood Type</label>
+                        <select class="form-control" id="department" name="department" required>
                             <option value="">Please select</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                            <option value="inactive">Compeletd</option>
+                            <option value="active">A</option>
+                            <option value="active">B</option>
+                            <option value="active">O</option>
+                            <option value="active">AB</option>
+                            <option value="active">A+</option>
+                            <option value="active">B+</option>
+                            <option value="active">A-</option>
+                            <option value="active">B-</option>
+                            <option value="active">O+</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="serial_no">Start Date</label>
-                        <input type="date" class="form-control" id="serial_no" name="serial_no">
-                    </div>
-                    <div class="form-group">
-                        <label for="description">End date</label>
-                        <input type="date" class="form-control" id="description" name="description"></input type="date">
-                    </div>
-                    <div class="form-group">
-                        <label for="status" class="required">Payment Status</label>
-                        <select class="form-control" id="status" name="status" required>
-                            <option value="">Please select</option>
-                            <option value="active">paid</option>
-                            <option value="inactive">pending</option>
-                        </select>
+                        <label for="description">Reciept No</label>
+                        <input type="text" class="form-control" id="description" name="description"></input type="date">
                     </div>
                 </div>
             </div>
