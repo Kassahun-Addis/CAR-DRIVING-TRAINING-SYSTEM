@@ -12,8 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('trainers', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id(); // Primary key
+            $table->string('name'); // Trainer's name
+            $table->string('phone_number', 20); // Trainer's phone number
+            $table->string('email')->unique(); // Trainer's email, must be unique
+            $table->integer('experience'); // Trainer's years of experience
+            $table->string('specialization'); // Trainer's area of specialization
+            $table->foreignId('car_id')->constrained('training_cars'); // Foreign key referencing the training_cars table
+            $table->timestamps(); // Created at and updated at timestamps
         });
     }
 
