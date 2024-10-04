@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\TrainingCar;
+use Illuminate\Http\Request;
+
+class TrainingCarController extends Controller
+{
+    // Display a listing of the training cars
+    public function index()
+    {
+        $trainingCars = TrainingCar::all();
+        return view('training_cars.index', compact('trainingCars'));
+    }
+
+    // Show the form for creating a new training car
+    public function create()
+    {
+        return view('training_cars.create');
+    }
+
+    // Store a newly created training car in the database
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'model' => 'nullable|string|max:255',
+            'year' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'plate_no' => 'required|string|max:20|unique:training_cars,plate_no',
+        ]);
+
+        TrainingCar::create($request->all());
+
+        return redirect()->route('training_cars.index')->with('success', 'Training Car created successfully!');
+    }
+
+    // Show the form for editing the specified training car
+    public function edit(TrainingCar $trainingCar)
+    {
+        return view('training_cars.edit', compact('trainingCar'));
+    }
+
+    // Update the specified training car in the database
+    public function update(Request $request, TrainingCar $trainingCar)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'model' => 'nullable|string|max:255',
+            'year' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'plate_no' => 'required|string|max:20|unique:training_cars,plate_no,' . $trainingCar->id,
+        ]);
+
+        $trainingCar->update($request->all());
+
+        return redirect()->route('training_cars.index')->with('success', 'Training Car updated successfully!');
+    }
+
+    // Remove the specified training car from the database
+    public function destroy(TrainingCar $trainingCar)
+    {
+        $trainingCar->delete();
+        return redirect()->route('training_cars.index')->with('success', 'Training Car deleted successfully!');
+    }
+}
