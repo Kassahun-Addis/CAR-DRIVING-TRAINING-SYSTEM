@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Trainee;
+use Illuminate\Support\Facades\Auth;
+
 
 class TraineeController extends Controller
 {
@@ -74,6 +76,7 @@ class TraineeController extends Controller
         // Pass the data to the index view
         return view('Trainee.index', compact('trainees'));
     }
+    
 
     public function edit($id)
     {
@@ -124,4 +127,16 @@ class TraineeController extends Controller
         // Redirect to the index page with a success message
         return redirect()->route('trainee.index')->with('success', 'Trainee deleted successfully.');
     }
+
+    public function showDashboard()
+{
+    $user = Auth::user();
+
+    if ($user) {
+        $trainee = Trainee::find($user->id); // Assuming the ID matches
+        return view('home', compact('trainee')); // Ensure 'home' is the correct view name
+    }
+
+    return redirect()->route('login')->withErrors('You are not logged in.');
+}
 }

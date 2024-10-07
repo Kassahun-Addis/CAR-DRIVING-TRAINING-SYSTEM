@@ -187,9 +187,9 @@
 </style>
 </head>
 <body>
-  <!-- Header Section -->
+<!-- Header Section -->
 <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
-    <h2 class="text-2xl font-bold">CAR Draiving Training System</h2>
+    <h2 class="text-2xl font-bold">CAR Driving Training System</h2>
     <div class="flex items-center">
         <a href="#" class="text-white relative mr-4">
             <i class="fas fa-bell"></i>
@@ -197,7 +197,7 @@
         </a>
         <a href="#" class="text-white flex items-center">
             <i class="fas fa-user mr-1"></i>
-            <span>User</span>
+            <span>{{ Auth::user()->name }}</span> <!-- Display logged-in user's name -->
         </a>
     </div>
     <div>
