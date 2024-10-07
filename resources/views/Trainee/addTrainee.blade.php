@@ -19,6 +19,10 @@
                         <input type="text" class="form-control" id="full_name" name="full_name" required>
                     </div>
                     <div class="form-group">
+                        <label for="photo" class="required">Upload Photo</label>
+                        <input type="file" class="form-control" id="photo" name="photo" accept="image/*" required>
+                    </div>
+                    <div class="form-group">
                         <label for="gender" class="required">Gender</label>
                         <select class="form-control" id="gender" name="gender" required>
                             <option value="">Please select</option>
@@ -51,12 +55,13 @@
                         <label for="phone_no" class="required">Phone No</label>
                         <input type="number" class="form-control" id="phone_no" name="phone_no" required>
                     </div>
+                                        
+                </div>
+                <div class="col-12 col-md-6">
                     <div class="form-group">
                         <label for="po_box" class="required">P.O.Box</label>
                         <input type="number" class="form-control" id="po_box" name="po_box" required>
-                    </div>                     
-                </div>
-                <div class="col-12 col-md-6">
+                    </div> 
                     <div class="form-group">
                         <label for="birth_place" class="required">Birth Place</label>
                         <input type="text" class="form-control" id="birth_place" name="birth_place" required>

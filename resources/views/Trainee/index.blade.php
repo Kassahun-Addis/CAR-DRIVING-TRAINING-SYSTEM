@@ -17,7 +17,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>#</th>
+                <th>No</th>
                 <th>Full Name</th>
                 <th>Gender</th>
                 <th>Nationality</th>

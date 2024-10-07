@@ -34,7 +34,11 @@ Route::get('/home', [TraineeController::class, 'showDashboard'])->name('home');
 // Attendance Routes
 Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
 Route::post('/attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
-Route::get('/attendance/list', [AttendanceController::class, 'show'])->name('attendance.show');
+Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
+Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit'); // Show edit form
+Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update'); // Update attendance
+Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy'); // Delete attendance
+
 
 // Trainer Routes
 Route::get('/trainers', [TrainerController::class, 'index'])->name('trainers.index');
