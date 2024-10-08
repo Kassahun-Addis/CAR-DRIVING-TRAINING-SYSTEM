@@ -36,11 +36,15 @@
                         <label for="trainer_name" class="required">Trainer Name</label>
                         <input type="text" class="form-control" id="trainer_name" name="TrainerName" value="{{ $attendance->TrainerName }}" required>
                     </div>
+                  
+
                     <div class="form-group">
-                        <label for="present" class="required">Mark Present</label>
-                        <input type="checkbox" name="Present" id="present" value="Present" onchange="this.form.Status.value=this.checked ? 'Present' : 'Absent';" {{ $attendance->Status == 'Present' ? 'checked' : '' }}>
-                        <label for="present">Check this box if present</label>
-                    </div>
+    <label for="present" class="required">Mark Present</label>
+    <div style="display: inline-flex; align-items: center;">
+        <label for="present" style="margin: 0; padding-right: 10px;">Present?</label>
+        <input type="checkbox" name="Present" id="present" value="Present" onchange="this.form.Status.value=this.checked ? 'Present' : 'Absent';" {{ $attendance->Status == 'Present' ? 'checked' : '' }}>
+    </div>
+</div>
                 </div>
             </div>
             <div class="d-flex justify-content-center">

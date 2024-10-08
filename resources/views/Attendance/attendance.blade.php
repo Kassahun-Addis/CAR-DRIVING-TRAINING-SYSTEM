@@ -36,11 +36,15 @@
                         <input type="text" class="form-control" id="trainer_name" name="TrainerName" required>
                     </div>
                     <div class="form-group">
-                        <label for="present" class="required">Mark Present</label>
-                        <input type="checkbox" name="Present" id="present" value="Present" onchange="this.form.Status.value=this.checked ? 'Present' : 'Absent';">
-                        <label for="present">Check this box if present</label>
-                    </div>
-                </div>
+    <label for="present" class="required">Mark Present</label>
+    <div style="display: inline-flex; align-items: center;">
+        <label for="present" style="margin: 0; padding-right: 10px;">Present?</label>
+        <input type="checkbox" name="Present" id="present" value="Present" 
+               onchange="this.form.Status.value=this.checked ? 'Present' : 'Absent';">
+    </div>
+</div>
+
+            </div>
             </div>
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary btn-custom">Save</button>

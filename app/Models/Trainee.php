@@ -14,7 +14,10 @@ class Trainee extends Model
 
     // The attributes that are mass assignable
     protected $fillable = [
+        'customid', 
+        'yellow_card',
         'full_name',
+        'photo',
         'gender',
         'nationality',
         'city',

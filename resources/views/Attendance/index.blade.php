@@ -13,6 +13,8 @@
         <thead>
             <tr>
                 <th>Date</th>
+                <th>Start Time</th>
+                <th>Finish Time</th>
                 <th>Trainee Name</th>
                 <th>Trainer Name</th>
                 <th>Status</th>
@@ -23,6 +25,8 @@
             @foreach($attendances as $attendance)
                 <tr>
                     <td>{{ $attendance->Date }}</td>
+                    <td>{{ $attendance->StartTime }}</td>
+                    <td>{{ $attendance->FinishTime }}</td>
                     <td>{{ $attendance->TraineeName }}</td>
                     <td>{{ $attendance->TrainerName }}</td>
                     <td>{{ $attendance->Status }}</td>

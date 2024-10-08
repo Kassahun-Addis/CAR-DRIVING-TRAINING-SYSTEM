@@ -18,10 +18,23 @@ class TraineeController extends Controller
     {
         // Log the incoming request data
         \Log::info('Storing Trainee data:', $request->all());
-
+    
+        // Get the last trainee record to increment the custom ID
+        $lastTrainee = Trainee::orderBy('id', 'desc')->first();
+        
+        // Generate the next custom ID
+        if ($lastTrainee) {
+            $lastCustomId = (int)$lastTrainee->customid;
+            $newCustomId = str_pad($lastCustomId + 1, 3, '0', STR_PAD_LEFT); // Increment and pad to 3 digits
+        } else {
+            $newCustomId = '001';  // First trainee ID
+        }
+    
         // Validate the incoming request data
         $request->validate([
+            'yellow_card' => 'required|unique:trainees,yellow_card',
             'full_name' => 'required|string|max:255',
+            'photo' => 'nullable|image|mimes:jpeg,png,jfif,jpg,gif|max:4096', // Validate image file
             'gender' => 'required|string',
             'nationality' => 'required|string',
             'city' => 'required|string',
@@ -38,11 +51,48 @@ class TraineeController extends Controller
             'disease' => 'nullable|string',
             'blood_type' => 'required|string',
             'receipt_no' => 'nullable|string',
+        ], [
+            'yellow_card.unique' => 'The yellow card number must be unique.',
+            'yellow_card.required' => 'The yellow card field is required.',
         ]);
 
-        // Create a new Trainee entry
+            // Initialize the photo name variable
+    $photoName = null;
+
+    // Check if a photo was uploaded
+    if ($request->hasFile('photo')) {
+        $photo = $request->file('photo');
+        
+        if ($photo->isValid()) { // Check if the file is valid
+            // Use the phone number as the photo name
+            $photoName = $request->input('phone_no') . '.' . $photo->getClientOriginalExtension(); 
+            
+            $uploadPath = base_path('uploads/trainee_photos');
+            
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0777, true); // Create directory if it doesn't exist
+            }
+            
+            // Move the file
+            $photo->move($uploadPath, $photoName);
+            
+            // Log the file path
+            \Log::info('Photo uploaded to:', ['path' => $uploadPath . '\\' . $photoName]);
+        } else {
+            \Log::error('Photo upload failed');
+        }
+    } else {
+        \Log::info('No photo uploaded, using null for photo field.');
+    }
+
+    
+    
+        // Create a new Trainee entry, including the generated custom ID
         $trainee = Trainee::create([
+            'customid' => $newCustomId,  // Save the generated custom ID
+            'yellow_card' => $request->input('yellow_card'),
             'full_name' => $request->input('full_name'),
+            'photo' => $photoName,  // Save the photo file name or path
             'gender' => $request->input('gender'),
             'nationality' => $request->input('nationality'),
             'city' => $request->input('city'),
@@ -60,12 +110,12 @@ class TraineeController extends Controller
             'blood_type' => $request->input('blood_type'),
             'receipt_no' => $request->input('receipt_no'),
         ]);
-
+    
         // Log the newly created Trainee
         \Log::info('New Trainee created:', $trainee->toArray());
-
+    
         // Redirect or return response
-        return redirect()->route('trainee.index')->with('success', 'Trainee addedsuccessfully.');
+        return redirect()->route('trainee.index')->with('success', 'Trainee added successfully.');
     }
 
     public function index()
@@ -91,6 +141,7 @@ class TraineeController extends Controller
     {
         // Validate the incoming request data
         $request->validate([
+            'yellow_card' => $request->input('yellow_card'),
             'full_name' => 'required|string|max:255',
             'gender' => 'required|string',
             'nationality' => 'required|string',
