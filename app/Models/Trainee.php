@@ -17,6 +17,7 @@ class Trainee extends Model
         'customid', 
         'yellow_card',
         'full_name',
+        'ሙሉ_ስም',
         'photo',
         'gender',
         'nationality',

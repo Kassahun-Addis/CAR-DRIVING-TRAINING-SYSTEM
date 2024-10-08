@@ -34,6 +34,7 @@ class TraineeController extends Controller
         $request->validate([
             'yellow_card' => 'required|unique:trainees,yellow_card',
             'full_name' => 'required|string|max:255',
+            'full_name_2' => 'required|string|max:255',
             'photo' => 'nullable|image|mimes:jpeg,png,jfif,jpg,gif|max:4096', // Validate image file
             'gender' => 'required|string',
             'nationality' => 'required|string',
@@ -92,6 +93,7 @@ class TraineeController extends Controller
             'customid' => $newCustomId,  // Save the generated custom ID
             'yellow_card' => $request->input('yellow_card'),
             'full_name' => $request->input('full_name'),
+            'ሙሉ_ስም' => $request->input('full_name_2'),
             'photo' => $photoName,  // Save the photo file name or path
             'gender' => $request->input('gender'),
             'nationality' => $request->input('nationality'),
@@ -143,6 +145,7 @@ class TraineeController extends Controller
         $request->validate([
             'yellow_card' => $request->input('yellow_card'),
             'full_name' => 'required|string|max:255',
+            'full_name_2' => 'required|string|max:255',
             'gender' => 'required|string',
             'nationality' => 'required|string',
             'city' => 'required|string',

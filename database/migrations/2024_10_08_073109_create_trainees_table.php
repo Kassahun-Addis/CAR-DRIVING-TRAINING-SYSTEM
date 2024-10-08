@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('customid', 5)->nullable();  // New column for custom ID
             $table->unique('yellow_card');
             $table->string('full_name');
+            $table->string('ሙሉ_ስም');
             $table->string('photo')->nullable();  // To store the photo path
             $table->string('gender')->nullable(); 
             $table->string('nationality')->nullable();

@@ -15,20 +15,30 @@
             <div class="row">
                 <div class="col-12 col-md-6">
             <div class="form-group">
-                <label for="yellow_card" class="required">Yellow Card</label>
+                <label for="yellow_card" class="required">Yellow Card No/የቢጫ ካርድ ቁጥር </label>
                 <input type="number" class="form-control" id="yellow_card" name="yellow_card" required>
                 
                 @if ($errors->has('yellow_card'))
                     <span class="text-danger">{{ $errors->first('yellow_card') }}</span>
                 @endif
             </div>
-            <div class="form-group">
-                <label for="full_name" class="required">Full Name</label>
-                <input type="text" class="form-control" id="full_name" name="full_name" value="{{ old('full_name') }}" required>
-                @error('full_name')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
-            </div>
+            <div class="form-group row">
+    <div class="col-md-6">
+        <label for="full_name" class="required">Full Name</label>
+        <input type="text" class="form-control" id="full_name" name="full_name" value="{{ old('full_name') }}" required>
+        @error('full_name')
+            <div class="text-danger">{{ $message }}</div>
+        @enderror
+    </div>
+    
+    <div class="col-md-6">
+        <label for="full_name_2" class="required">ሙሉ ስም </label>
+        <input type="text" class="form-control" id="full_name_2" name="full_name_2" value="{{ old('full_name_2') }}" required>
+        @error('full_name_2')
+            <div class="text-danger">{{ $message }}</div>
+        @enderror
+    </div>
+</div>
                     <div class="form-group">
                         <label for="photo" class="required">Upload Photo</label>
                         <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
