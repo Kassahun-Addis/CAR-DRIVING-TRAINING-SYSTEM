@@ -19,14 +19,20 @@ return new class extends Migration
             $table->string('ሙሉ_ስም');
             $table->string('photo')->nullable();  // To store the photo path
             $table->string('gender')->nullable(); 
+            $table->string('ጾታ')->nullable(); 
             $table->string('nationality')->nullable();
+            $table->string('ዜግነት')->nullable();
             $table->string('city');
+            $table->string('ከተማ');
             $table->string('sub_city')->nullable();
+            $table->string('ክፍለ_ከተማ')->nullable();
             $table->string('woreda');
+            $table->string('ወረዳ');
             $table->string('house_no');
             $table->string('phone_no')->nullable();
             $table->string('po_box')->nullable();
             $table->string('birth_place');
+            $table->string('የትዉልድ_ቦታ');
             $table->date('dob')->nullable();
             $table->string('existing_driving_lic_no');
             $table->string('license_type');

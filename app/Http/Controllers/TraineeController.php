@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Trainee;
 use Illuminate\Support\Facades\Auth;
+use App\Exports\TraineeExport;
+
 
 
 class TraineeController extends Controller
@@ -37,14 +39,20 @@ class TraineeController extends Controller
             'full_name_2' => 'required|string|max:255',
             'photo' => 'nullable|image|mimes:jpeg,png,jfif,jpg,gif|max:4096', // Validate image file
             'gender' => 'required|string',
+            'gender_1' => 'required|string',
             'nationality' => 'required|string',
+            'nationality_1' => 'required|string',
             'city' => 'required|string',
+            'city_1' => 'required|string',
             'sub_city' => 'required|string',
+            'sub_city_1' => 'required|string',
             'woreda' => 'required|string',
+            'woreda_1' => 'required|string',
             'house_no' => 'required|numeric',
             'phone_no' => 'required|numeric',
             'po_box' => 'required|numeric',
             'birth_place' => 'required|string',
+            'birth_place_1' => 'required|string',
             'dob' => 'required|date',
             'driving_license_no' => 'nullable|string',
             'license_type' => 'required|string',
@@ -57,28 +65,22 @@ class TraineeController extends Controller
             'yellow_card.required' => 'The yellow card field is required.',
         ]);
 
-            // Initialize the photo name variable
+              // Initialize the photo name variable
     $photoName = null;
 
     // Check if a photo was uploaded
     if ($request->hasFile('photo')) {
         $photo = $request->file('photo');
-        
+
         if ($photo->isValid()) { // Check if the file is valid
             // Use the phone number as the photo name
             $photoName = $request->input('phone_no') . '.' . $photo->getClientOriginalExtension(); 
             
-            $uploadPath = base_path('uploads/trainee_photos');
-            
-            if (!file_exists($uploadPath)) {
-                mkdir($uploadPath, 0777, true); // Create directory if it doesn't exist
-            }
-            
-            // Move the file
-            $photo->move($uploadPath, $photoName);
-            
+            // Store the photo in the storage/app/public/trainee_photos directory
+            $path = $photo->storeAs('trainee_photos', $photoName, 'public');
+
             // Log the file path
-            \Log::info('Photo uploaded to:', ['path' => $uploadPath . '\\' . $photoName]);
+            \Log::info('Photo uploaded to:', ['path' => $path]);
         } else {
             \Log::error('Photo upload failed');
         }
@@ -96,14 +98,20 @@ class TraineeController extends Controller
             'ሙሉ_ስም' => $request->input('full_name_2'),
             'photo' => $photoName,  // Save the photo file name or path
             'gender' => $request->input('gender'),
+            'ጾታ' => $request->input('gender_1'),
             'nationality' => $request->input('nationality'),
+            'ዜግነት' => $request->input('nationality_1'),
             'city' => $request->input('city'),
+            'ከተማ' => $request->input('city_1'),
             'sub_city' => $request->input('sub_city'),
+            'ክፍለ_ከተማ' => $request->input('sub_city_1'),
             'woreda' => $request->input('woreda'),
+            'ወረዳ' => $request->input('woreda_1'),
             'house_no' => $request->input('house_no'),
             'phone_no' => $request->input('phone_no'),
             'po_box' => $request->input('po_box'),
             'birth_place' => $request->input('birth_place'),
+            'የትዉልድ_ቦታ' => $request->input('birth_place_1'),
             'dob' => $request->input('dob'),
             'existing_driving_lic_no' => $request->input('driving_license_no'),
             'license_type' => $request->input('license_type'),
@@ -120,14 +128,19 @@ class TraineeController extends Controller
         return redirect()->route('trainee.index')->with('success', 'Trainee added successfully.');
     }
 
-    public function index()
-    {
-        // Fetch all trainees from the database
-        $trainees = Trainee::all();
 
-        // Pass the data to the index view
+    public function index(Request $request)
+    {
+        $search = $request->input('search'); // Get the search term
+        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+
+        // Query the banks with search and pagination
+         $trainees = Trainee::when($search, function ($query) use ($search) {
+            return $query->where('full_name', 'like', '%' . $search . '%')
+                        ->orWhere('gender', 'like', '%' . $search . '%');
+        })->paginate($perPage);
         return view('Trainee.index', compact('trainees'));
-    }
+   }
     
 
     public function edit($id)
@@ -193,4 +206,25 @@ class TraineeController extends Controller
 
     return redirect()->route('login')->withErrors('You are not logged in.');
 }
+
+// Add this method to your controller
+public function exportToExcel()
+{
+    return Excel::download(new BankCategoryExport, 'trainees.xlsx');
+}
+
+// public function showPhoto($photoName)
+// {
+//     $path = base_path('uploads/trainee_photos/' . $photoName);
+
+//     if (!File::exists($path)) {
+//         abort(404, 'Image not found.');
+//     }
+
+//     $file = File::get($path);
+//     $mimeType = File::mimeType($path);
+
+//     return response($file)->header("Content-Type", $mimeType);
+// }
+
 }

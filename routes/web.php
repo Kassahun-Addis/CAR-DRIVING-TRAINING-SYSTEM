@@ -30,6 +30,8 @@ Route::get('/trainee/edit/{id}', [TraineeController::class, 'edit'])->name('trai
 Route::put('/trainee/update/{id}', [TraineeController::class, 'update'])->name('trainee.update');
 Route::delete('/trainee/destroy/{id}', [TraineeController::class, 'destroy'])->name('trainee.destroy');
 Route::get('/home', [TraineeController::class, 'showDashboard'])->name('home');
+Route::post('trainee/export', [TraineeController::class, 'exportToExcel'])->name('trainee.export');
+//Route::get('/trainee/photo/{photoName}', [TraineeController::class, 'showPhoto']);
 
 // Attendance Routes
 Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');

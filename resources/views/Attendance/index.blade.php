@@ -18,6 +18,7 @@
                 <th>Trainee Name</th>
                 <th>Trainer Name</th>
                 <th>Status</th>
+                <th>Comments</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -30,6 +31,7 @@
                     <td>{{ $attendance->TraineeName }}</td>
                     <td>{{ $attendance->TrainerName }}</td>
                     <td>{{ $attendance->Status }}</td>
+                    <td>{{ $attendance->Comments }}</td>
                     <td>
                         <!-- You can add actions like Edit or Delete here -->
                         <a href="{{ route('attendance.edit', $attendance->AttendanceID) }}" class="btn btn-warning btn-sm">Edit</a>
