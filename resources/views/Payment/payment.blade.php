@@ -5,9 +5,12 @@
 @section('content')
 <div class="container mt-5">
     <h2>Add Payment</h2>
+
+    <div class="form-section">
     <form action="{{ route('payments.store') }}" method="POST">
         @csrf
-
+        <div class="row">
+        <div class="col-6">
         <div class="form-group">
             <label for="FullName">Full Name</label>
             <input type="text" class="form-control" id="FullName" name="FullName" required>
@@ -40,7 +43,9 @@
                 @endforeach
             </select>
         </div>
+        </div>
 
+        <div class="col-6">
         <div class="form-group">
             <label for="TransactionNo">Transaction Number</label>
             <input type="text" class="form-control" id="TransactionNo" name="TransactionNo">
@@ -69,9 +74,17 @@
                 <option value="Overdue">Overdue</option>
             </select>
         </div>
+        </div>
+        </div>
 
-        <button type="submit" class="btn btn-primary">Save</button>
+        <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary btn-custom">Save</button>
+                <button type="reset" class="btn btn-secondary btn-custom">Reset</button>
+                <a href="{{ route('payments.index') }}" class="btn btn-secondary btn-custom">Back to list</a>
+        </div>
+        
     </form>
+</div>
 </div>
 
 <script>
