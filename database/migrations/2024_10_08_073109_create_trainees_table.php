@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('trainees', function (Blueprint $table) {
             $table->id();
             $table->string('customid', 5)->nullable();  // New column for custom ID
-            $table->unique('yellow_card');
+            $table->string('yellow_card');  // Define yellow_card column
+            $table->unique('yellow_card');  // Apply unique constraint on yellow_card
             $table->string('full_name');
             $table->string('ሙሉ_ስም');
             $table->string('photo')->nullable();  // To store the photo path

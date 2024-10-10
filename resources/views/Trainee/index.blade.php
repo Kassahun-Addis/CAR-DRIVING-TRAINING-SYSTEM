@@ -73,7 +73,7 @@
             <tr>
                 <th>No</th>
                 <th>Yellow card No</th>
-                <th>photo</th>
+                <th>Photo</th>
                 <th>Full Name</th>
                 <th>Gender</th>
                 <th>Nationality</th>
@@ -125,7 +125,8 @@
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this trainee?')">Delete</button>
                         </form>
                         <!-- <button class="btn btn-info btn-sm ml-1" onclick="printBankDetails('{{ $trainee->WastageID }}', '{{ $trainee->Product_name }}','{{ $trainee->Quantity }}', '{{ $trainee->WastageDate }}', '{{ $trainee->Reason }}', '{{ $trainee->unit }}')">Print</button> -->
-                        <button class="btn btn-info btn-sm ml-1" onclick="printDrivingLicenseApplication({{ json_encode($trainee) }})">Print D</button>                    </td>
+                        <button class="btn btn-info btn-sm ml-1" onclick="printDrivingLicenseApplication({{ json_encode($trainee) }})">Print</button>                    
+                    </td>
                 </tr>
             @endforeach
         </tbody>
@@ -173,7 +174,6 @@
 
 <!-- JavaScript function to print driving license application form -->
 <script>
-// JavaScript function to print driving license application form
 function printDrivingLicenseApplication(trainee) {
     const printWindow = window.open('', '', 'height=1000,width=900');
     printWindow.document.write('<html><head><title>Driving License Application</title>');

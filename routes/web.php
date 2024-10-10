@@ -7,6 +7,8 @@ use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\TrainingCarController;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\BankController;
 use App\Http\Controllers\Auth\LoginController; // Import LoginController
 
 // Redirect root to login page
@@ -58,6 +60,17 @@ Route::get('/training_cars/{trainingCar}', [TrainingCarController::class, 'show'
 Route::get('/training_cars/{trainingCar}/edit', [TrainingCarController::class, 'edit'])->name('training_cars.edit');
 Route::put('/training_cars/{trainingCar}/update', [TrainingCarController::class, 'update'])->name('training_cars.update');
 Route::delete('/training_cars/{trainingCar}/destroy', [TrainingCarController::class, 'destroy'])->name('training_cars.destroy');
+
+// Payment Routes
+Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+Route::get('/payments/create', [PaymentController::class, 'create'])->name('payments.create');
+Route::post('/payments/store', [PaymentController::class, 'store'])->name('payments.store');
+Route::get('/payments/edit/{payment}', [PaymentController::class, 'edit'])->name('payments.edit');
+Route::put('/payments/update/{payment}', [PaymentController::class, 'update'])->name('payments.update');
+Route::delete('/payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
+Route::get('/payments/print/{payment}', [PaymentController::class, 'print'])->name('payments.print');
+
+Route::resource('banks', BankController::class);
 
 // Auth routes (if you are using built-in authentication)
 Auth::routes();

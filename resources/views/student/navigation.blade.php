@@ -112,7 +112,11 @@
         </a>
         <a href="#" class="text-white flex items-center">
             <i class="fas fa-user mr-1"></i>
-            <span>{{ optional($trainee)->full_name ?? 'Guest' }}</span> <!-- Using optional() to avoid errors -->
+            @if (Auth::check())
+                <span>{{ Auth::user()->name }}</span> <!-- Display logged-in user's name -->
+            @else
+                <span>Guest</span> <!-- Display "Guest" if no user is logged in -->
+            @endif
         </a>
     </div>
     <div>
@@ -128,9 +132,9 @@
         <li><a href="/" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
         <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Trainee</a></li>
         <li><a href="{{ route('trainers.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Trainer</a></li>
-        <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Payment</a></li>
+        <li><a href="{{ route('payments.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Payment</a></li>
         <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Fill Attendance</a></li>
-
+        <li><a href="{{ route('banks.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Bank </a></li>
     </ul>
 </div>
 
