@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('Status', ['Present', 'Absent'])->default('Absent'); // Status of attendance
             $table->string('TraineeName', 100); // Trainee name
             $table->string('TrainerName', 100); // Trainer name
-            $table->text('Comments')->nullable(); // Optional comments
+            $table->string('comment')->nullable(); // Optional comments
             $table->timestamps(); // Created at and updated at timestamps
         });
     }

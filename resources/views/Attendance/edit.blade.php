@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('student.app')
 
 @section('title', 'Edit Attendance')
 
@@ -45,6 +45,12 @@
         <input type="checkbox" name="Present" id="present" value="Present" onchange="this.form.Status.value=this.checked ? 'Present' : 'Absent';" {{ $attendance->Status == 'Present' ? 'checked' : '' }}>
     </div>
 </div>
+
+<div class="form-group">
+                        <label for="comment" class="required">Comments</label>
+                        <input type="text" class="form-control" id="comment" name="comment" value="{{ $attendance->comment }}">
+                    </div>
+
                 </div>
             </div>
             <div class="d-flex justify-content-center">

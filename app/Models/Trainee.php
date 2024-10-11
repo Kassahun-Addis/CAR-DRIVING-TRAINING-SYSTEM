@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Trainee extends Model
+class Trainee extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     // The table associated with the model (optional if you follow Laravel naming conventions)
     protected $table = 'trainees';
@@ -38,7 +39,6 @@ class Trainee extends Model
         'existing_driving_lic_no',
         'license_type',
         'education_level',
-        'any_case',
         'blood_type',
         'receipt_no',
     ];

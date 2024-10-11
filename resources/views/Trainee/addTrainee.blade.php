@@ -153,10 +153,10 @@
                         <label for="education_level">Education Level/የትምህርት ደረጃ</label>
                         <input type="text" class="form-control" id="education_level" name="education_level">
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="disease" class="required">Any Case (Disease)</label>
                         <input type="text" class="form-control" id="disease" name="disease">
-                    </div>          
+                    </div>           -->
                     <div class="form-group">
                         <label for="blood_type" class="required">Blood Type/የደም አይነት </label>
                         <select class="form-control" id="blood_type" name="blood_type" required>

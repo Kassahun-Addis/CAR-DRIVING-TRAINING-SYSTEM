@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'trainee' => [ // New guard for trainees
+            'driver' => 'session',
+            'provider' => 'trainees',
+        ],
     ],
 
     /*
@@ -62,13 +67,14 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            // 'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => App\Models\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'trainees' => [ // New provider for the trainees model
+            'driver' => 'eloquent',
+            'model' => App\Models\Trainee::class,
+        ],
     ],
 
     /*
@@ -97,6 +103,7 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+        // You might want to add a password reset configuration for trainees too.
     ],
 
     /*

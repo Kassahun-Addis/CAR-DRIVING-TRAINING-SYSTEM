@@ -102,39 +102,40 @@
 </style>
 
 <!-- Header Section -->
-<!-- Header Section -->
-<header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
-    <h2 class="text-2xl font-bold">CAR Driving Training System</h2>
-    <div class="flex items-center">
-        <a href="#" class="text-white relative mr-4">
-            <i class="fas fa-bell"></i>
-            <span class="absolute top-0 right-0 bg-red-600 text-xs rounded-full px-1">3</span>
-        </a>
-        <a href="#" class="text-white flex items-center">
-            <i class="fas fa-user mr-1"></i>
-            @if (Auth::check())
-                <span>{{ Auth::user()->name }}</span> <!-- Display logged-in user's name -->
-            @else
-                <span>Guest</span> <!-- Display "Guest" if no user is logged in -->
-            @endif
-        </a>
-    </div>
-    <div>
-        <button id="menu-toggle" class="text-white focus:outline-none hidden">
-            <i class="fas fa-bars text-2xl"></i>
-        </button>
-    </div>
-</header>
+    <!-- Header Section -->
+    <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
+       <h2 class="text-2xl font-bold">CAR Driving Training System</h2>
+       <div class="flex items-center">
+           <a href="#" class="text-white relative mr-4">
+               <i class="fas fa-bell"></i>
+               <span class="absolute top-0 right-0 bg-red-600 text-xs rounded-full px-1">3</span>
+           </a>
+           <a href="#" class="text-white flex items-center">
+               <i class="fas fa-user mr-1"></i>
+               @if (Auth::guard('trainee')->check()) <!-- Check if a trainee is logged in -->
+                   <span>{{ Auth::guard('trainee')->user()->full_name }}</span> <!-- Display full name of the logged-in trainee -->
+               @else
+                   <span>Guest</span> <!-- Display "Guest" if no user is logged in -->
+               @endif
+           </a>
+       </div>
+       <div>
+           <button id="menu-toggle" class="text-white focus:outline-none hidden">
+               <i class="fas fa-bars text-2xl"></i>
+           </button>
+       </div>
+   </header>
+
 
 <!-- Sidebar Section -->
 <div id="sidebar" class="sidebar bg-gray-800 text-white w-64 h-screen fixed z-10 shadow-lg">
     <ul class="mt-0 space-y-1 pl-0 list-none">
-        <li><a href="/" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
-        <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Trainee</a></li>
+        <li><a href="/welcome" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+        <!-- <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Trainee</a></li>
         <li><a href="{{ route('trainers.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Trainer</a></li>
-        <li><a href="{{ route('payments.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Payment</a></li>
-        <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Fill Attendance</a></li>
-        <li><a href="{{ route('banks.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Bank </a></li>
+        <li><a href="{{ route('payments.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Payment</a></li> -->
+        <li><a href="{{ route('attendance.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Fill Attendance</a></li>
+        <!-- <li><a href="{{ route('banks.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Bank </a></li> -->
     </ul>
 </div>
 

@@ -116,7 +116,6 @@ class TraineeController extends Controller
             'existing_driving_lic_no' => $request->input('driving_license_no'),
             'license_type' => $request->input('license_type'),
             'education_level' => $request->input('education_level'),
-            'any_case' => $request->input('disease'),
             'blood_type' => $request->input('blood_type'),
             'receipt_no' => $request->input('receipt_no'),
         ]);

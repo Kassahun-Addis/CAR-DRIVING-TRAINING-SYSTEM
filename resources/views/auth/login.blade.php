@@ -38,6 +38,15 @@
                 emailField.style.display = 'flex';
             }
         }
+
+        function togglePassword() {
+            var passwordField = document.getElementById('password');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+            } else {
+                passwordField.type = 'password';
+            }
+        }
     </script>
 </head>
 <body>
@@ -88,6 +97,13 @@
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
+                                </div>
+                            </div>
+
+                            <!-- Show Password Checkbox -->
+                            <div class="row mb-3">
+                                <div class="col-md-6 offset-md-4">
+                                    <input type="checkbox" id="show-password" onclick="togglePassword()"> Show Password
                                 </div>
                             </div>
 

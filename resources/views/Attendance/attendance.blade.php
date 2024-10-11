@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('student.app')
 
 @section('title', 'Trainee - Add New')
 
@@ -43,6 +43,11 @@
                onchange="this.form.Status.value=this.checked ? 'Present' : 'Absent';">
     </div>
 </div>
+
+                   <div class="form-group">
+                        <label for="comment" class="required">Comment</label>
+                        <input type="text" class="form-control" id="comment" name="comment">
+                    </div>
 
             </div>
             </div>

@@ -38,7 +38,6 @@ return new class extends Migration
             $table->string('existing_driving_lic_no');
             $table->string('license_type');
             $table->string('education_level')->nullable();
-            $table->string('any_case')->nullable();
             $table->string('blood_type');
             $table->string('receipt_no')->nullable();
             $table->timestamps(0);

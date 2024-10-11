@@ -45,21 +45,21 @@ class LoginController extends Controller
             return back()->withErrors([
                 'email' => 'The provided credentials do not match our records for admin.',
             ]);
-        } elseif ($credentials['user_type'] === 'student') {
-            // For students, check the trainees table using ID as password
-            $trainee = Trainee::where('id', $credentials['password'])->first();
-
-            // If a trainee is found, you can authenticate them
+        }    elseif ($credentials['user_type'] === 'student') {
+            // For students, check the trainees table using yellow_card as the password
+            $trainee = Trainee::where('yellow_card', $credentials['password'])->first(); // Check yellow_card field
+     
             if ($trainee) {
-                // You may not need to use Auth::login() since you're handling it differently
-                return redirect()->intended('/home'); // Redirect to the student dashboard
+                Auth::guard('trainee')->login($trainee);  // Use the trainee guard to log in
+                return redirect()->intended('/home');  // Redirect to student dashboard
             }
-
+     
             // If no trainee found, return an error
             return back()->withErrors([
-                'password' => 'The provided ID does not match our records.',
+                'password' => 'The provided yellow card does not match our records.',
             ]);
         }
+        
 
         // If user_type is not valid
         return back()->withErrors([

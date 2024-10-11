@@ -22,6 +22,6 @@ class Attendance extends Model
         'TraineeName',
         'TrainerName',
         'Status',
-        'Comments' // Include Comments if used
+        'comment', 
     ];
 }

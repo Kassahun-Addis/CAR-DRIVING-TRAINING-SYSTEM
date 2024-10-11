@@ -51,13 +51,13 @@
                     <div class="form-group">
                         <label for="phone_no" class="required">Phone No</label>
                         <input type="number" class="form-control" id="phone_no" name="phone_no" value="{{ old('phone_no', $trainee->phone_no) }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="po_box" class="required">P.O.Box</label>
-                        <input type="number" class="form-control" id="po_box" name="po_box" value="{{ old('po_box', $trainee->po_box) }}" required>
-                    </div>                     
+                    </div>                    
                 </div>
                 <div class="col-12 col-md-6">
+                   <div class="form-group">
+                        <label for="po_box" class="required">P.O.Box</label>
+                        <input type="number" class="form-control" id="po_box" name="po_box" value="{{ old('po_box', $trainee->po_box) }}" required>
+                    </div> 
                     <div class="form-group">
                         <label for="birth_place" class="required">Birth Place</label>
                         <input type="text" class="form-control" id="birth_place" name="birth_place" value="{{ old('birth_place', $trainee->birth_place) }}" required>
@@ -83,10 +83,10 @@
                         <label for="education_level">Education Level</label>
                         <input type="text" class="form-control" id="education_level" name="education_level" value="{{ old('education_level', $trainee->education_level) }}">
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="disease" class="required">Any Case (Disease)</label>
                         <input type="text" class="form-control" id="disease" name="disease" value="{{ old('disease', $trainee->any_case) }}">
-                    </div>          
+                    </div>           -->
                     <div class="form-group">
                         <label for="blood_type" class="required">Blood Type</label>
                         <select class="form-control" id="blood_type" name="blood_type" required>
