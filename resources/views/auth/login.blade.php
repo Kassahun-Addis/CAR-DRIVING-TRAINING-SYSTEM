@@ -29,24 +29,27 @@
         }
     </style>
     <script>
-        function toggleEmailField() {
-            const userType = document.querySelector('input[name="user_type"]:checked').value;
-            const emailField = document.getElementById('emailField');
-            if (userType === 'student') {
-                emailField.style.display = 'none';
-            } else {
-                emailField.style.display = 'flex';
-            }
+    function toggleEmailField() {
+        const userType = document.querySelector('input[name="user_type"]:checked').value;
+        const emailField = document.getElementById('emailField');
+        const emailInput = document.getElementById('email');
+        
+        if (userType === 'student') {
+            emailField.style.display = 'none';
+            emailInput.removeAttribute('name');  // Remove 'name' attribute for student
+        } else {
+            emailField.style.display = 'flex';
+            emailInput.setAttribute('name', 'email');  // Restore 'name' attribute for admin
         }
-
-        function togglePassword() {
-            var passwordField = document.getElementById('password');
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-            } else {
-                passwordField.type = 'password';
-            }
+    }
+    function togglePassword() {
+        const passwordField = document.getElementById('password');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+        } else {
+            passwordField.type = 'password';
         }
+    }
     </script>
 </head>
 <body>
@@ -125,11 +128,11 @@
                                         {{ __('Login') }}
                                     </button>
 
-                                    @if (Route::has('password.request'))
+                                    <!-- @if (Route::has('password.request'))
                                         <a class="btn btn-link" href="{{ route('password.request') }}">
                                             {{ __('Forgot Your Password?') }}
                                         </a>
-                                    @endif
+                                    @endif -->
                                 </div>
                             </div>
                         </form>

@@ -111,7 +111,7 @@
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary btn-custom">Update</button>
                 <button type="reset" class="btn btn-secondary btn-custom">Reset</button>
-                <a href="{{ route('trainee.index') }}" class="btn btn-secondary btn-custom">Back to list</a>
+                <a href="{{ route('trainee.index') }}" class="btn btn-secondary btn-custom">Cancel</a>
             </div>
         </form>
     </div>

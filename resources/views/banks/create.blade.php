@@ -13,7 +13,7 @@
             </ul>
         </div>
     @endif
-
+    <div class="form-section">
     <form action="{{ route('banks.store') }}" method="POST">
         @csrf
 
@@ -21,7 +21,12 @@
             <label for="bank_name">Bank Name</label>
             <input type="text" name="bank_name" class="form-control" required>
         </div>
-        <button type="submit" class="btn btn-primary">Save</button>
+        <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary btn-custom">Save</button>
+                <button type="reset" class="btn btn-secondary btn-custom">Reset</button>
+                <a href="{{ route('banks.index') }}" class="btn btn-secondary btn-custom">Back to list</a>
+            </div>
     </form>
+  </div>
 </div>
 @endsection

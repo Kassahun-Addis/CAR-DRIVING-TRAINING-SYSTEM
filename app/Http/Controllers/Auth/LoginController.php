@@ -25,47 +25,62 @@ class LoginController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function login(Request $request)
-    {
-        // Validate the request
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-            'user_type' => 'required|in:admin,student', // Ensure user_type is either admin or student
-        ]);
+    
+     protected function sendFailedLoginResponse(Request $request)
+     {
+         throw ValidationException::withMessages([
+             $this->username() => [trans('auth.failed')],
+         ]);
+     }
+     
+     public function login(Request $request)
+{
+    \Log::info('Login attempt:', $request->all());
 
-        // Check if the user is an admin
+    // Basic validation
+    $credentials = $request->validate([
+        'password' => 'required',
+        'user_type' => 'required|in:admin,student',
+    ]);
+
+    try {
         if ($credentials['user_type'] === 'admin') {
-            // Attempt to log the admin in
-            if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
-                return redirect()->intended('/welcome'); // Redirect to the welcome page for admin
+            // Validate admin credentials
+            $adminCredentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
+            // Attempt to log in the admin
+            if (Auth::attempt($adminCredentials)) {
+                return redirect()->intended('/welcome'); // Admin dashboard
             }
 
-            // If authentication fails for admin
-            return back()->withErrors([
-                'email' => 'The provided credentials do not match our records for admin.',
-            ]);
-        }    elseif ($credentials['user_type'] === 'student') {
-            // For students, check the trainees table using yellow_card as the password
-            $trainee = Trainee::where('yellow_card', $credentials['password'])->first(); // Check yellow_card field
-     
+            return back()->withErrors(['email' => 'Admin credentials do not match.']);
+        } elseif ($credentials['user_type'] === 'student') {
+            // Attempt to log in the student using yellow card number
+            $yellowCardNumber = $credentials['password'];
+            $trainee = Trainee::where('yellow_card', $yellowCardNumber)->first();
+
             if ($trainee) {
-                Auth::guard('trainee')->login($trainee);  // Use the trainee guard to log in
-                return redirect()->intended('/home');  // Redirect to student dashboard
+                \Log::info('Trainee found: ', [$trainee]);
+                Auth::guard('trainee')->login($trainee);
+                return redirect()->intended('/home'); // Student dashboard
+            } else {
+                \Log::info('Trainee not found for yellow card: ' . $yellowCardNumber);
+                return back()->withErrors(['password' => 'Invalid yellow card number.']);
             }
-     
-            // If no trainee found, return an error
-            return back()->withErrors([
-                'password' => 'The provided yellow card does not match our records.',
-            ]);
         }
-        
+    } catch (\Exception $e) {
+        // Log the exception message
+        \Log::error('Login error: ' . $e->getMessage());
 
-        // If user_type is not valid
-        return back()->withErrors([
-            'user_type' => 'Invalid user type specified.',
-        ]);
+        // Return a generic error message to the user
+        return back()->withErrors(['login' => 'An error occurred during login. Please try again.']);
     }
+
+    return back()->withErrors(['user_type' => 'Invalid user type.']);
+}
 
     /**
      * Handle a successful authentication attempt.

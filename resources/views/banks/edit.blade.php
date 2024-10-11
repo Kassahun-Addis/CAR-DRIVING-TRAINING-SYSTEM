@@ -23,7 +23,10 @@
             <input type="text" name="bank_name" class="form-control" value="{{ $bank->bank_name }}" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Update</button>
+        <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary btn-custom">Update</button>
+                <a href="{{ route('banks.index') }}" class="btn btn-secondary btn-custom">Back to list</a>
+            </div>
     </form>
 </div>
 @endsection

@@ -7,11 +7,18 @@ use Illuminate\Http\Request;
 
 class BankController extends Controller
 {
-    public function index()
+   
+    public function index(Request $request)
     {
-        $banks = Bank::all();
+        $search = $request->input('search'); // Get the search term
+        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+
+        // Query the banks with search and pagination
+         $banks = Bank::when($search, function ($query) use ($search) {
+            return $query->where('bank_name', 'like', '%' . $search . '%');
+        })->paginate($perPage);
         return view('banks.index', compact('banks'));
-    }
+   }
 
     public function create()
     {

@@ -9,7 +9,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <div class="form-section">
+    <div class="form-section">e
         <form action="{{ route('trainee.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="row">
