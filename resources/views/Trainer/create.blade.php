@@ -39,20 +39,24 @@
             <input type="number" class="form-control" id="experience" name="experience" required>
         </div>
 
-        <div class="form-group">
-            <label for="specialization">Specialization:</label>
-            <input type="text" class="form-control" id="specialization" name="specialization" required>
-        </div>
+        
 
         <div class="form-group">
-            <label for="car_id">Car ID:</label>
+            <!-- <label for="car_id">Car ID:</label> -->
+            <label for="car_id">Car Name:</label>
             <select class="form-control" id="car_id" name="car_id" required>
                 @foreach ($trainingCars as $car)
                     <option value="{{ $car->id }}">{{ $car->name }}</option>
                 @endforeach
             </select>
         </div>
+
+        <div class="form-group">
+            <label for="plate_no">Plate No:</label>
+            <input type="text" class="form-control" id="plate_no" name="plate_no" required>
         </div>
+
+    </div>
 </div>
 
 

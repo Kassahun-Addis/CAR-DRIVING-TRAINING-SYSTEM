@@ -44,13 +44,12 @@ Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('a
 Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy'); // Delete attendance
 
 
-// Trainer Routes
 Route::get('/trainers', [TrainerController::class, 'index'])->name('trainers.index');
 Route::get('/trainers/create', [TrainerController::class, 'create'])->name('trainers.create');
 Route::post('/trainers/store', [TrainerController::class, 'store'])->name('trainers.store');
-Route::get('/trainers/edit/{id}', [TrainerController::class, 'edit'])->name('trainers.edit');
-Route::put('/trainers/update/{id}', [TrainerController::class, 'update'])->name('trainers.update');
-Route::delete('/trainers/destroy/{id}', [TrainerController::class, 'destroy'])->name('trainers.destroy');
+Route::get('/trainers/edit/{trainer}', [TrainerController::class, 'edit'])->name('trainers.edit'); // Update here
+Route::put('/trainers/update/{trainer}', [TrainerController::class, 'update'])->name('trainers.update'); // Update here
+Route::delete('/trainers/destroy/{trainer}', [TrainerController::class, 'destroy'])->name('trainers.destroy');
 
 // Training Car Routes
 Route::get('/training_cars', [TrainingCarController::class, 'index'])->name('training_cars.index');

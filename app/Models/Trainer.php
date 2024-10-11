@@ -15,7 +15,7 @@ class Trainer extends Model
         'phone_number',
         'email',
         'experience',
-        'specialization',
+        'plate_no',
         'car_id',
     ];
 }

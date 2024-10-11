@@ -8,11 +8,18 @@ use Illuminate\Http\Request;
 class TrainingCarController extends Controller
 {
     // Display a listing of the training cars
-    public function index()
+    public function index(Request $request)
     {
-        $trainingCars = TrainingCar::all();
+        $search = $request->input('search'); // Get the search term
+        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+
+        // Query the banks with search and pagination
+         $trainingCars = TrainingCar::when($search, function ($query) use ($search) {
+            return $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('plate_no', 'like', '%' . $search . '%');
+        })->paginate($perPage);
         return view('training_cars.index', compact('trainingCars'));
-    }
+   }
 
     // Show the form for creating a new training car
     public function create()

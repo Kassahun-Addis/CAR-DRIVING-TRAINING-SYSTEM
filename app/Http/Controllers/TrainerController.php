@@ -8,12 +8,19 @@ use App\Models\TrainingCar;
 
 class TrainerController extends Controller
 {
-    // Display a listing of the trainers
-    public function index()
+    // Display a listing of the training cars
+    public function index(Request $request)
     {
-        $trainers = Trainer::all(); // Fetch all trainers
-        return view('trainer.index', compact('trainers')); // Return to index view
-    }
+        $search = $request->input('search'); // Get the search term
+        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+
+        // Query the banks with search and pagination
+         $trainers = Trainer::when($search, function ($query) use ($search) {
+            return $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('phone_number', 'like', '%' . $search . '%');
+        })->paginate($perPage);
+        return view('trainer.index', compact('trainers'));
+   }
 
     // Show the form for creating a new trainer
     public function create()
@@ -30,7 +37,7 @@ class TrainerController extends Controller
             'phone_number' => 'required|string|max:20',
             'email' => 'required|email|unique:trainers,email',
             'experience' => 'required|integer',
-            'specialization' => 'required|string|max:255',
+            'plate_no' => 'required|string|max:255',
             'car_id' => 'required|exists:training_cars,id', // Validate car ID
         ]);
 
@@ -40,7 +47,7 @@ class TrainerController extends Controller
             'phone_number' => $request->phone_number,
             'email' => $request->email,
             'experience' => $request->experience,
-            'specialization' => $request->specialization,
+            'plate_no' => $request->plate_no,
             'car_id' => $request->car_id,
         ]);
 
@@ -65,12 +72,12 @@ class TrainerController extends Controller
             'phone_number' => 'required|string|max:20',
             'email' => 'required|email|unique:trainers,email,' . $trainer->id,
             'experience' => 'required|integer',
-            'specialization' => 'required|string|max:255',
-            'car_id' => 'required|exists:training_cars,id', // Validate car ID
+            'plate_no' => 'required|string|max:255',
+            'car_id' => 'required|exists:training_cars,id',
         ]);
-
-        $trainer->update($request->all()); // Update the trainer record
-
+    
+        $trainer->update($request->all());
+    
         return redirect()->route('trainers.index')->with('success', 'Trainer updated successfully!');
     }
 
