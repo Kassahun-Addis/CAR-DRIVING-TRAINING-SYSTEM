@@ -33,7 +33,7 @@ class TrainingCarController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'model' => 'nullable|string|max:255',
-            'year' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'year' => 'nullable|integer|min:1950|max:' . date('Y'),
             'plate_no' => 'required|string|max:20|unique:training_cars,plate_no',
         ]);
 

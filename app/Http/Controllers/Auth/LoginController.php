@@ -65,6 +65,18 @@ class LoginController extends Controller
             if ($trainee) {
                 \Log::info('Trainee found: ', [$trainee]);
                 Auth::guard('trainee')->login($trainee);
+                if ($trainee) {
+                    \Log::info('Trainee found: ', [$trainee]);
+                    Auth::guard('trainee')->login($trainee);
+                    
+                    // Check if the user is logged in
+                    if (Auth::guard('trainee')->check()) {
+                        \Log::info('Trainee logged in successfully: ' . $trainee->id);
+                        return redirect()->intended('/home'); // Student dashboard
+                    } else {
+                        \Log::error('Failed to log in trainee: ' . $trainee->id);
+                    }
+                }
                 return redirect()->intended('/home'); // Student dashboard
             } else {
                 \Log::info('Trainee not found for yellow card: ' . $yellowCardNumber);

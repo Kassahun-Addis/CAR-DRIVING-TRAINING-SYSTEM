@@ -109,9 +109,17 @@
             <i class="fas fa-bell"></i>
             <span class="absolute top-0 right-0 bg-red-600 text-xs rounded-full px-1">3</span>
         </a> -->
+        <!-- <a href="#" class="text-white flex items-center mr-4">
+            <i class="fas fa-user mr-1"></i>
+            <span>{{ Auth::user()->name }}</span> 
+        </a> -->
         <a href="#" class="text-white flex items-center mr-4">
             <i class="fas fa-user mr-1"></i>
-            <span>{{ Auth::user()->name }}</span> <!-- Display logged-in user's name -->
+            @if (Auth::check())
+                <span>{{ Auth::user()->name }}</span> <!-- Display logged-in user's name -->
+            @else
+                <span>Guest</span> <!-- Fallback if no user is logged in -->
+            @endif
         </a>
         <button id="menu-toggle" class="text-white focus:outline-none hidden">
             <i class="fas fa-bars text-2xl"></i>
@@ -133,6 +141,7 @@
         <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Practical Session</a></li>
         <li><a href="{{ route('attendance.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Attendance </a></li> -->
         <li><a href="{{ route('banks.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Bank </a></li>
+        <li><a href="{{ route('car_category.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Car Category </a></li>
 
 
     </ul>

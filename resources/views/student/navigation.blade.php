@@ -105,19 +105,31 @@
     <!-- Header Section -->
     <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
        <h2 class="text-2xl font-bold">CAR Driving Training System</h2>
-       <div class="flex items-center">
-           <a href="#" class="text-white relative mr-4">
+       <div class="flex items-center ml-auto"> <!-- Use ml-auto to push this div to the right -->
+       <!-- <a href="#" class="text-white relative mr-4">
                <i class="fas fa-bell"></i>
                <span class="absolute top-0 right-0 bg-red-600 text-xs rounded-full px-1">3</span>
-           </a>
-           <a href="#" class="text-white flex items-center">
-               <i class="fas fa-user mr-1"></i>
-               @if (Auth::guard('trainee')->check()) <!-- Check if a trainee is logged in -->
-                   <span>{{ Auth::guard('trainee')->user()->full_name }}</span> <!-- Display full name of the logged-in trainee -->
-               @else
-                   <span>Guest</span> <!-- Display "Guest" if no user is logged in -->
-               @endif
-           </a>
+           </a> -->
+           <a href="#" class="text-white flex items-center mr-4">
+    @if (Auth::guard('trainee')->check())
+        @php
+            $trainee = Auth::guard('trainee')->user();
+        @endphp
+        @if ($trainee->photo)
+            <img 
+                src="{{ asset('storage/trainee_photos/' . $trainee->photo) }}" 
+                alt="{{ $trainee->full_name }}" 
+                style="width: 28px; height: 28px; object-fit: cover;" 
+                class="rounded-full mr-1">
+        @else
+            <i class="fas fa-user mr-1"></i>
+        @endif
+        <span>{{ $trainee->full_name }}</span>
+    @else
+        <i class="fas fa-user mr-1"></i>
+        <span>Guest</span>
+    @endif
+</a>
        </div>
        <div>
            <button id="menu-toggle" class="text-white focus:outline-none hidden">
@@ -130,7 +142,7 @@
 <!-- Sidebar Section -->
 <div id="sidebar" class="sidebar bg-gray-800 text-white w-64 h-screen fixed z-10 shadow-lg">
     <ul class="mt-0 space-y-1 pl-0 list-none">
-        <li><a href="/" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+        <li><a href="/home" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
         <!-- <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Trainee</a></li>
         <li><a href="{{ route('trainers.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Trainer</a></li>
         <li><a href="{{ route('payments.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Payment</a></li> -->
