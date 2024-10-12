@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TrainingCar;
 use Illuminate\Http\Request;
+use App\Models\CarCategory;
 
 class TrainingCarController extends Controller
 {
@@ -16,7 +17,7 @@ class TrainingCarController extends Controller
         // Query the banks with search and pagination
          $trainingCars = TrainingCar::when($search, function ($query) use ($search) {
             return $query->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('plate_no', 'like', '%' . $search . '%');
+                        ->orWhere('category', 'like', '%' . $search . '%');
         })->paginate($perPage);
         return view('training_cars.index', compact('trainingCars'));
    }
@@ -24,7 +25,11 @@ class TrainingCarController extends Controller
     // Show the form for creating a new training car
     public function create()
     {
-        return view('training_cars.create');
+        // Fetch all car categories
+        $categories = CarCategory::all();
+
+        // Pass the categories to the view
+        return view('training_cars.create', compact('categories'));
     }
 
     // Store a newly created training car in the database
@@ -32,6 +37,7 @@ class TrainingCarController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
             'model' => 'nullable|string|max:255',
             'year' => 'nullable|integer|min:1950|max:' . date('Y'),
             'plate_no' => 'required|string|max:20|unique:training_cars,plate_no',
@@ -43,24 +49,54 @@ class TrainingCarController extends Controller
     }
 
     // Show the form for editing the specified training car
-    public function edit(TrainingCar $trainingCar)
+    // public function edit(TrainingCar $trainingCar)
+    // {
+    //     return view('training_cars.edit', compact('trainingCar'));
+    // }
+
+    // // Update the specified training car in the database
+    // public function update(Request $request, TrainingCar $trainingCar)
+    // {
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'category' => 'required|string|max:255',
+    //         'model' => 'nullable|string|max:255',
+    //         'year' => 'nullable|integer|min:1900|max:' . date('Y'),
+    //         'plate_no' => 'required|string|max:20|unique:training_cars,plate_no,' . $trainingCar->id,
+    //     ]);
+
+    //     $trainingCar->update($request->all());
+
+    //     return redirect()->route('training_cars.index')->with('success', 'Training Car updated successfully!');
+    // }
+
+    public function edit($id)
     {
-        return view('training_cars.edit', compact('trainingCar'));
+        // Fetch the training car by ID
+        $trainingCar = TrainingCar::findOrFail($id);
+
+        // Fetch all car categories
+        $categories = CarCategory::all();
+
+        // Pass the training car and categories to the view
+        return view('training_cars.edit', compact('trainingCar', 'categories'));
     }
 
-    // Update the specified training car in the database
-    public function update(Request $request, TrainingCar $trainingCar)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'model' => 'nullable|string|max:255',
+            'name' => 'required',
+            'category' => 'required',
+            'model' => 'nullable',
             'year' => 'nullable|integer|min:1900|max:' . date('Y'),
-            'plate_no' => 'required|string|max:20|unique:training_cars,plate_no,' . $trainingCar->id,
+            'plate_no' => 'required|unique:training_cars,plate_no,' . $id,
         ]);
 
+        // Find the training car and update its data
+        $trainingCar = TrainingCar::findOrFail($id);
         $trainingCar->update($request->all());
 
-        return redirect()->route('training_cars.index')->with('success', 'Training Car updated successfully!');
+        return redirect()->route('training_cars.index')->with('success', 'Training car updated successfully.');
     }
 
     // Remove the specified training car from the database

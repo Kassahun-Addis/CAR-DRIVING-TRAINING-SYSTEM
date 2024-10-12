@@ -29,6 +29,17 @@ class TrainerController extends Controller
         return view('trainer.create', compact('trainingCars')); // Return create view
     }
 
+//     public function create()
+// {
+//     // Fetch all training cars with their categories
+//     $trainingCars = TrainingCar::with('category')->get(); // Assuming TrainingCar model has a relation with the CarCategory model
+
+//     // Return view with trainingCars data
+//     return view('trainer.create', compact('trainingCars'));
+// }
+
+
+
     // Store a newly created trainer in the database
     public function store(Request $request)
     {

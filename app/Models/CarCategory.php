@@ -13,4 +13,10 @@ class CarCategory extends Model
         'car_category_name',
       
     ];
+
+   // Define the relationship with TrainingCar
+   public function trainingCars()
+   {
+       return $this->hasMany(TrainingCar::class);
+   }
 }

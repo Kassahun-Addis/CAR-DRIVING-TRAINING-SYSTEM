@@ -72,6 +72,7 @@
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Category</th>
                 <th>Model</th>
                 <th>Year</th>
                 <th>Plate No</th>
@@ -82,6 +83,7 @@
             @foreach($trainingCars as $car)
                 <tr>
                     <td>{{ $car->name }}</td>
+                    <td>{{ $car->category }}</td>
                     <td>{{ $car->model }}</td>
                     <td>{{ $car->year }}</td>
                     <td>{{ $car->plate_no }}</td>

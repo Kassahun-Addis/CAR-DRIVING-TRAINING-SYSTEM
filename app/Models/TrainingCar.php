@@ -11,6 +11,7 @@ class TrainingCar extends Model
 
     protected $fillable = [
         'name',
+        'category',
         'model',
         'year',
         'plate_no',
@@ -21,4 +22,17 @@ class TrainingCar extends Model
 //      {
 //          return $this->hasMany(Trainer::class, 'car_id');
 //      }
+
+
+// Make sure your TrainingCar model has a relationship with the CarCategory model, something like:
+
+// Define the relationship with CarCategory
+
+
+// public function category()
+// {
+//     return $this->belongsTo(CarCategory::class, 'category_id');
+// }
+
+
  }

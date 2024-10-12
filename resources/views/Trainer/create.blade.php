@@ -39,16 +39,11 @@
             <input type="number" class="form-control" id="experience" name="experience" required>
         </div>
 
-        
+
 
         <div class="form-group">
-            <!-- <label for="car_id">Car ID:</label> -->
-            <label for="car_id">Car Name:</label>
-            <select class="form-control" id="car_id" name="car_id" required>
-                @foreach ($trainingCars as $car)
-                    <option value="{{ $car->id }}">{{ $car->name }}</option>
-                @endforeach
-            </select>
+            <label for="category">Car Category:</label>
+            <input type="text" class="form-control" id="category" name="category" readonly>
         </div>
 
         <div class="form-group">
@@ -70,4 +65,12 @@
     </div>
 
 </div>
+
+<!-- <script>
+    document.getElementById('car_id').addEventListener('change', function() {
+        var selectedOption = this.options[this.selectedIndex];
+        var category = selectedOption.getAttribute('data-category');
+        document.getElementById('category').value = category;
+    });
+</script> -->
 @endsection
