@@ -16,6 +16,8 @@ class Trainer extends Model
         'email',
         'experience',
         'plate_no',
-        'car_id',
+        'car_id',      // Include car_id if you are using it
+        'car_name',    // Include car_name to allow mass assignment
+        'category',     // Include category if you are using it
     ];
 }

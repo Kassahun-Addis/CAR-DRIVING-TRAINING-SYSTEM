@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Trainer;
 use App\Models\TrainingCar;
+use App\Models\CarCategory; // Import the CarCategory model
 
 class TrainerController extends Controller
 {
@@ -26,53 +27,46 @@ class TrainerController extends Controller
     public function create()
     {
         $trainingCars = TrainingCar::all(); // Fetch all training cars
-        return view('trainer.create', compact('trainingCars')); // Return create view
+        $carCategories = CarCategory::all(); // Fetch all car categories
+        return view('trainer.create', compact('trainingCars', 'carCategories')); // Return create view with car categories
     }
-
-//     public function create()
-// {
-//     // Fetch all training cars with their categories
-//     $trainingCars = TrainingCar::with('category')->get(); // Assuming TrainingCar model has a relation with the CarCategory model
-
-//     // Return view with trainingCars data
-//     return view('trainer.create', compact('trainingCars'));
-// }
-
-
 
     // Store a newly created trainer in the database
     public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            'email' => 'required|email|unique:trainers,email',
-            'experience' => 'required|integer',
-            'plate_no' => 'required|string|max:255',
-            'car_id' => 'required|exists:training_cars,id', // Validate car ID
-        ]);
+{
+    // Log the incoming request data
+    \Log::info('Incoming request data:', $request->all());
 
-        // Create a new Trainer
-        $trainer = Trainer::create([
-            'name' => $request->name,
-            'phone_number' => $request->phone_number,
-            'email' => $request->email,
-            'experience' => $request->experience,
-            'plate_no' => $request->plate_no,
-            'car_id' => $request->car_id,
-        ]);
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'phone_number' => 'required|string|max:20',
+        'email' => 'required|email|unique:trainers,email',
+        'experience' => 'required|integer',
+        'plate_no' => 'required|string|max:255',
+        'category' => 'required|exists:car_categories,id', // Validate category ID
+        'car_name' => 'required|string|max:255', // Validate car make
+    ]);
 
-        // Optional: Log the creation of the trainer
-        \Log::info('New trainer created: ', ['trainer' => $trainer]);
+    // Create a new Trainer
+    $trainer = Trainer::create([
+        'name' => $request->name,
+        'phone_number' => $request->phone_number,
+        'email' => $request->email,
+        'experience' => $request->experience,
+        'plate_no' => $request->plate_no,
+        'car_name' => $request->car_name, // Store the car make
+        'category' => $request->category, // Store the selected category
+    ]);
 
-        return redirect()->route('trainers.index')->with('success', 'Trainer registered successfully!');
-    }
+    return redirect()->route('trainers.index')->with('success', 'Trainer registered successfully!');
+}
 
     // Show the form for editing the specified trainer
     public function edit(Trainer $trainer)
     {
         $trainingCars = TrainingCar::all(); // Fetch all training cars
-        return view('trainer.edit', compact('trainer', 'trainingCars')); // Return edit view
+        $carCategories = CarCategory::all(); // Fetch all car categories
+        return view('trainer.edit', compact('trainer', 'trainingCars', 'carCategories')); // Return edit view with car categories
     }
 
     // Update the specified trainer in the database
@@ -85,6 +79,7 @@ class TrainerController extends Controller
             'experience' => 'required|integer',
             'plate_no' => 'required|string|max:255',
             'car_id' => 'required|exists:training_cars,id',
+            'category' => 'required|exists:car_categories,id', // Validate category ID
         ]);
     
         $trainer->update($request->all());
@@ -98,4 +93,11 @@ class TrainerController extends Controller
         $trainer->delete(); // Delete the trainer record
         return redirect()->route('trainers.index')->with('success', 'Trainer deleted successfully!');
     }
+
+    public function getCarsByCategory($categoryId)
+{
+    $cars = TrainingCar::where('category', $categoryId)->get(['id', 'name']); // Fetch cars by category
+    return response()->json($cars); // Return JSON response
+}
+
 }

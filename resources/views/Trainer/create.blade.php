@@ -39,21 +39,30 @@
             <input type="number" class="form-control" id="experience" name="experience" required>
         </div>
 
-
-
         <div class="form-group">
             <label for="category">Car Category:</label>
-            <input type="text" class="form-control" id="category" name="category" readonly>
+            <select class="form-control" id="category" name="category" required>
+                <option value="">Select a category</option>
+                @foreach($carCategories as $category)
+                    <option value="{{ $category->id }}">{{ $category->car_category_name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="car_name">Car Make:</label>
+            <input type="text" class="form-control" id="car_name" name="car_name" required>
         </div>
 
         <div class="form-group">
             <label for="plate_no">Plate No:</label>
             <input type="text" class="form-control" id="plate_no" name="plate_no" required>
         </div>
+ <!-- Hidden field for car_id -->
+ <input type="hidden" id="car_id" name="car_id" value="">
 
     </div>
 </div>
-
 
 <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary btn-custom">Save</button>
@@ -66,11 +75,4 @@
 
 </div>
 
-<!-- <script>
-    document.getElementById('car_id').addEventListener('change', function() {
-        var selectedOption = this.options[this.selectedIndex];
-        var category = selectedOption.getAttribute('data-category');
-        document.getElementById('category').value = category;
-    });
-</script> -->
 @endsection
