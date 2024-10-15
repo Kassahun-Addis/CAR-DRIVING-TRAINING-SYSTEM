@@ -40,19 +40,22 @@
         </div>
 
         <div class="form-group">
-    <label for="category_id">Car Category:</label>
-    <select class="form-control" id="category_id" name="category_id" required>
-        <option value="">Select a category</option>
-        @foreach($carCategories as $category)
-            <option value="{{ $category->id }}">{{ $category->car_category_name }}</option>
-        @endforeach
-    </select>
-</div>
+            <label for="category_id">Car Category:</label>
+            <select class="form-control" id="category_id" name="category_id" required>
+                <option value="">Select a category</option>
+                @foreach($carCategories as $category)
+                    <option value="{{ $category->id }}">{{ $category->car_category_name }}</option>
+                @endforeach
+            </select>
+        </div>
 
         <div class="form-group">
-            <label for="plate_no">Plate No:</label>
-            <input type="number" class="form-control" id="plate_no" name="plate_no" required>
-        </div>
+    <label for="plate_no">Plate No:</label>
+    <select class="form-control" id="plate_no" name="plate_no" required>
+        <option value="">Select a plate number</option>
+        <!-- Options will be populated dynamically based on the category -->
+    </select>
+</div>
 
         <div class="form-group">
             <label for="car_name">Car Name:</label>
@@ -72,5 +75,35 @@
     </div>
 
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.getElementById('category_id').addEventListener('change', function() {
+        var categoryId = this.value;
+        var plateSelect = document.getElementById('plate_no');
+        plateSelect.innerHTML = ''; // Clear previous options
+
+        if (categoryId) {
+            fetch(`/car-category/${categoryId}/plates`) // Ensure this matches your route
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Object.keys(data).forEach(function(id) {
+                        var option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = data[id];
+                        plateSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching plates:', error);
+                });
+        }
+    });
+</script>
 
 @endsection

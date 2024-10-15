@@ -19,4 +19,10 @@ class CarCategory extends Model
    {
        return $this->hasMany(TrainingCar::class);
    }
+
+   // CarCategory.php
+public function cars()
+{
+    return $this->hasMany(Car::class); // Assuming a car belongs to a category
+}
 }

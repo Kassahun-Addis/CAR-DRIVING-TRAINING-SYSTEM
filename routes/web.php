@@ -109,13 +109,16 @@ Route::get('/car_category/{CarCategory}/edit', [CarCategoryController::class, 'e
 Route::put('/car_category/{CarCategory}', [CarCategoryController::class, 'update'])->name('car_category.update'); // Update a specific CarCategory
 Route::delete('/car_category/{CarCategory}', [CarCategoryController::class, 'destroy'])->name('car_category.destroy'); // Delete a specific bank
 
-// Bank Routes
+// trainer_assigning Routes
 Route::get('/trainer_assigning', [TrainerAssigningController::class, 'index'])->name('trainer_assigning.index'); // List all trainer_assigning
 Route::get('/trainer_assigning/create', [TrainerAssigningController::class, 'create'])->name('trainer_assigning.create'); // Show form to create a new CarCategory
 Route::post('/trainer_assigning', [TrainerAssigningController::class, 'store'])->name('trainer_assigning.store'); // Store a new CarCategory
 Route::get('/trainer_assigning/{trainer_assigning}/edit', [TrainerAssigningController::class, 'edit'])->name('trainer_assigning.edit'); // Show form to edit a specific trainer_assigning
 Route::put('/trainer_assigning/{trainer_assigning}', [TrainerAssigningController::class, 'update'])->name('trainer_assigning.update'); // Update a specific trainer_assigning
 Route::delete('/trainer_assigning/{trainer_assigning}', [TrainerAssigningController::class, 'destroy'])->name('trainer_assigning.destroy'); // Delete a specific bank
+Route::get('/car-category/{categoryId}/plates', [TrainerAssigningController::class, 'getPlatesByCategory']); // New route for fetching plates
+
+
 
 
 // Auth routes (if you are using built-in authentication)

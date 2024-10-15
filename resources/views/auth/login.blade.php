@@ -42,15 +42,7 @@
             emailInput.setAttribute('name', 'email');  // Restore 'name' attribute for admin
         }
     }
-    function togglePassword() {
-        const passwordField = document.getElementById('password');
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-        } else {
-            passwordField.type = 'password';
-        }
-    }
-    </script>
+</script>
 </head>
 <body>
     <div class="container">

@@ -29,10 +29,10 @@ class TrainingCar extends Model
 // Define the relationship with CarCategory
 
 
-// public function category()
-// {
-//     return $this->belongsTo(CarCategory::class, 'category_id');
-// }
+public function category()
+{
+    return $this->belongsTo(CarCategory::class, 'category', 'id'); // Ensure this relationship is correct
+}
 
 
  }

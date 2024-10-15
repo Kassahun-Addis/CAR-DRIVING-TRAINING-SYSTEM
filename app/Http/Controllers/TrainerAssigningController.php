@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\CarCategory;
 use App\Models\TrainerAssigning;
 use Illuminate\Validation\Rule;
-
+use App\Models\TrainingCar;
 
 
 class TrainerAssigningController extends Controller
@@ -102,9 +102,23 @@ class TrainerAssigningController extends Controller
         return redirect()->route('trainer_assigning.index')->with('success', 'Trainer deleted successfully!');
     }
 
-//     public function getCarsByCategory($categoryId)
-// {
-//     $cars = TrainingCar::where('category', $categoryId)->get(['id', 'name']); // Fetch cars by category
-//     return response()->json($cars); // Return JSON response
-// }
+
+    public function getPlatesByCategory($categoryId)
+    {
+        \Log::info('Fetching plates for category ID: ' . $categoryId);
+        
+        try {
+            $plates = TrainingCar::where('category', $categoryId)->pluck('plate_no', 'id');
+            
+            if ($plates->isEmpty()) {
+                \Log::info('No plates found for category ID: ' . $categoryId);
+            }
+            
+            return response()->json($plates);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching plates: ' . $e->getMessage());
+            return response()->json(['error' => 'Unable to fetch plates'], 500);
+        }
+    }
+
 }
