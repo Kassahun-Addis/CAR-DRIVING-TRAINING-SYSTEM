@@ -12,6 +12,8 @@ use App\Http\Controllers\BankController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CarCategoryController;
 use App\Http\Controllers\TrainerAssigningController;
+use App\Http\Controllers\AccountController; // Make sure to import your controller
+
 
 
 
@@ -45,14 +47,15 @@ Route::middleware('auth')->group(function () {
 });
 
 // Attendance Routes
-Route::middleware('auth:trainee')->group(function () {
+// Route::middleware('auth:trainee')->group(function () {
+    Route::get('/trainee/dashboard', [StudentDashboardController::class, 'showDashboard'])->name('trainee.dashboard'); // Trainee dashboard
     Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit'); // Show edit form
     Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update'); // Update attendance
     Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy'); // Delete attendance
-});
+// });
 
 // Trainer Routes
 //Route::middleware('auth:trainee')->group(function () {
@@ -122,3 +125,9 @@ Route::get('/car-category/{categoryId}/plates-with-count', [TrainerAssigningCont
 
 // Auth routes (if you are using built-in authentication)
 Auth::routes();
+
+// Route to display the account management page
+Route::get('/account/manage', [AccountController::class, 'manage'])->name('account.manage');
+
+// Route to handle the account update
+Route::put('/account/update', [AccountController::class, 'update'])->name('account.update');

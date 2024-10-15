@@ -141,26 +141,61 @@ class TrainerAssigningController extends Controller
             ->where('category', $categoryId) // Ensure this references the correct field
             ->get();
 
-        // Combine the results using union
-        $plates = $trainerPlates->union($carPlates->select('plate_no', \DB::raw('0 as count')))->get();
+        // Convert the trainer plates to a collection for easier manipulation
+        $trainerPlatesCollection = $trainerPlates->get()->keyBy('plate_no');
+
+        // Prepare an array to hold the final results
+        $finalPlates = [];
+
+        // Iterate over the car plates and set counts
+        foreach ($carPlates as $carPlate) {
+            if (isset($trainerPlatesCollection[$carPlate->plate_no])) {
+                // If the plate exists in trainer_assignings, use its count
+                $count = $trainerPlatesCollection[$carPlate->plate_no]->count;
+                $finalPlates[] = [
+                    'plate_no' => $carPlate->plate_no,
+                    'count' => $count,
+                    'display' => "{$carPlate->plate_no} ({$count} Trainee)", // Always append "Trainee"
+                ];
+            } else {
+                // If the plate exists only in training_cars, set count to 0
+                $finalPlates[] = [
+                    'plate_no' => $carPlate->plate_no,
+                    'count' => 0,
+                    'display' => "{$carPlate->plate_no} (0 Trainee)", // Always append "Trainee"
+                ];
+            }
+        }
+
+        // Add any plates from trainer_assignings that are not in training_cars
+        foreach ($trainerPlatesCollection as $plateNo => $trainerPlate) {
+            if (!in_array($plateNo, array_column($finalPlates, 'plate_no'))) {
+                $count = $trainerPlate->count;
+                $finalPlates[] = [
+                    'plate_no' => $plateNo,
+                    'count' => $count,
+                    'display' => "{$plateNo} ({$count} Trainee)", // Always append "Trainee"
+                ];
+            }
+        }
 
         // Log the fetched plates
-        \Log::info('Fetched plates: ', $plates->toArray());
+        \Log::info('Fetched plates: ', $finalPlates);
 
         // If no plates are found, return an empty array
-        if ($plates->isEmpty()) {
+        if (empty($finalPlates)) {
             \Log::info('No plates found for category ID: ' . $categoryId);
             return response()->json([]); // Return an empty array
         }
 
         // Sort the plates by count in ascending order
-        $sortedPlates = $plates->sortBy('count');
+        $sortedPlates = collect($finalPlates)->sortBy('count');
 
         // Return the sorted plates with their counts
         return response()->json($sortedPlates->values()->all()); // Use values() to reset keys
     } catch (\Exception $e) {
         \Log::error('Error fetching plates: ' . $e->getMessage());
-        return response()->json(['error' => 'Unable to fetch plates'], 500);
+        return response()->json(['error' => 'Unable to fetch plates: ' . $e->getMessage()], 500);
     }
 }
 

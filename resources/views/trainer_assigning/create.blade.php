@@ -101,7 +101,7 @@
                 data.forEach(function(item) {
                     var option = document.createElement('option');
                     option.value = item.plate_no; // Set the value to the actual plate number
-                    option.textContent = `${item.plate_no} (${item.count})`; // Display the plate number with count
+                    option.textContent = `${item.display}`; // Use the display field
                     plateSelect.appendChild(option);
                 });
             })

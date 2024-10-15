@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Trainers assigning - List')
+@section('title', 'Trainers Assigning - List')
 
 @section('content')
 <div class="container mt-5">
-<h2 style="text-align: center; padding:10px;">Trainers List</h2>
+<h2 style="text-align: center; padding:10px;">Trainers Assigning List</h2>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
     </div>

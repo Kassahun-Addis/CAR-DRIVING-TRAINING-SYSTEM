@@ -12,33 +12,35 @@ class AttendanceController extends Controller
         // Return the view to create a new attendance record
         return view('Attendance.attendance'); // Make sure this view exists
     }
-    public function store(Request $request)
-    {
-        // Validate the incoming request data
-        $request->validate([
-            'Date' => 'required|date',
-            'StartTime' => 'required',
-            'FinishTime' => 'required',
-            'TraineeName' => 'required|string',
-            'TrainerName' => 'required|string',
-            'Status' => 'required|in:Present,Absent',
-            'comment' => 'nullable|string',
-        ]);
 
-        // Create a new attendance record
-        Attendance::create([
-            'Date' => $request->Date,
-            'StartTime' => $request->StartTime,
-            'FinishTime' => $request->FinishTime,
-            'TraineeName' => $request->TraineeName,
-            'TrainerName' => $request->TrainerName,
-            'Status' => $request->Status,
-            'comment' => $request->comment,
+    private function validateAttendance(Request $request)
+{
+    return $request->validate([
+        'date' => 'required|date',
+        'start_time' => 'required',
+        'finish_time' => 'required',
+        'trainee_name' => 'required|string',
+        'trainer_name' => 'required|string',
+        'status' => 'required|in:Present,Absent',
+        'comment' => 'nullable|string',
+    ]);
+}
+public function store(Request $request)
+{
+    $this->validateAttendance($request);
 
-        ]);
+    Attendance::create([
+        'date' => $request->date,
+        'start_time' => $request->start_time,
+        'finish_time' => $request->finish_time,
+        'trainee_name' => $request->trainee_name,
+        'trainer_name' => $request->trainer_name,
+        'status' => $request->status,
+        'comment' => $request->comment,
+    ]);
 
-        return redirect()->route('attendance.index')->with('success', 'Attendance recorded successfully.');
-    }
+    return redirect()->route('attendance.index')->with('success', 'Attendance recorded successfully.');
+}
 
     public function index(Request $request)
     {
@@ -64,25 +66,16 @@ class AttendanceController extends Controller
 
 public function update(Request $request, $id)
 {
-    // Validate the incoming request data
-    $request->validate([
-        'Date' => 'required|date',
-        'StartTime' => 'required',
-        'FinishTime' => 'required',
-        'TraineeName' => 'required|string',
-        'TrainerName' => 'required|string',
-        'comment' => 'nullable|string', // Changed to nullable
-    ]);
+    $this->validateAttendance($request);
 
-    // Find the attendance record and update it
     $attendance = Attendance::findOrFail($id);
     $attendance->update([
-        'Date' => $request->Date,
-        'StartTime' => $request->StartTime,
-        'FinishTime' => $request->FinishTime,
-        'TraineeName' => $request->TraineeName,
-        'TrainerName' => $request->TrainerName,
-        'Status' => $request->has('Present') ? 'Present' : 'Absent', // Updated status handling
+        'date' => $request->date,
+        'start_time' => $request->start_time,
+        'finish_time' => $request->finish_time,
+        'trainee_name' => $request->trainee_name,
+        'trainer_name' => $request->trainer_name,
+        'status' => $request->status,
         'comment' => $request->comment,
     ]);
 

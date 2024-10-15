@@ -125,7 +125,9 @@
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this trainee?')">Delete</button>
                         </form>
                         <!-- <button class="btn btn-info btn-sm ml-1" onclick="printBankDetails('{{ $trainee->WastageID }}', '{{ $trainee->Product_name }}','{{ $trainee->Quantity }}', '{{ $trainee->WastageDate }}', '{{ $trainee->Reason }}', '{{ $trainee->unit }}')">Print</button> -->
-                        <button class="btn btn-info btn-sm ml-1" onclick="printDrivingLicenseApplication({{ json_encode($trainee) }})">Print</button>                    
+                        <button class="btn btn-info btn-sm ml-1" onclick="printDrivingLicenseApplication({{ json_encode($trainee) }})">Print</button>
+                        <a href="{{ route('attendance.index') }}" class="btn btn-danger btn-sm">View Aten</a>
+                    
                     </td>
                 </tr>
             @endforeach

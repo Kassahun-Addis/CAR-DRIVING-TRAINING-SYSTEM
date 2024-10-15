@@ -102,41 +102,40 @@
 </style>
 
 <!-- Header Section -->
-    <!-- Header Section -->
-    <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
-       <h2 class="text-2xl font-bold">CAR Driving Training System</h2>
-       <div class="flex items-center ml-auto"> <!-- Use ml-auto to push this div to the right -->
-       <!-- <a href="#" class="text-white relative mr-4">
-               <i class="fas fa-bell"></i>
-               <span class="absolute top-0 right-0 bg-red-600 text-xs rounded-full px-1">3</span>
-           </a> -->
-           <a href="#" class="text-white flex items-center mr-4">
-    @if (Auth::guard('trainee')->check())
-        @php
-            $trainee = Auth::guard('trainee')->user();
-        @endphp
-        @if ($trainee->photo)
-            <img 
-                src="{{ asset('storage/trainee_photos/' . $trainee->photo) }}" 
-                alt="{{ $trainee->full_name }}" 
-                style="width: 28px; height: 28px; object-fit: cover;" 
-                class="rounded-full mr-1">
-        @else
-            <i class="fas fa-user mr-1"></i>
-        @endif
-        <span>{{ $trainee->full_name }}</span>
-    @else
-        <i class="fas fa-user mr-1"></i>
-        <span>Guest</span>
-    @endif
-</a>
-       </div>
-       <div>
-           <button id="menu-toggle" class="text-white focus:outline-none hidden">
-               <i class="fas fa-bars text-2xl"></i>
-           </button>
-       </div>
-   </header>
+<header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
+    <h2 class="text-2xl font-bold">CAR Driving Training System</h2>
+    <div class="flex items-center ml-auto"> <!-- Use ml-auto to push this div to the right -->
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" >
+            @csrf
+        </form>
+        <a href="#" class="text-white flex items-center mr-4" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            @if (Auth::guard('trainee')->check())
+                @php
+                    $trainee = Auth::guard('trainee')->user();
+                @endphp
+                @if ($trainee->photo)
+                    <img 
+                        src="{{ asset('storage/trainee_photos/' . $trainee->photo) }}" 
+                        alt="{{ $trainee->full_name }}" 
+                        style="width: 28px; height: 28px; object-fit: cover;" 
+                        class="rounded-full mr-1">
+                @else
+                    <i class="fas fa-user mr-1"></i>
+                @endif
+                <span>{{ $trainee->full_name }}</span>
+            @else
+                <i class="fas fa-user mr-1"></i>
+                <span>Guest</span>
+            @endif
+        </a>
+        <a href="#" class="text-white btn btn-danger btn-sm" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+    </div>
+    <div>
+        <button id="menu-toggle" class="text-white focus:outline-none hidden">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </div>
+</header>
 
 
 <!-- Sidebar Section -->
