@@ -30,6 +30,7 @@ class TrainerAssigningController extends Controller
     {
         //$trainingCars = TrainingCar::all(); // Fetch all training cars
         $carCategories = CarCategory::all(); // Fetch all car categories
+        $plates = []; // Initialize plates as an empty array
         return view('trainer_assigning.create', compact('carCategories')); // Return create view with car categories
         //return view('trainer_assigning.create');
     }
@@ -45,7 +46,8 @@ class TrainerAssigningController extends Controller
         'start_date' => 'required|date',
         'end_date' => 'required|date|after_or_equal:start_date',
         'category_id' => 'required|exists:car_categories,id', // Ensure the category exists
-        'plate_no' => 'required|numeric|unique:trainer_assignings,plate_no',
+        'plate_no' => 'required|numeric', 
+        // 'plate_no' => 'required|numeric|unique:trainer_assignings,plate_no',
         'car_name' => 'required|string|max:255',
     ]);
 
@@ -64,12 +66,14 @@ class TrainerAssigningController extends Controller
 
     // Show the form for editing the specified trainer
     public function edit(TrainerAssigning $trainer_assigning)
-    {
-        //$trainingCars = TrainingCar::all(); // Fetch all training cars
-        $carCategories = CarCategory::all(); // Fetch all car categories
-        return view('trainer_assigning.edit', compact('trainer_assigning', 'carCategories')); // Pass trainer_assigning to the view
-        // Return edit view with car categories
-    }
+{
+    $carCategories = CarCategory::all(); // Fetch all car categories
+
+    // Fetch plates based on the current category of the trainer assigning
+    $plates = TrainingCar::where('category', $trainer_assigning->category_id)->pluck('plate_no', 'id');
+
+    return view('trainer_assigning.edit', compact('trainer_assigning', 'carCategories', 'plates')); // Pass all necessary variables to the view
+}
 
     // Update the specified trainer in the database
 
@@ -81,12 +85,13 @@ class TrainerAssigningController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'category_id' => 'required|exists:car_categories,id',
-            'plate_no' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('trainer_assignings')->ignore($trainer_assigning->assigning_id),
-            ],
+            'plate_no' => 'required|string|max:255',
+            // 'plate_no' => [
+            //     'required',
+            //     'string',
+            //     'max:255',
+            //     Rule::unique('trainer_assignings')->ignore($trainer_assigning->assigning_id),
+            // ],
             'car_name' => 'required|string|max:255',
         ]);
     
@@ -120,5 +125,43 @@ class TrainerAssigningController extends Controller
             return response()->json(['error' => 'Unable to fetch plates'], 500);
         }
     }
+
+    public function getPlatesWithCount($categoryId)
+{
+    \Log::info('Fetching plates with count for category ID: ' . $categoryId);
+    
+    try {
+        // Fetch plate numbers and count occurrences from the trainer_assignings table
+        $trainerPlates = TrainerAssigning::select('plate_no', \DB::raw('COUNT(*) as count'))
+            ->where('category_id', $categoryId)
+            ->groupBy('plate_no');
+
+        // Fetch plate numbers from the training_cars table
+        $carPlates = TrainingCar::select('plate_no')
+            ->where('category', $categoryId) // Ensure this references the correct field
+            ->get();
+
+        // Combine the results using union
+        $plates = $trainerPlates->union($carPlates->select('plate_no', \DB::raw('0 as count')))->get();
+
+        // Log the fetched plates
+        \Log::info('Fetched plates: ', $plates->toArray());
+
+        // If no plates are found, return an empty array
+        if ($plates->isEmpty()) {
+            \Log::info('No plates found for category ID: ' . $categoryId);
+            return response()->json([]); // Return an empty array
+        }
+
+        // Sort the plates by count in ascending order
+        $sortedPlates = $plates->sortBy('count');
+
+        // Return the sorted plates with their counts
+        return response()->json($sortedPlates->values()->all()); // Use values() to reset keys
+    } catch (\Exception $e) {
+        \Log::error('Error fetching plates: ' . $e->getMessage());
+        return response()->json(['error' => 'Unable to fetch plates'], 500);
+    }
+}
 
 }
