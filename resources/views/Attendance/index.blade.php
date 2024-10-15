@@ -83,19 +83,19 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($attendances as $attendance)
+            @foreach($attendances as $key => $attendance)
                 <tr>
-                    <td>{{ $attendance->AttendanceID }}</td>
-                    <td>{{ $attendance->Date }}</td>
-                    <td>{{ $attendance->StartTime }}</td>
-                    <td>{{ $attendance->FinishTime }}</td>
-                    <td>{{ $attendance->TraineeName }}</td>
-                    <td>{{ $attendance->TrainerName }}</td>
-                    <td>{{ $attendance->Status }}</td>
+                    <td>{{ $key + 1 }}</td>
+                    <td>{{ $attendance->date }}</td>
+                    <td>{{ $attendance->start_time }}</td>
+                    <td>{{ $attendance->finish_time }}</td>
+                    <td>{{ $attendance->trainee_name }}</td>
+                    <td>{{ $attendance->trainer_name }}</td>
+                    <td>{{ $attendance->status }}</td>
                     <td>{{ $attendance->comment }}</td>
                     <td class="text-nowrap">
-                      <a href="{{ route('attendance.edit', $attendance->AttendanceID) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('attendance.destroy', $attendance->AttendanceID) }}" method="POST" style="display:inline;">
+                      <a href="{{ route('attendance.edit', $attendance->attendance_id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <form action="{{ route('attendance.destroy', $attendance->attendance_id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this attendance?')">Delete</button>

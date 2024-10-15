@@ -11,7 +11,7 @@
     @endif
 
     <div class="form-section">
-        <form action="{{ route('attendance.update', $attendance->AttendanceID) }}" method="POST">
+        <form action="{{ route('attendance.update', $attendance->attendance_id) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="row">
