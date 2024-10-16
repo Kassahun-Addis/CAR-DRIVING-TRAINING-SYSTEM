@@ -118,18 +118,16 @@
                     <td>{{ $trainee->receipt_no }}</td>
                     <td>{{ \Carbon\Carbon::parse($trainee->dob)->format('Y-m-d') }}</td>
                     <td class="text-nowrap">
-                      <a href="{{ route('trainee.edit', $trainee->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('trainee.destroy', $trainee->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this trainee?')">Delete</button>
-                        </form>
-                        <!-- <button class="btn btn-info btn-sm ml-1" onclick="printBankDetails('{{ $trainee->WastageID }}', '{{ $trainee->Product_name }}','{{ $trainee->Quantity }}', '{{ $trainee->WastageDate }}', '{{ $trainee->Reason }}', '{{ $trainee->unit }}')">Print</button> -->
-                        <button class="btn btn-info btn-sm ml-1" onclick="printDrivingLicenseApplication({{ json_encode($trainee) }})">Print</button>
-                        <a href="{{ route('attendance.index') }}" class="btn btn-danger btn-sm">View Aten</a>
-                    
-                    </td>
-                </tr>
+    <a href="{{ route('trainee.edit', $trainee->id) }}" class="btn btn-warning btn-sm">Edit</a>
+    <form action="{{ route('trainee.destroy', $trainee->id) }}" method="POST" style="display:inline;">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this trainee?')">Delete</button>
+    </form>
+    <button class="btn btn-info btn-sm ml-1" onclick="printDrivingLicenseApplication({{ json_encode($trainee) }})">Print</button>
+    <a href="{{ route('attendance.index', ['trainee_id' => $trainee->id, 'trainee_name' => $trainee->full_name]) }}" class="btn btn-danger btn-sm">View Attendance</a>
+</td>
+</tr>
             @endforeach
         </tbody>
     </table>

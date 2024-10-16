@@ -55,6 +55,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit'); // Show edit form
     Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update'); // Update attendance
     Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy'); // Delete attendance
+    //Route::get('/attendance/{trainee_id}', [AttendanceController::class, 'showAttendance'])->name('attendance.show');
+    Route::get('/attendance/{traineeId?}', [AttendanceController::class, 'index'])->name('attendance.index');
+// });
+
+
+// // Attendance Routes
+// Route::middleware('auth')->group(function () {
+//     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+//     Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
+//     Route::post('/attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
+//     Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
+//     Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
+//     Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
+//     Route::get('/attendance/{trainee_id}', [AttendanceController::class, 'showAttendance'])->name('attendance.show');
 // });
 
 // Trainer Routes

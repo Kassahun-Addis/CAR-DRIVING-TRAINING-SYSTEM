@@ -25,6 +25,8 @@ class Attendance extends Model
         'comment', 
         //'trainee_id' => $request->trainee_id, // Save the trainee ID
         'trainee_id', // Save the trainee ID
-
+        'location', 
+        'latitude', 
+        'longitude', 
     ];
 }

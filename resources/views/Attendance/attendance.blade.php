@@ -14,6 +14,10 @@
             @csrf
             <input type="hidden" name="status" value="Absent"> <!-- Default status -->
             <input type="hidden" name="trainee_id" value="{{ Auth::guard('trainee')->user()->id }}"> <!-- Hidden field for Trainee ID -->
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+            <input type="hidden" id="location" name="location"> <!-- Hidden field for location -->
+
             <div class="row">
                 <div class="col-12 col-md-12">
                     <div class="form-group">
