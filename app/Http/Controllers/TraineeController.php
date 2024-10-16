@@ -152,37 +152,84 @@ class TraineeController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        // Validate the incoming request data
-        $request->validate([
-            'yellow_card' => $request->input('yellow_card'),
-            'full_name' => 'required|string|max:255',
-            'full_name_2' => 'required|string|max:255',
-            'gender' => 'required|string',
-            'nationality' => 'required|string',
-            'city' => 'required|string',
-            'sub_city' => 'required|string',
-            'woreda' => 'required|string',
-            'house_no' => 'required|numeric',
-            'phone_no' => 'required|numeric',
-            'po_box' => 'required|numeric',
-            'birth_place' => 'required|string',
-            'dob' => 'required|date',
-            'driving_license_no' => 'nullable|string',
-            'license_type' => 'required|string',
-            'education_level' => 'nullable|string',
-            'disease' => 'nullable|string',
-            'blood_type' => 'required|string',
-            'receipt_no' => 'nullable|string',
-        ]);
+{
+    \Log::info('Incoming request data:', $request->all());
 
-        // Find the trainee by id and update the information
-        $trainee = Trainee::findOrFail($id);
-        $trainee->update($request->all());
+    // Validate the incoming request data
+    $request->validate([
+        'yellow_card' => 'required|unique:trainees,yellow_card,' . $id, // Ensure unique check ignores current record
+        'full_name' => 'required|string|max:255',
+        'full_name_2' => 'required|string|max:255',
+        'gender' => 'required|string',
+        'nationality' => 'required|string',
+        'city' => 'required|string',
+        'sub_city' => 'required|string',
+        'woreda' => 'required|string',
+        'house_no' => 'required|numeric',
+        'phone_no' => 'required|numeric',
+        'po_box' => 'required|numeric',
+        'birth_place' => 'required|string',
+        'dob' => 'required|date',
+        'driving_license_no' => 'nullable|string',
+        'license_type' => 'required|string',
+        'education_level' => 'nullable|string',
+        'disease' => 'nullable|string',
+        'blood_type' => 'required|string',
+        'receipt_no' => 'nullable|string',
+        'photo' => 'nullable|image|mimes:jpeg,png,jfif,jpg,gif|max:4096', // Validate image file
+    ]);
 
-        // Redirect to the index page with a success message
-        return redirect()->route('trainee.index')->with('success', 'Trainee updated successfully.');
+    // Find the trainee by id
+    $trainee = Trainee::findOrFail($id);
+
+    // Check if a new photo is uploaded
+    if ($request->hasFile('photo')) {
+        $photo = $request->file('photo');
+
+        if ($photo->isValid()) {
+            // Use the phone number as the photo name
+            $photoName = $request->input('phone_no') . '.' . $photo->getClientOriginalExtension(); 
+            
+            // Store the photo in the storage/app/public/trainee_photos directory
+            $photo->storeAs('trainee_photos', $photoName, 'public');
+
+            // Save the new photo name in the database
+            $trainee->photo = $photoName;
+        }
     }
+
+    // Update other trainee fields
+    $trainee->yellow_card = $request->input('yellow_card');
+    $trainee->full_name = $request->input('full_name');
+    $trainee->ሙሉ_ስም = $request->input('full_name_2');
+    $trainee->gender = $request->input('gender');
+    $trainee->ጾታ = $request->input('gender_1');
+    $trainee->nationality = $request->input('nationality');
+    $trainee->ዜግነት = $request->input('nationality_1');
+    $trainee->city = $request->input('city');
+    $trainee->ከተማ = $request->input('city_1');
+    $trainee->sub_city = $request->input('sub_city');
+    $trainee->ክፍለ_ከተማ = $request->input('sub_city_1');
+    $trainee->woreda = $request->input('woreda');
+    $trainee->ወረዳ = $request->input('woreda_1');
+    $trainee->house_no = $request->input('house_no');
+    $trainee->phone_no = $request->input('phone_no');
+    $trainee->po_box = $request->input('po_box');
+    $trainee->birth_place = $request->input('birth_place');
+    $trainee->የትዉልድ_ቦታ = $request->input('birth_place_1');
+    $trainee->dob = $request->input('dob');
+    $trainee->existing_driving_lic_no = $request->input('driving_license_no');
+    $trainee->license_type = $request->input('license_type');
+    $trainee->education_level = $request->input('education_level');
+    $trainee->blood_type = $request->input('blood_type');
+    $trainee->receipt_no = $request->input('receipt_no');
+
+    // Save the trainee record
+    $trainee->save();
+
+    // Redirect to the index page with a success message
+    return redirect()->route('trainee.index')->with('success', 'Trainee updated successfully.');
+}
 
     public function destroy($id)
     {

@@ -20,7 +20,7 @@
         <div class="col-12">
 
         <div class="form-group">
-            <label for="name">Name:</label>
+            <label for="name">Trainer Name:</label>
             <input type="text" class="form-control" id="name" name="name" required>
         </div>
 
@@ -50,7 +50,7 @@
         </div>
 
         <div class="form-group">
-            <label for="car_name">Car Make:</label>
+            <label for="car_name">Vehicle:</label>
             <input type="text" class="form-control" id="car_name" name="car_name" required>
         </div>
 
@@ -59,7 +59,7 @@
             <input type="text" class="form-control" id="plate_no" name="plate_no" required>
         </div>
  <!-- Hidden field for car_id -->
- <input type="hidden" id="car_id" name="car_id" value="">
+ <!-- <input type="hidden" id="car_id" name="car_id" value=""> -->
 
     </div>
 </div>
