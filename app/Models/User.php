@@ -34,11 +34,26 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+    public function getIsAdminAttribute()
+    {
+        // Assuming you have a role column to check if the user is an admin
+        return $this->role === 'admin'; // Change this condition based on your role setup
+    }
 
     public function isStudent()
     {
         return $this->role === 'student';
     }
+
+    // public function trainee()
+    // {
+    //     return $this->hasOne(Trainee::class, 'id');
+    // }
+
+    // public function isTrainee()
+    // {
+    //     return $this->trainee()->exists();
+    // }
 }
 
 

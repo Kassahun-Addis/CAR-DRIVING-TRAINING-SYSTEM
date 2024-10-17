@@ -1,13 +1,35 @@
 @extends('student.app')
 
-@section('title', 'Trainee - Add New')
+@section('title', 'Attendance - Add New')
 
 @section('content')
+
+<style>
+/* Reduce the font size of h2 and hide the icon on small devices */
+@media (max-width: 768px) {
+    h2 {
+        font-size: 1.25rem; /* Reduce font size for h2 */
+    }
+
+    .btn-custom i {
+        display: none; /* Hide the arrow icon */
+    }
+}
+</style>
+
 <div class="container mt-5">
-    <h2>Trainee, Add New</h2>
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Attendance, Add New</h2>
+        <a href="/home" class="btn btn-secondary btn-custom">
+            <i class="fas fa-arrow-left mr-2"></i>Back
+        </a>
+    </div>
+    
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+
+
 
     <div class="form-section">
         <form action="{{ route('attendance.store') }}" method="POST">

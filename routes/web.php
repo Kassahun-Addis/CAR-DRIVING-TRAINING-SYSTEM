@@ -36,7 +36,7 @@ Route::get('/welcome', [AdminDashboardController::class, 'index'])
     ->name('welcome');
 
 // Trainee Routes
-Route::middleware('auth')->group(function () {
+//Route::middleware('auth')->group(function () {
     Route::get('/trainee/create', [TraineeController::class, 'create'])->name('trainee.create');
     Route::post('/trainee/store', [TraineeController::class, 'store'])->name('trainee.store');
     Route::get('/trainee/list', [TraineeController::class, 'index'])->name('trainee.index');
@@ -44,7 +44,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/trainee/update/{id}', [TraineeController::class, 'update'])->name('trainee.update');
     Route::delete('/trainee/destroy/{id}', [TraineeController::class, 'destroy'])->name('trainee.destroy');
     Route::post('trainee/export', [TraineeController::class, 'exportToExcel'])->name('trainee.export');
-});
+    Route::get('/trainee/{id}/agreement', [TraineeController::class, 'showAgreement'])->name('trainee.agreement');
+    Route::get('/trainee/{id}/agreement', [TraineeController::class, 'showAgreement'])->name('trainee.agreement');
+    Route::get('/trainee/{id}/download-agreement', [TraineeController::class, 'downloadAgreement'])->name('download.agreement');
+ //});
 
 // Attendance Routes
 // Route::middleware('auth:trainee')->group(function () {

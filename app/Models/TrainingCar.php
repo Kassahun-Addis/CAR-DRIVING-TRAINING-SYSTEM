@@ -17,18 +17,6 @@ class TrainingCar extends Model
         'plate_no',
     ];
 
-     // A TrainingCar has many Trainers
-//      public function trainers()
-//      {
-//          return $this->hasMany(Trainer::class, 'car_id');
-//      }
-
-
-// Make sure your TrainingCar model has a relationship with the CarCategory model, something like:
-
-// Define the relationship with CarCategory
-
-
 public function category()
 {
     return $this->belongsTo(CarCategory::class, 'category', 'id'); // Ensure this relationship is correct

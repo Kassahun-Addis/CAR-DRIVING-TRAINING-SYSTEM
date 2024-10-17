@@ -1,43 +1,39 @@
-<!-- Include Font Awesome for icons -->
-<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> -->
-
-
 <style>
-   /* Ensure the header is fixed */
-.header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 50;
-}
+    /* Ensure the header is fixed */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 50;
+    }
 
-/* Prevent main content from hiding behind the fixed header */
-.main-content {
-    margin-top: 65px; /* Adjust this based on your header height */
-    position: relative; /* Ensure main content stays below sidebar */
-    z-index: 1; /* Lower z-index to ensure it stays below sidebar */
-}
+    /* Prevent main content from hiding behind the fixed header */
+    .main-content {
+        margin-top: 65px; /* Adjust this based on your header height */
+        position: relative; /* Ensure main content stays below sidebar */
+        z-index: 1; /* Lower z-index to ensure it stays below sidebar */
+    }
 
-/* Sidebar styles */
-#sidebar {
-    transform: translateX(0); /* Default visible */
-    transition: transform 0.3s ease; /* Smooth transition */
-    z-index: 100; /* Increase z-index to ensure it overrides other content */
-}
+    /* Sidebar styles */
+    #sidebar {
+        transform: translateX(0); /* Default visible */
+        transition: transform 0.3s ease; /* Smooth transition */
+        z-index: 100; /* Increase z-index to ensure it overrides other content */
+    }
 
-/* Overlay for mobile menu */
-#overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: none; /* Initially hidden */
-    z-index: 90; /* Ensure the overlay is between sidebar and main content */
-}
+    /* Overlay for mobile menu */
+    #overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none; /* Initially hidden */
+        z-index: 90; /* Ensure the overlay is between sidebar and main content */
+    }
 
-.hidden {
-    display: none; /* Ensure hidden elements are not displayed */
-}
+    .hidden {
+        display: none; /* Ensure hidden elements are not displayed */
+    }
 
     /* Hide sidebar off-screen on small devices */
     @media (max-width: 768px) {
@@ -49,7 +45,7 @@
         }
         #menu-toggle {
             display: block; /* Show menu toggle button on small devices */
-            background:blue;
+            background: blue;
         }
     }
 
@@ -60,52 +56,48 @@
         }
     }
 
-    /* Overlay for mobile menu */
-    #overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        display: none; /* Initially hidden */
-        z-index: 40; /* Ensure overlay appears above other content */
-    }
-
-
- 
-    .hidden {
-        display: none; /* Ensure hidden elements are not displayed */
-    }
-    
-    /* Sidebar styles */
-    #sidebar {
-        transform: translateX(0); /* Default visible */
-        transition: transform 0.3s ease; /* Smooth transition */
-    }
-
-    /* Hide sidebar off-screen on small devices */
-    @media (max-width: 768px) {
-        #sidebar {
-            transform: translateX(-100%); /* Hide sidebar off-screen */
-            background: bg-gray-800;
-        }
-        #sidebar.active {
-            transform: translateX(0); /* Show sidebar */
-            
-        }
-    }
-
     ul.mt-0 {
-    margin-top: 0;
-    padding-left: 0;
-    list-style-type: none;
-}
+        margin-top: 0;
+        padding-left: 0;
+        list-style-type: none;
+    }
 
+    /* Header font size for small devices */
+    @media (max-width: 768px) {
+        .header h2 {
+            font-size: 1.25rem; /* Adjust this value as needed */
+        }
+
+        /* Show user info in sidebar */
+        .sidebar-user-info {
+            display: block;
+        }
+
+        /* Hide user info in header */
+        .header-user-info {
+            display: none;
+        }
+    }
+
+    /* Header font size for larger devices */
+    @media (min-width: 769px) {
+        /* Hide user info in sidebar */
+        .sidebar-user-info {
+            display: none;
+        }
+
+        /* Show user info in header */
+        .header-user-info {
+            display: flex;
+        }
+    }
 </style>
 
 <!-- Header Section -->
 <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
     <h2 class="text-2xl font-bold">CAR Driving Training System</h2>
-    <div class="flex items-center ml-auto"> <!-- Use ml-auto to push this div to the right -->
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" >
+    <div class="header-user-info flex items-center ml-auto hidden md:flex">
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
         </form>
         <a href="#" class="text-white flex items-center mr-4" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -137,21 +129,44 @@
     </div>
 </header>
 
-
 <!-- Sidebar Section -->
 <div id="sidebar" class="sidebar bg-gray-800 text-white w-64 h-screen fixed z-10 shadow-lg">
     <ul class="mt-0 space-y-1 pl-0 list-none">
         <li><a href="/home" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
-        <!-- <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Trainee</a></li>
-        <li><a href="{{ route('trainers.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Trainer</a></li>
-        <li><a href="{{ route('payments.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Payment</a></li> -->
         <li><a href="{{ route('attendance.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Fill Attendance</a></li>
-        <!-- <li><a href="{{ route('banks.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Bank </a></li> -->
+
+        @auth
+            <li><a href="{{ route('trainee.agreement', ['id' => auth()->user()->id]) }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>View Agreement</a></li>
+        @endauth
+
+        <!-- User Info & Logout (Visible only on small devices) -->
+        <li class="sidebar-user-info block md:hidden">
+            <a href="#" class="flex items-center p-2 hover:bg-gray-700 rounded" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                @if (Auth::guard('trainee')->check())
+                    @if ($trainee->photo)
+                        <img 
+                            src="{{ asset('storage/trainee_photos/' . $trainee->photo) }}" 
+                            alt="{{ $trainee->full_name }}" 
+                            style="width: 28px; height: 28px; object-fit: cover;" 
+                            class="rounded-full mr-1">
+                    @else
+                        <i class="fas fa-user mr-1"></i>
+                    @endif
+                    <span>{{ $trainee->full_name }}</span>
+                @else
+                    <i class="fas fa-user mr-1"></i>
+                    <span>Guest</span>
+                @endif
+            </a>
+            <a href="#" class="text-white btn btn-danger btn-sm" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+        </li>
     </ul>
 </div>
 
 <!-- Overlay for mobile menu -->
 <div id="overlay" class="overlay"></div>
+
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

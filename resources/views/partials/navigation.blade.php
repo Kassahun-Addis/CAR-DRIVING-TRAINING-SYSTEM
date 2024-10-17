@@ -99,49 +99,66 @@
     list-style-type: none;
 }
 
+/* Header font size for small devices */
+@media (max-width: 768px) {
+    .header h2 {
+        font-size: 1.25rem; /* Adjust this value as needed */
+    }
+}
+
+
 </style>
 
 <!-- Header Section -->
 <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
     <h2 class="text-2xl font-bold">CAR Driving Training System</h2>
-    <div class="flex items-center ml-auto"> <!-- Use ml-auto to push this div to the right -->
-    <a href="#" class="text-white flex items-center mr-4" onclick="toggleUserMenu(event)">
+    <!-- ... existing code ... -->
+<div class="flex items-center ml-auto"> <!-- Use ml-auto to push this div to the right -->
+    <a href="#" class="text-white flex items-center mr-4">
         <i class="fas fa-user mr-1"></i>
         @if (Auth::check())
             <span>{{ Auth::user()->name }}</span> <!-- Display logged-in user's name -->
+            <div class="dropdown">
+                <button class="btn btn-link dropdown-toggle text-white" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-cog"></i> <!-- Settings icon -->
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="{{ route('account.manage') }}">Manage Account</a>
+                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                </div>
+            </div>
         @else
             <span>Guest</span> <!-- Fallback if no user is logged in -->
         @endif
     </a>
-        @if (Auth::check())
-            <!-- Logout Form -->
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
-            <a href="#" class="text-white flex items-center" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="fas fa-sign-out-alt mr-1"></i>Logout
-            </a>
-        @endif
-    </div>
+</div>
+<!-- ... existing code ... -->
 </header>
 
 <!-- Sidebar Section -->
+<!-- Sidebar Section -->
 <div id="sidebar" class="sidebar bg-gray-800 text-white w-64 h-screen fixed z-10 shadow-lg">
-    <ul class="mt-0 space-y-1 pl-0 list-none">
-        <li><a href="/welcome" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
-        <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-user-graduate mr-2"></i>Trainee</a></li>
-        <li><a href="{{ route('trainers.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-chalkboard-teacher mr-2"></i>Trainer</a></li>
-        <li><a href="{{ route('payments.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-money-check-alt mr-2"></i>Payment</a></li>
-        <!-- <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-calendar-alt mr-2"></i>Schedule</a></li> -->
-        <!-- <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-clipboard-check mr-2"></i>Exam</a></li> -->
-        <li><a href="{{ route('training_cars.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-car mr-2"></i>Vehicle</a></li>
-        <!-- <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-book mr-2"></i>Theoretical Session</a></li> -->
-        <!-- <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-tools mr-2"></i>Practical Session</a></li> -->
-        <!-- <li><a href="{{ route('attendance.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-user-check mr-2"></i>Attendance </a></li> -->
-        <li><a href="{{ route('banks.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-university mr-2"></i>Bank</a></li>
-        <li><a href="{{ route('car_category.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-tags mr-2"></i>Car Category</a></li>
-        <li><a href="{{ route('trainer_assigning.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Trainer Assignment</a></li>
-    </ul>
+    @if (Auth::check() && Auth::user()->role === 'admin') <!-- Check if user is an admin -->
+        <ul class="mt-0 space-y-1 pl-0 list-none">
+            <li><a href="/welcome" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+            <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-user-graduate mr-2"></i>Trainee</a></li>
+            <li><a href="{{ route('trainers.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-chalkboard-teacher mr-2"></i>Trainer</a></li>
+            <li><a href="{{ route('payments.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-money-check-alt mr-2"></i>Payment</a></li>
+            <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-clipboard-check mr-2"></i>Exam</a></li>
+            <li><a href="{{ route('training_cars.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-car mr-2"></i>Vehicle</a></li>
+            <li><a href="{{ route('banks.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-university mr-2"></i>Bank</a></li>
+            <li><a href="{{ route('car_category.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-tags mr-2"></i>Car Category</a></li>
+            <li><a href="{{ route('trainer_assigning.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Trainer Assignment</a></li>
+        </ul>
+    @else
+        <ul class="mt-0 space-y-1 pl-0 list-none">
+            <li><a href="/home" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+           
+        </ul>
+    @endif
 </div>
 
 <!-- Overlay for mobile menu -->

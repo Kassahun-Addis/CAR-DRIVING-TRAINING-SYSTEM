@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Trainee;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\TraineeExport;
-
+use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\Response;
 
 
 class TraineeController extends Controller
@@ -272,5 +274,28 @@ public function exportToExcel()
 
 //     return response($file)->header("Content-Type", $mimeType);
 // }
+
+
+public function showAgreement($id)
+{
+    //dd($id); // Check if this outputs the correct ID
+    $trainee = Trainee::findOrFail($id);
+    return view('Trainee.agreement', compact('trainee'));
+}
+
+public function downloadAgreement($id)
+{
+    $trainee = Trainee::findOrFail($id); // Fetch the trainee object
+
+    // Render the view with the trainee data
+    $agreementContent = view('Trainee.agreement', ['trainee' => $trainee])->render();
+
+    // Create a PDF from the content
+    $pdf = app('dompdf.wrapper');
+    $pdf->loadHTML($agreementContent);
+
+    // Download the PDF
+    return $pdf->download("agreement_{$id}.pdf");
+}
 
 }

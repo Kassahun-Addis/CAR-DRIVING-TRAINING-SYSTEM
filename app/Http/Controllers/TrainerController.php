@@ -31,6 +31,7 @@ class TrainerController extends Controller
         return view('trainer.create', compact('trainingCars', 'carCategories')); // Return create view with car categories
     }
 
+    
     // Store a newly created trainer in the database
     public function store(Request $request)
 {
@@ -71,29 +72,21 @@ class TrainerController extends Controller
 
     // Update the specified trainer in the database
     public function update(Request $request, Trainer $trainer)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'phone_number' => 'required|string|max:20',
-        'email' => 'required|email|unique:trainers,email,' . $trainer->id,
-        'experience' => 'required|integer',
-        'plate_no' => 'required|string|max:255',
-        'category' => 'required|exists:car_categories,id', // Validate category ID
-    ]);
-
-    // Use only the fields you want to update
-    $trainer->update($request->only([
-        'name',
-        'phone_number',
-        'email',
-        'experience',
-        'plate_no',
-        'category',
-        'car_name', // Assuming you want to update this too
-    ]));
-
-    return redirect()->route('trainers.index')->with('success', 'Trainer updated successfully!');
-}
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:20',
+            'email' => 'required|email|unique:trainers,email,' . $trainer->id,
+            'experience' => 'required|integer',
+            'plate_no' => 'required|string|max:255',
+            'car_id' => 'required|exists:training_cars,id',
+            'category' => 'required|exists:car_categories,id', // Validate category ID
+        ]);
+    
+        $trainer->update($request->all());
+    
+        return redirect()->route('trainers.index')->with('success', 'Trainer updated successfully!');
+    }
 
     // Remove the specified trainer from the database
     public function destroy(Trainer $trainer)

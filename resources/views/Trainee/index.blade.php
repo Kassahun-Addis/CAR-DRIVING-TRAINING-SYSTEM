@@ -125,6 +125,7 @@
         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this trainee?')">Delete</button>
     </form>
     <button class="btn btn-info btn-sm ml-1" onclick="printDrivingLicenseApplication({{ json_encode($trainee) }})">Print</button>
+    <a href="{{ route('trainee.agreement', $trainee->id) }}" class="btn btn-info btn-sm ml-1">Agreement</a>
     <a href="{{ route('attendance.index', ['trainee_id' => $trainee->id, 'trainee_name' => $trainee->full_name]) }}" class="btn btn-danger btn-sm">View Attendance</a>
 </td>
 </tr>
