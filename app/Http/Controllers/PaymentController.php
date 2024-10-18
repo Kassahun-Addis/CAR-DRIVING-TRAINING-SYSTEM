@@ -101,37 +101,42 @@ public function edit($id)
 public function update(Request $request, Payment $payment)
 {
     \Log::info('Update method hit', ['payment_id' => $payment->payment_id]);
+
     // Validate incoming request data
     try {
-    $request->validate([
-        'full_name' => 'required|string|max:255',
-        'tin_no' => 'required|string|max:20',
-        'payment_date' => 'required|date',
-        'payment_method' => 'required|in:Cash,Bank,Telebirr',
-        'bank_id' => 'required_if:payment_method,Bank|exists:banks,id', // Validate bank_id only if payment method is Bank
-        'transaction_no' => 'nullable|string|max:255',
-        'sub_total' => 'required|numeric|min:0',
-        'vat' => 'required|numeric|min:0',
-        'total' => 'required|numeric|min:0',
-        'amount_paid' => 'required|numeric|min:0',
-        'payment_status' => 'required|in:Paid,Pending,Overdue',
-    ]);
-} catch (\Illuminate\Validation\ValidationException $e) {
-    \Log::error('Validation failed', [
-        'errors' => $e->validator->errors()->toArray()
-    ]);
-    return back()->withErrors($e->validator)->withInput();
-}
+        $request->validate([
+            'full_name' => 'required|string|max:255',
+            'tin_no' => 'required|string|max:20',
+            'payment_date' => 'required|date',
+            'payment_method' => 'required|in:Cash,Bank,Telebirr',
+            'bank_id' => 'required_if:payment_method,Bank|exists:banks,id', // Validate bank_id only if payment method is Bank
+            'transaction_no' => 'nullable|string|max:255',
+            'sub_total' => 'required|numeric|min:0',
+            'vat' => 'required|numeric|min:0',
+            'total' => 'required|numeric|min:0',
+            'amount_paid' => 'required|numeric|min:0',
+            'payment_status' => 'required|in:Paid,Pending,Overdue',
+        ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        \Log::error('Validation failed', [
+            'errors' => $e->validator->errors()->toArray()
+        ]);
+        return back()->withErrors($e->validator)->withInput();
+    }
 
-// If the payment method is not Bank, unset the bank_id
-if ($request->payment_method !== 'Bank') {
-    $paymentData['bank_id'] = null; // Ensure bank_id is null for non-Bank methods
-}
+    // Initialize payment data array
+    $paymentData = $request->all();
+
+    // If the payment method is not Bank, unset the bank_id
+    if ($request->payment_method !== 'Bank') {
+        $paymentData['bank_id'] = null; // Ensure bank_id is null for non-Bank methods
+    }
+
     // Calculate remaining balance before updating
     $remainingBalance = $request->total - $request->amount_paid;
 
     // Update payment
-    $payment->update(array_merge($request->all(), ['remaining_balance' => $remainingBalance]));
+    $payment->update(array_merge($paymentData, ['remaining_balance' => $remainingBalance]));
 
     // Record payment history
     PaymentHistory::create([
@@ -140,7 +145,7 @@ if ($request->payment_method !== 'Bank') {
         'payment_date' => $request->payment_date,
         'transaction_no' => $request->transaction_no,
         'payment_method' => $request->payment_method,
-        'bank_id' => $request->bank_id, // Store the selected bank ID
+        'bank_id' => $request->payment_method === 'Bank' ? $request->bank_id : null, // Store the bank ID conditionally
         'payment_status' => $remainingBalance > 0 ? 'Partial' : 'Paid',
     ]);
 
