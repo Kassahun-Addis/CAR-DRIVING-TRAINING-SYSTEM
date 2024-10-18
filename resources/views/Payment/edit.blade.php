@@ -10,64 +10,89 @@
         @method('PUT')
 
         <div class="form-group">
-            <label for="FullName">Full Name</label>
-            <input type="text" class="form-control" id="FullName" name="FullName" value="{{ $payment->FullName }}" required>
+            <label for="full_name">Full Name</label>
+            <input type="text" class="form-control" id="full_name" name="full_name" value="{{ old('full_name', $payment->full_name) }}" required>
         </div>
         
         <div class="form-group">
-            <label for="TinNo">Tax Identification Number (TIN)</label>
-            <input type="text" class="form-control" id="TinNo" name="TinNo" value="{{ $payment->TinNo }}" required>
+            <label for="tin_no">Tax Identification Number (TIN)</label>
+            <input type="text" class="form-control" id="tin_no" name="tin_no" value="{{ old('tin_no', $payment->tin_no) }}" required>
         </div>
 
         <div class="form-group">
-            <label for="PaymentDate">Payment Date</label>
-            <input type="date" class="form-control" id="PaymentDate" name="PaymentDate" value="{{ $payment->PaymentDate }}" required>
+            <label for="payment_date">Payment Date</label>
+            <input type="date" class="form-control" id="payment_date" name="payment_date" value="{{ old('payment_date', $payment->payment_date) }}" required>
         </div>
 
         <div class="form-group">
-            <label for="PaymentMethod">Payment Method</label>
-            <select name="PaymentMethod" id="PaymentMethod" class="form-control" required>
-                <option value="Cash" {{ $payment->PaymentMethod == 'Cash' ? 'selected' : '' }}>Cash</option>
-                <option value="Bank" {{ $payment->PaymentMethod == 'Bank' ? 'selected' : '' }}>Bank</option>
-                <option value="Telebirr" {{ $payment->PaymentMethod == 'Telebirr' ? 'selected' : '' }}>Telebirr</option>
+            <label for="payment_method">Payment Method</label>
+            <select name="payment_method" id="payment_method" class="form-control" required onchange="toggleBankField()">
+                <option value="Cash" {{ old('payment_method', $payment->payment_method) == 'Cash' ? 'selected' : '' }}>Cash</option>
+                <option value="Bank" {{ old('payment_method', $payment->payment_method) == 'Bank' ? 'selected' : '' }}>Bank</option>
+                <option value="Telebirr" {{ old('payment_method', $payment->payment_method) == 'Telebirr' ? 'selected' : '' }}>Telebirr</option>
             </select>
         </div>
 
+        <div class="form-group" id="bank_field" style="{{ old('payment_method', $payment->payment_method) == 'Bank' ? '' : 'display: none;' }}">
+    <label for="bank_id">Bank Name</label>
+    <select name="bank_id" id="bank_id" class="form-control">
+        <option value="" disabled {{ old('bank_id', $payment->bank_id) ? '' : 'selected' }}>Select Bank</option> <!-- Default option -->
+        @foreach($banks as $bank)
+            <option value="{{ $bank->id }}" {{ $bank->id == old('bank_id', $payment->bank_id) ? 'selected' : '' }}>{{ $bank->bank_name }}</option>
+        @endforeach
+    </select>
+</div>
+        
         <div class="form-group">
-            <label for="BankName">Bank Name</label>
-            <input type="text" class="form-control" id="BankName" name="BankName" value="{{ $payment->BankName }}">
+            <label for="transaction_no">Transaction Number</label>
+            <input type="text" class="form-control" id="transaction_no" name="transaction_no" value="{{ old('transaction_no', $payment->transaction_no) }}">
         </div>
 
         <div class="form-group">
-            <label for="TransactionNo">Transaction Number</label>
-            <input type="text" class="form-control" id="TransactionNo" name="TransactionNo" value="{{ $payment->TransactionNo }}">
+            <label for="sub_total">Sub Total</label>
+            <input type="number" class="form-control" id="sub_total" name="sub_total" step="0.01" min="0" value="{{ old('sub_total', $payment->sub_total) }}" required>
         </div>
 
         <div class="form-group">
-            <label for="SubTotal">Sub Total</label>
-            <input type="number" class="form-control" id="SubTotal" name="SubTotal" step="0.01" min="0" value="{{ $payment->SubTotal }}" required>
+            <label for="amount_paid">Amount Paid</label>
+            <input type="text" name="amount_paid" value="{{ old('amount_paid', $payment->amount_paid) }}">
+            </div>
+
+        <div class="form-group">
+            <label for="vat">VAT</label>
+            <input type="number" class="form-control" id="vat" name="vat" step="0.01" min="0" value="{{ old('vat', $payment->vat) }}" required>
         </div>
 
         <div class="form-group">
-            <label for="Vat">VAT</label>
-            <input type="number" class="form-control" id="Vat" name="Vat" step="0.01" min="0" value="{{ $payment->Vat }}" required>
+            <label for="total">Total</label>
+            <input type="number" class="form-control" id="total" name="total" step="0.01" min="0" value="{{ old('total', $payment->total) }}" required>
         </div>
 
         <div class="form-group">
-            <label for="Total">Total</label>
-            <input type="number" class="form-control" id="Total" name="Total" step="0.01" min="0" value="{{ $payment->Total }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="PaymentStatus">Payment Status</label>
-            <select name="PaymentStatus" id="PaymentStatus" class="form-control" required>
-                <option value="Paid" {{ $payment->PaymentStatus == 'Paid' ? 'selected' : '' }}>Paid</option>
-                <option value="Pending" {{ $payment->PaymentStatus == 'Pending' ? 'selected' : '' }}>Pending</option>
-                <option value="Overdue" {{ $payment->PaymentStatus == 'Overdue' ? 'selected' : '' }}>Overdue</option>
+            <label for="payment_status">Payment Status</label>
+            <select name="payment_status" id="payment_status" class="form-control" required>
+                <option value="Paid" {{ old('payment_status', $payment->payment_status) == 'Paid' ? 'selected' : '' }}>Paid</option>
+                <option value="Pending" {{ old('payment_status', $payment->payment_status) == 'Pending' ? 'selected' : '' }}>Pending</option>
+                <option value="Overdue" {{ old('payment_status', $payment->payment_status) == 'Overdue' ? 'selected' : '' }}>Overdue</option>
             </select>
         </div>
 
         <button type="submit" class="btn btn-primary">Update</button>
     </form>
 </div>
+
+<script>
+// Function to toggle visibility of bank field based on payment method
+function toggleBankField() {
+    const paymentMethod = document.getElementById('payment_method').value;
+    const bankField = document.getElementById('bank_field');
+    bankField.style.display = paymentMethod === 'Bank' ? '' : 'none';
+}
+
+// Initialize the bank field visibility based on current payment method
+document.addEventListener('DOMContentLoaded', function() {
+    toggleBankField();
+});
+</script>
+
 @endsection

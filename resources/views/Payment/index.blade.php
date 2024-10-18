@@ -4,9 +4,6 @@
 
 @section('content')
 <div class="container mt-5">
-@if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
 
 <h2 style="text-align: center; padding:10px;">Payments List</h2>
 
@@ -84,6 +81,8 @@
                 <th>Sub Total</th>
                 <th>VAT</th>
                 <th>Total</th>
+                <th>Paid Amount</th>
+                <th>Remaining Balance</th>
                 <th>Payment Status</th>
                 <th>Actions</th>
             </tr>
@@ -91,31 +90,52 @@
         <tbody>
             @foreach($payments as $payment)
                 <tr>
-                    <td>{{ $payment->PaymentID }}</td>
-                    <td>{{ $payment->FullName }}</td>
-                    <td>{{ $payment->TinNo }}</td>
-                    <td>{{ $payment->PaymentDate }}</td>
-                    <td>{{ $payment->PaymentMethod }}</td>
-                    <td>{{ $payment->BankName }}</td>
-                    <td>{{ $payment->TransactionNo }}</td>
-                    <td>{{ $payment->SubTotal }}</td>
-                    <td>{{ $payment->Vat }}</td>
-                    <td>{{ $payment->Total }}</td>
-                    <td>{{ $payment->PaymentStatus }}</td>
+                    <td>{{ $payment->payment_id }}</td>
+                    <td>{{ $payment->full_name }}</td>
+                    <td>{{ $payment->tin_no }}</td>
+                    <td>{{ $payment->payment_date }}</td>
+                    <td>{{ $payment->payment_method }}</td>
+                    <td>{{ $payment->bank ? $payment->bank->bank_name : '' }}</td>
+                    <td>{{ $payment->transaction_no }}</td>
+                    <td>{{ $payment->sub_total }}</td>
+                    <td>{{ $payment->vat }}</td>
+                    <td>{{ $payment->total }}</td>
+                    <td>{{ $payment->amount_paid }}</td>
+                    <td>{{ $payment->remaining_balance }}</td>
+                    <td>{{ $payment->payment_status }}</td>
                     <td class="text-nowrap">
-    <a href="{{ route('payments.edit', $payment) }}" class="btn btn-warning">Edit</a>
-    <form action="{{ route('payments.destroy', $payment) }}" method="POST" style="display:inline;">
+    <a href="{{ route('payments.edit', $payment) }}" class="btn btn-warning" style="margin-right: 5px;">Edit</a>
+    <form action="{{ route('payments.destroy', $payment) }}" method="POST" style="display:inline; margin-right: 5px;">
         @csrf
         @method('DELETE')
         <button type="submit" class="btn btn-danger">Delete</button>
     </form>
-    <a href="{{ route('payments.print', $payment) }}" class="btn btn-secondary">Print</a> <!-- Add this line -->
+    <a href="{{ route('payments.print', $payment) }}" class="btn btn-secondary" style="margin-right: 5px;">Print</a>
+    
+    <!-- Pay Remaining Dropdown -->
+    <div class="btn-group" style="display: inline-block;">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 8px 12px; border-radius: 4px;">
+            Pay Remaining
+        </button>
+        <div class="dropdown-menu" style="background-color: #ffffff; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);">
+            <a class="dropdown-item" href="{{ route('payments.pay_remaining', $payment) }}" style="color: #007bff; padding: 8px 16px; text-decoration: none; display: block;">
+                Pay
+            </a>
+            <a class="dropdown-item" href="{{ route('payments.history', $payment) }}" style="color: #007bff; padding: 8px 16px; text-decoration: none; display: block;">
+                See History
+            </a>
+        </div>
+    </div>
 </td>
+
+
 </tr>
-            @endforeach
-        </tbody>
-    </table>
+@endforeach
+</tbody>
+</table>
 </div>
+
+
 <!-- Showing entries information -->
 <div class="mt-3">
     Showing {{ $payments->firstItem() }} to {{ $payments->lastItem() }} of {{ $payments->total() }} entries

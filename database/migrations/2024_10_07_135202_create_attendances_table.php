@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('trainee_name', 100); // Trainee name
             $table->string('trainer_name', 100); // Trainer name
             $table->string('comment')->nullable(); // Optional comments
+            $table->string('location')->nullable(); // Optional comments
+            $table->float('latitude')->nullable(); // Optional comments
+            $table->float('longitude')->nullable(); // Optional comments
             $table->timestamps(); // Created at and updated at timestamps
         });
     }

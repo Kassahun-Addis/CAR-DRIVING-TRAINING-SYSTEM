@@ -16,6 +16,6 @@ class Bank extends Model
 
     public function payments()
     {
-        return $this->hasMany(Payment::class, 'BankID'); // Define inverse relationship
+        return $this->hasMany(Payment::class, 'bank_id'); // Define inverse relationship
     }
 }

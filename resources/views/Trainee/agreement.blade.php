@@ -25,17 +25,11 @@
 <div>
     <button onclick="printAgreement()" class="btn btn-primary" style="float: left; margin-top: 1%;">Print Document</button>
 
-    @auth
-        <a href="{{ route('trainee.index') }}" class="btn btn-secondary btn-custom" style="float: left; margin-top: 1%;">Back to list</a>
-    @endauth
-
-    @if (auth()->user() && auth()->user()->id !== 1) <!-- Assuming admin ID is 1 -->
-            <a href="/home" class="btn btn-secondary btn-custom" style="float: left; margin-top: 1%;">
-                <i class="fas fa-arrow-left mr-2"></i>Back
-            </a>
-    @endif
+    <!-- Conditionally set the href based on whether the user is authenticated or not -->
+    <a href="{{ auth()->check() ? route('trainee.index') : url('/home') }}" class="btn btn-secondary btn-custom" style="float: left; margin-top: 1%;">
+    <i class="fas fa-arrow-left mr-2"></i> Back
+    </a>
 </div>
-
     
     <div id="agreement-content">
     <img src="{{ asset('storage/trainee_photos/' . $trainee->photo) }}" alt="Trainee Photo" style="width: 100px; height: 100px; margin-left: 75%;">

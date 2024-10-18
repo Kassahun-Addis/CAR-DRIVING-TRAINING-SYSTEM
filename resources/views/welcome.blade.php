@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">                                                                                                                       
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
 
     <!-- Include Bootstrap CSS -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -111,8 +111,6 @@
         }
 
 
-
-
          /* Ensure the header is fixed */
 .header {
     position: fixed;
@@ -121,6 +119,7 @@
     width: 100%;
     z-index: 50;
 }
+
 
 /* Prevent main content from hiding behind the fixed header */
 .main-content {
@@ -162,6 +161,7 @@
   /* Hide sidebar off-screen on small devices */
   @media (max-width: 768px) {
         #sidebar {
+            margin-top:-27px;
             transform: translateX(-100%); /* Hide sidebar off-screen */
         }
         #sidebar.active {
@@ -184,6 +184,23 @@
     padding-left: 0;
     list-style-type: none;
 }
+
+/* Header font size for small devices */
+@media (max-width: 768px) {
+        .header h2 {
+            font-size: 1.25rem; /* Adjust this value as needed */
+        }
+
+        /* Show user info in sidebar */
+        .sidebar-user-info {
+            display: block;
+        }
+
+        /* Hide user info in header */
+        .header-user-info {
+            display: none;
+        }
+    }
 </style>
 </head>
 <body>
@@ -210,7 +227,11 @@
             @endif
         </div>
     </div>
-    <!-- ... existing code ... -->
+    <div>
+        <button id="menu-toggle" class="text-white focus:outline-none hidden">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </div>
 </header>
   <!-- Sidebar Section -->
 <div id="sidebar" class="sidebar bg-gray-800 text-white w-64 h-screen fixed z-10 shadow-lg">
@@ -244,40 +265,22 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const menuToggle = document.getElementById('menu-toggle');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        const categoryToggle = document.getElementById('category-toggle');
-        const categorySubmenu = document.getElementById('category-submenu');
-        const orderToggle = document.getElementById('order-toggle');
-        const orderSubmenu = document.getElementById('order-submenu');
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
 
-        // Toggle the sidebar for mobile devices
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active'); // Show/hide sidebar
-            overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none'; // Show/hide overlay
-        });
-
-        // Toggle the category submenu
-        categoryToggle.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent default anchor behavior
-            categorySubmenu.classList.toggle('hidden'); // Show/hide submenu
-        });
-
-        orderToggle.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent default anchor behavior
-            orderSubmenu.classList.toggle('hidden'); // Show/hide submenu
-        });
-
-        // Close sidebar when clicking on overlay
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('active'); // Hide sidebar
-            overlay.style.display = 'none'; // Hide overlay
-            categorySubmenu.classList.add('hidden'); // Ensure submenu is hidden
-            orderSubmenu.classList.add('hidden'); // Ensure submenu is hidden
-
-        });
+    // Toggle the sidebar for mobile devices
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active'); // Show/hide sidebar
+        overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none'; // Show/hide overlay
     });
+
+    // Close sidebar when clicking on overlay
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active'); // Hide sidebar
+        overlay.style.display = 'none'; // Hide overlay
+    });
+});
 </script>
 
 </body>

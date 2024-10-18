@@ -107,6 +107,9 @@ Route::get('/welcome', [AdminDashboardController::class, 'index'])
     Route::put('/payments/update/{payment}', [PaymentController::class, 'update'])->name('payments.update');
     Route::delete('/payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
     Route::get('/payments/print/{payment}', [PaymentController::class, 'print'])->name('payments.print');
+    Route::get('payments/{payment}/pay_remaining', [PaymentController::class, 'payRemaining'])->name('payments.pay_remaining');
+    Route::post('payments/{payment}/pay_remaining_process', [PaymentController::class, 'processRemainingPayment'])->name('payments.pay_remaining_process');
+    Route::get('payments/{payment}/history', [PaymentController::class, 'showPaymentHistory'])->name('payments.history');
 });
 
 // Bank Routes

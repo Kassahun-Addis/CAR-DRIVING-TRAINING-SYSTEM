@@ -79,7 +79,9 @@
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary btn-custom">Save</button>
                 <button type="reset" class="btn btn-secondary btn-custom">Reset</button>
+                @if (!request()->routeIs('attendance.index'))
                 <a href="{{ route('attendance.index') }}" class="btn btn-secondary btn-custom">Back to list</a>
+               @endif
             </div>
         </form>
     </div>

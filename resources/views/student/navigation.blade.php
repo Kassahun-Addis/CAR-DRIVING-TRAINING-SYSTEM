@@ -38,6 +38,7 @@
     /* Hide sidebar off-screen on small devices */
     @media (max-width: 768px) {
         #sidebar {
+            margin-top:-18px;
             transform: translateX(-100%); /* Hide sidebar off-screen */
         }
         #sidebar.active {
@@ -131,36 +132,50 @@
 
 <!-- Sidebar Section -->
 <div id="sidebar" class="sidebar bg-gray-800 text-white w-64 h-screen fixed z-10 shadow-lg">
-    <ul class="mt-0 space-y-1 pl-0 list-none">
-        <li><a href="/home" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
-        <li><a href="{{ route('attendance.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Fill Attendance</a></li>
+    @if (Auth::guard('trainee')->check())
+        <ul class="mt-0 space-y-1 pl-0 list-none">
+            <!-- Always show Dashboard -->
+            <li><a href="/home" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+            
+            <!-- Check if the current route is for filling attendance -->
+            @if (!request()->routeIs('attendance.create'))
+                <li><a href="{{ route('attendance.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Fill Attendance</a></li>
+            @endif
 
-        @auth
-            <li><a href="{{ route('trainee.agreement', ['id' => auth()->user()->id]) }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>View Agreement</a></li>
-        @endauth
+            <!-- Show View Agreement link only if not in the attendance create route -->
+            @auth
+                @if (!request()->routeIs('attendance.create'))
+                    <li><a href="{{ route('trainee.agreement', ['id' => auth()->user()->id]) }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>View Agreement</a></li>
+                @endif
+            @endauth
 
-        <!-- User Info & Logout (Visible only on small devices) -->
-        <li class="sidebar-user-info block md:hidden">
-            <a href="#" class="flex items-center p-2 hover:bg-gray-700 rounded" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                @if (Auth::guard('trainee')->check())
-                    @if ($trainee->photo)
-                        <img 
-                            src="{{ asset('storage/trainee_photos/' . $trainee->photo) }}" 
-                            alt="{{ $trainee->full_name }}" 
-                            style="width: 28px; height: 28px; object-fit: cover;" 
-                            class="rounded-full mr-1">
+            <!-- User Info & Logout (Visible only on small devices) -->
+            <li class="sidebar-user-info block md:hidden">
+                <a href="#" class="flex items-center p-2 hover:bg-gray-700 rounded" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    @if (Auth::guard('trainee')->check())
+                        @if ($trainee->photo)
+                            <img 
+                                src="{{ asset('storage/trainee_photos/' . $trainee->photo) }}" 
+                                alt="{{ $trainee->full_name }}" 
+                                style="width: 28px; height: 28px; object-fit: cover;" 
+                                class="rounded-full mr-1">
+                        @else
+                            <i class="fas fa-user mr-1"></i>
+                        @endif
+                        <span>{{ $trainee->full_name }}</span>
                     @else
                         <i class="fas fa-user mr-1"></i>
+                        <span>Guest</span>
                     @endif
-                    <span>{{ $trainee->full_name }}</span>
-                @else
-                    <i class="fas fa-user mr-1"></i>
-                    <span>Guest</span>
-                @endif
-            </a>
-            <a href="#" class="text-white btn btn-danger btn-sm" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
-        </li>
-    </ul>
+                </a>
+                <a href="#" class="text-white btn btn-danger btn-sm" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+            </li>
+        </ul>
+    @else
+        <ul class="mt-0 space-y-1 pl-0 list-none">
+            <li><a href="/welcome" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+        </ul>
+    @endif
 </div>
 
 <!-- Overlay for mobile menu -->
@@ -173,26 +188,11 @@
         const menuToggle = document.getElementById('menu-toggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        const categoryToggle = document.getElementById('category-toggle');
-        const categorySubmenu = document.getElementById('category-submenu');
-        const orderToggle = document.getElementById('order-toggle');
-        const orderSubmenu = document.getElementById('order-submenu');
 
         // Toggle the sidebar for mobile devices
         menuToggle.addEventListener('click', () => {
             sidebar.classList.toggle('active'); // Show/hide sidebar
             overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none'; // Show/hide overlay
-        });
-
-        // Toggle the category submenu
-        categoryToggle.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent default anchor behavior
-            categorySubmenu.classList.toggle('hidden'); // Show/hide submenu
-        });
-
-        orderToggle.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent default anchor behavior
-            orderSubmenu.classList.toggle('hidden'); // Show/hide submenu
         });
 
         // Close sidebar when clicking on overlay
