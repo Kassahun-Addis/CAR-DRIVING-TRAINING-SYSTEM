@@ -19,17 +19,7 @@
             <div class="row">
                 <div class="col-12">
 
-                    <div class="form-group">
-                        <label for="trainee_name">Trainee Name:</label>
-                        <input type="text" class="form-control" id="trainee_name" name="trainee_name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="trainer_name">Trainer Name:</label>
-                        <input type="text" class="form-control" id="trainer_name" name="trainer_name" required>
-                    </div>
-
-                    <div class="form-group">
+                <div class="form-group">
                         <label for="start_date">Start Date:</label>
                         <input type="date" class="form-control" id="start_date" name="start_date" required>
                     </div>
@@ -40,26 +30,33 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="category_id">Car Category:</label>
-                        <select class="form-control" id="category_id" name="category_id" required>
-                            <option value="">Select a category</option>
-                            @foreach($carCategories as $category)
-                                <option value="{{ $category->id }}">{{ $category->car_category_name }}</option>
+                        <label for="trainee_name">Trainee Name:</label>
+                        <input type="text" class="form-control" id="trainee_name" name="trainee_name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trainer_name">Trainer Name:</label>
+                        <select class="form-control" id="trainer_name" name="trainer_name" required>
+                            <option value="">Select a Trainer</option>
+                            @foreach($trainers as $trainer)
+                                <option value="{{ $trainer->id }}">{{ $trainer->trainer_name }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div class="form-group">
+                        <label for="category_id">Car Category:</label>
+                        <input type="text" class="form-control" id="category_id" name="category_id" readonly>
+                    </div>
+
+                    <div class="form-group">
                         <label for="plate_no">Plate No:</label>
-                        <select name="plate_no" id="plate_no" required>
-                            <option value="">Select a plate number</option>
-                            <!-- Options will be populated dynamically based on the selected category -->
-                        </select>
+                        <input type="text" class="form-control" id="plate_no" name="plate_no" readonly>
                     </div>
 
                     <div class="form-group">
                         <label for="car_name">Car Name:</label>
-                        <input type="text" class="form-control" id="car_name" name="car_name" required>
+                        <input type="text" class="form-control" id="car_name" name="car_name" readonly>
                     </div>
 
                 </div>
@@ -76,40 +73,31 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    document.getElementById('category_id').addEventListener('change', function() {
-    var categoryId = this.value;
-    var plateSelect = document.getElementById('plate_no');
-    plateSelect.innerHTML = ''; // Clear previous options
+    // Add an event listener for when a trainer is selected
+    $('#trainer_name').on('change', function() {
+        var trainerId = $(this).val(); // Get the selected trainer ID
 
-    if (categoryId) {
-        fetch(`/car-category/${categoryId}/plates-with-count`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.length === 0) {
-                    var option = document.createElement('option');
-                    option.value = '';
-                    option.textContent = 'No plates available';
-                    plateSelect.appendChild(option);
-                    return; // Exit the function
-                }
+        // Clear previous values
+        $('#category_id').val('');
+        $('#plate_no').val('');
+        $('#car_name').val('');
 
-                data.forEach(function(item) {
-                    var option = document.createElement('option');
-                    option.value = item.plate_no; // Set the value to the actual plate number
-                    option.textContent = `${item.display}`; // Use the display field
-                    plateSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching plates:', error);
+        if (trainerId) {
+            // Make an AJAX request to fetch the trainer details
+            $.ajax({
+                url: '/trainers/' + trainerId + '/details', // API endpoint to fetch trainer details
+                type: 'GET',
+                success: function(data) {
+                    // Fill the fields with the fetched data
+                    $('#category_id').val(data.category);
+                    $('#plate_no').val(data.plate_no);
+                    $('#car_name').val(data.car_name);
+                },
+                error: function(error) {
+                    console.error('Error fetching trainer details:', error);
+                }
             });
-    }
-});
+        }
+    });
 </script>
-
 @endsection

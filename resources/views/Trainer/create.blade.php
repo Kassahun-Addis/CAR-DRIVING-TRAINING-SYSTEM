@@ -20,8 +20,8 @@
         <div class="col-12">
 
         <div class="form-group">
-            <label for="name">Trainer Name:</label>
-            <input type="text" class="form-control" id="name" name="name" required>
+            <label for="trainer_name">Trainer Name:</label>
+            <input type="text" class="form-control" id="trainer_name" name="trainer_name" required>
         </div>
 
         <div class="form-group">

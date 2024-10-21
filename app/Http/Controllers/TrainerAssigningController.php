@@ -7,31 +7,57 @@ use App\Models\CarCategory;
 use App\Models\TrainerAssigning;
 use Illuminate\Validation\Rule;
 use App\Models\TrainingCar;
+use App\Models\Trainer;
 
 
 class TrainerAssigningController extends Controller
 {
+
+    // Method to fetch trainer details based on the trainer's ID
+    // public function getTrainerDetails($id)
+    // {
+    //     // Find the trainer by ID
+    //     $trainer = Trainer::with('category')->find($id);
+
+    //     if ($trainer) {
+    //         return response()->json([
+    //             'category' => $trainer->category->car_category_name, // Assuming a relationship with category
+    //             'plate_no' => $trainer->plate_no,
+    //             'car_name' => $trainer->car_name,
+    //         ]);
+    //     }
+
+    //     return response()->json(['error' => 'Trainer not found'], 404);
+    // }
+
     // Display a listing of the training cars
     public function index(Request $request)
-    {
-        $search = $request->input('search'); // Get the search term
-        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+{
+    \Log::info('Request data:', $request->all());
 
-        // Query the banks with search and pagination
-         $trainers_assigning = TrainerAssigning::when($search, function ($query) use ($search) {
+    $search = $request->input('search');
+    $perPage = $request->input('perPage', 10);
+
+    // Eager load the category relationship
+    $trainers_assigning = TrainerAssigning::with('category')
+        ->when($search, function ($query) use ($search) {
             return $query->where('trainee_name', 'like', '%' . $search . '%')
-                        ->orWhere('trainer_name', 'like', '%' . $search . '%');
+                         ->orWhere('trainer_name', 'like', '%' . $search . '%');
         })->paginate($perPage);
-        return view('trainer_assigning.index', compact('trainers_assigning'));
-   }
 
-    // Show the form for creating a new trainer
+    \Log::info('Trainers Assigning:', $trainers_assigning->toArray());
+
+    return view('trainer_assigning.index', compact('trainers_assigning'));
+}
+
+    // Show the form for creating a new trainer 
     public function create()
     {
+        $trainers = Trainer::all();
         //$trainingCars = TrainingCar::all(); // Fetch all training cars
         $carCategories = CarCategory::all(); // Fetch all car categories
         $plates = []; // Initialize plates as an empty array
-        return view('trainer_assigning.create', compact('carCategories')); // Return create view with car categories
+        return view('trainer_assigning.create', compact('carCategories', 'trainers')); // Return create view with car categories
         //return view('trainer_assigning.create');
     }
 
@@ -40,23 +66,32 @@ class TrainerAssigningController extends Controller
 {
     \Log::info('Incoming request data:', $request->all());
 
+    // Validate the request
     $request->validate([
         'trainee_name' => 'required|string|max:255',
         'trainer_name' => 'required|string|max:255',
         'start_date' => 'required|date',
         'end_date' => 'required|date|after_or_equal:start_date',
-        'category_id' => 'required|exists:car_categories,id', // Ensure the category exists
+        'category_id' => 'required|string|exists:trainers,category', // Validate against car_category_name
         'plate_no' => 'required|numeric', 
-        // 'plate_no' => 'required|numeric|unique:trainer_assignings,plate_no',
         'car_name' => 'required|string|max:255',
     ]);
 
+    // Find the category id based on the category name
+    $categoryId = \DB::table('trainers')->where('category', $request->category_id)->value('id');
+
+    // Check if the category ID was found
+    if (!$categoryId) {
+        return redirect()->back()->withErrors(['category_id' => 'Selected category ID is invalid.']);
+    }
+
+    // Create the TrainerAssigning record
     $trainer_assigning = TrainerAssigning::create([
         'trainee_name' => $request->trainee_name,
         'trainer_name' => $request->trainer_name,
         'start_date' => $request->start_date,
         'end_date' => $request->end_date,
-        'category_id' => $request->category_id, // Ensure this references the correct field
+        'category_id' => $categoryId, // Use the found category id
         'plate_no' => $request->plate_no,
         'car_name' => $request->car_name,
     ]);

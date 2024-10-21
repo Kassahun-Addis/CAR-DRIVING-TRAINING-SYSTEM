@@ -141,6 +141,7 @@ Route::put('/trainer_assigning/{trainer_assigning}', [TrainerAssigningController
 Route::delete('/trainer_assigning/{trainer_assigning}', [TrainerAssigningController::class, 'destroy'])->name('trainer_assigning.destroy'); // Delete a specific bank
 Route::get('/car-category/{categoryId}/plates', [TrainerAssigningController::class, 'getPlatesByCategory']); // New route for fetching plates
 Route::get('/car-category/{categoryId}/plates-with-count', [TrainerAssigningController::class, 'getPlatesWithCount']);
+Route::get('/trainers/{trainer}/details', [TrainerController::class, 'getDetails']);
 
 
 // Auth routes (if you are using built-in authentication)

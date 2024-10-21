@@ -11,7 +11,7 @@ class Trainer extends Model
 
     // Specify which attributes are mass assignable
     protected $fillable = [
-        'name',
+        'trainer_name',
         'phone_number',
         'email',
         'experience',

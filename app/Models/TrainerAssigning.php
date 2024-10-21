@@ -23,4 +23,10 @@ class TrainerAssigning extends Model
         'plate_no',
         'car_name',
     ];
+
+    // Define the relationship to the Category model
+    public function category()
+    {
+        return $this->belongsTo(CarCategory::class, 'category_id'); // Adjust 'category_id' if your foreign key is named differently
+    }
 }

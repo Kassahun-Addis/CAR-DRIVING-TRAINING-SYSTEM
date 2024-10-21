@@ -76,6 +76,7 @@
                 <th>Phone Number</th>
                 <th>Email</th>
                 <th>Experience (Years)</th>
+                <th>Category</th>
                 <th>Car Name</th>
                 <th>Plate No</th>
                 <!-- <th>Training Car</th> -->
@@ -86,14 +87,15 @@
             @foreach($trainers as $key => $trainer)
                 <tr>
                     <td>{{ $key + 1 }}</td>
-                    <td>{{ $trainer->name }}</td>
+                    <td>{{ $trainer->trainer_name }}</td>
                     <td>{{ $trainer->phone_number }}</td>
                     <td>{{ $trainer->email }}</td>
                     <td>{{ $trainer->experience }}</td>
+                    <td>{{ $trainer->category }}</td>
                     <td>{{ $trainer->car_name }}</td>
                     <td>{{ $trainer->plate_no }}</td>
                     <!-- <td>{{ $trainer->trainingCar ? $trainer->trainingCar->name : 'N/A' }}</td> -->
-                    <td>
+                    <td class="text-nowrap">
                         <a href="{{ route('trainers.edit', $trainer->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <form action="{{ route('trainers.destroy', $trainer->id) }}" method="POST" style="display:inline;">
                             @csrf

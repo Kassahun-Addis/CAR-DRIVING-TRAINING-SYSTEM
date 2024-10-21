@@ -9,6 +9,23 @@ use App\Models\CarCategory; // Import the CarCategory model
 
 class TrainerController extends Controller
 {
+
+    public function getDetails($id)
+    {
+        // Fetch the trainer's details from the database
+        $trainer = Trainer::find($id);
+    
+        if ($trainer) {
+            return response()->json([
+                'category' => $trainer->category,
+                'plate_no' => $trainer->plate_no,
+                'car_name' => $trainer->car_name,
+            ]);
+        } else {
+            return response()->json(['error' => 'Trainer not found'], 404);
+        }
+    }
+
     // Display a listing of the training cars
     public function index(Request $request)
     {
@@ -17,7 +34,7 @@ class TrainerController extends Controller
 
         // Query the banks with search and pagination
          $trainers = Trainer::when($search, function ($query) use ($search) {
-            return $query->where('name', 'like', '%' . $search . '%')
+            return $query->where('trainer_name', 'like', '%' . $search . '%')
                         ->orWhere('phone_number', 'like', '%' . $search . '%');
         })->paginate($perPage);
         return view('trainer.index', compact('trainers'));
@@ -39,7 +56,7 @@ class TrainerController extends Controller
     \Log::info('Incoming request data:', $request->all());
 
     $request->validate([
-        'name' => 'required|string|max:255',
+        'trainer_name' => 'required|string|max:255',
         'phone_number' => 'required|string|max:20',
         'email' => 'required|email|unique:trainers,email',
         'experience' => 'required|integer',
@@ -48,15 +65,22 @@ class TrainerController extends Controller
         'car_name' => 'required|string|max:255', // Validate car make
     ]);
 
+    // Fetch the car category name based on the provided category ID
+    $carCategory = \DB::table('car_categories')->where('id', $request->category)->first();
+
+    if (!$carCategory) {
+        return redirect()->back()->withErrors(['category' => 'Invalid car category selected.']);
+    }
+
     // Create a new Trainer
     $trainer = Trainer::create([
-        'name' => $request->name,
+        'trainer_name' => $request->trainer_name,
         'phone_number' => $request->phone_number,
         'email' => $request->email,
         'experience' => $request->experience,
         'plate_no' => $request->plate_no,
         'car_name' => $request->car_name, // Store the car make
-        'category' => $request->category, // Store the selected category
+        'category' => $carCategory->car_category_name, // Save the car category name
     ]);
 
     return redirect()->route('trainers.index')->with('success', 'Trainer registered successfully!');
@@ -74,7 +98,7 @@ class TrainerController extends Controller
     public function update(Request $request, Trainer $trainer)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'trainer_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
             'email' => 'required|email|unique:trainers,email,' . $trainer->id,
             'experience' => 'required|integer',

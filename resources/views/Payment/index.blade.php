@@ -71,7 +71,7 @@
       <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Payment ID</th>
+                <th>No</th>
                 <th>Full Name</th>
                 <th>TIN No</th>
                 <th>Payment Date</th>
@@ -87,10 +87,10 @@
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach($payments as $payment)
+           <tbody>
+              @foreach($payments as $key => $payment)
                 <tr>
-                    <td>{{ $payment->payment_id }}</td>
+                    <td>{{ $key + 1 }}</td>
                     <td>{{ $payment->full_name }}</td>
                     <td>{{ $payment->tin_no }}</td>
                     <td>{{ $payment->payment_date }}</td>

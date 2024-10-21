@@ -2,8 +2,13 @@
 
 @section('content')
 <div class="container">
-    <h2>Payment History for {{ $payment->full_name }}</h2>
+<div style="display: flex; justify-content: space-between; align-items: center; margin: 10px -8px 10px 0;">
+    <h3>Payment History for {{ $payment->full_name }}</h3>
+    <a href="{{ route('payments.index') }}" class="btn btn-secondary btn-custom">Back</a>
+</div>
 
+<!-- Responsive table wrapper -->
+<div class="table-responsive">
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -28,5 +33,6 @@
             @endforeach
         </tbody>
     </table>
+</div>
 </div>
 @endsection

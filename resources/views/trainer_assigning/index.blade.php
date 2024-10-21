@@ -76,7 +76,7 @@
                 <th>Trainer Name</th>
                 <th>Start Date</th>
                 <th>End Date</th>
-                <!-- <th>Category Id</th> -->
+                <th>Category Id</th>
                 <th>Car Name</th>
                 <th>Plate No</th>
                 <!-- <th>Training Car</th> -->
@@ -91,7 +91,7 @@
                     <td>{{ $trainer_assigning->trainer_name }}</td>
                     <td>{{ $trainer_assigning->start_date }}</td>
                     <td>{{ $trainer_assigning->end_date }}</td>
-                    <!-- <td>{{ $trainer_assigning->category_id }}</td> -->
+                    <td>{{ $trainer_assigning->category->car_category_name ?? 'N/A' }}</td>
                     <td>{{ $trainer_assigning->car_name }}</td>
                     <td>{{ $trainer_assigning->plate_no }}</td>
                     <td>
