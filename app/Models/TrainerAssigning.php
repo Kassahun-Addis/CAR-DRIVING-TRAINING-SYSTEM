@@ -8,25 +8,30 @@ use Illuminate\Database\Eloquent\Model;
 class TrainerAssigning extends Model
 {
     use HasFactory;
-    protected $table = 'trainer_assignings'; // Table name
-    protected $primaryKey = 'assigning_id'; // Specify the primary key
-    public $incrementing = true; // Indicates that the ID is auto-incrementing
-    protected $keyType = 'int'; // The data type of the primary key
 
+    protected $table = 'trainer_assignings'; 
+    protected $primaryKey = 'assigning_id'; 
+    public $incrementing = true; 
+    protected $keyType = 'int'; 
 
     protected $fillable = [
         'trainee_name',
-        'trainer_name',
+        'trainer_name', // This should match with the Trainer's trainer_name
         'start_date',
         'end_date',
-        'category_id', // Correctly reference the column name
+        'category_id',
         'plate_no',
         'car_name',
     ];
 
-    // Define the relationship to the Category model
+    // Relationship to the Category model
     public function category()
     {
-        return $this->belongsTo(CarCategory::class, 'category_id'); // Adjust 'category_id' if your foreign key is named differently
+        return $this->belongsTo(Trainer::class, 'category_id');
     }
+
+//     public function trainer()
+// {
+//     return $this->belongsTo(Trainer::class, 'trainer_id'); // Use trainer_id as the foreign key
+// }
 }

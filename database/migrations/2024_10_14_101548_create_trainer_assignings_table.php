@@ -16,11 +16,11 @@ class CreateTrainerAssigningsTable extends Migration
             $table->date('end_date'); // End date of the assignment
             $table->string('plate_no'); // Plate number of the car
             $table->string('car_name'); // Car name
-            $table->unsignedBigInteger('category_id');  // Foreign key for category
+            $table->string('category_id');  // Foreign key for category
             $table->timestamps(); // Created at and updated at timestamps
 
             // Foreign key constraint
-            $table->foreign('category_id')->references('id')->on('car_categories')->onDelete('cascade');
+            // $table->foreign('category_id')->references('id')->on('car_categories')->onDelete('cascade');
         });
     }
 

@@ -40,8 +40,17 @@
         </div>
 
         <div class="form-group">
+            <label for="training_type">Training Type</label>
+            <select name="training_type" id="training_type" class="form-control" required>
+                <option value="Theoretical">Theoretical</option>
+                <option value="Practical">Practical</option>
+                <option value="Both">Both</option>
+            </select>
+        </div>
+
+        <div class="form-group car-fields">
             <label for="category">Car Category:</label>
-            <select class="form-control" id="category" name="category" required>
+            <select class="form-control" id="category" name="category">
                 <option value="">Select a category</option>
                 @foreach($carCategories as $category)
                     <option value="{{ $category->id }}">{{ $category->car_category_name }}</option>
@@ -49,17 +58,15 @@
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group car-fields">
             <label for="car_name">Vehicle:</label>
-            <input type="text" class="form-control" id="car_name" name="car_name" required>
+            <input type="text" class="form-control" id="car_name" name="car_name">
         </div>
 
-        <div class="form-group">
+        <div class="form-group car-fields">
             <label for="plate_no">Plate No:</label>
-            <input type="text" class="form-control" id="plate_no" name="plate_no" required>
+            <input type="text" class="form-control" id="plate_no" name="plate_no">
         </div>
- <!-- Hidden field for car_id -->
- <!-- <input type="hidden" id="car_id" name="car_id" value=""> -->
 
     </div>
 </div>
@@ -74,5 +81,27 @@
     </div>
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const trainingType = document.getElementById('training_type');
+        const carFields = document.querySelectorAll('.car-fields');
+
+        // Function to show or hide car fields
+        function toggleCarFields() {
+            if (trainingType.value === 'Theoretical') {
+                carFields.forEach(field => field.style.display = 'none');
+            } else {
+                carFields.forEach(field => field.style.display = 'block');
+            }
+        }
+
+        // Initially check on page load
+        toggleCarFields();
+
+        // Add event listener for changes in training type
+        trainingType.addEventListener('change', toggleCarFields);
+    });
+</script>
 
 @endsection

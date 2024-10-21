@@ -22,8 +22,8 @@
                 <div class="col-12">
 
                     <div class="form-group">
-                        <label for="name">Trainer Name:</label>
-                        <input type="text" class="form-control" id="name" name="name" value="{{ $trainer->name }}" required>
+                        <label for="trainer_name">Trainer Name:</label>
+                        <input type="text" class="form-control" id="trainer_name" name="trainer_name" value="{{ $trainer->trainer_name }}" required>
                     </div>
 
                     <div class="form-group">
@@ -42,8 +42,17 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="training_type">Training Type:</label>
+                        <select name="training_type" id="training_type" class="form-control" required>
+                            <option value="Theoretical" {{ $trainer->training_type == 'Theoretical' ? 'selected' : '' }}>Theoretical</option>
+                            <option value="Practical" {{ $trainer->training_type == 'Practical' ? 'selected' : '' }}>Practical</option>
+                            <option value="Both" {{ $trainer->training_type == 'Both' ? 'selected' : '' }}>Both</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group car-fields">
                         <label for="category">Car Category:</label>
-                        <select class="form-control" id="category" name="category" required>
+                        <select class="form-control" id="category" name="category">
                             <option value="">Select a category</option>
                             @foreach($carCategories as $category)
                                 <option value="{{ $category->id }}" {{ $category->id == $trainer->category ? 'selected' : '' }}>
@@ -53,17 +62,16 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group car-fields">
                         <label for="car_name">Vehicle:</label>
-                        <input type="text" class="form-control" id="car_name" name="car_name" value="{{ $trainer->car_name }}" required>
+                        <input type="text" class="form-control" id="car_name" name="car_name" value="{{ $trainer->car_name }}">
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group car-fields">
                         <label for="plate_no">Plate No:</label>
-                        <input type="text" class="form-control" id="plate_no" name="plate_no" value="{{ $trainer->plate_no }}" required>
+                        <input type="text" class="form-control" id="plate_no" name="plate_no" value="{{ $trainer->plate_no }}">
                     </div>
 
-                  
                 </div>
             </div>
 
@@ -75,4 +83,26 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const trainingType = document.getElementById('training_type');
+        const carFields = document.querySelectorAll('.car-fields');
+
+        // Function to show or hide car fields
+        function toggleCarFields() {
+            if (trainingType.value === 'Theoretical') {
+                carFields.forEach(field => field.style.display = 'none');
+            } else {
+                carFields.forEach(field => field.style.display = 'block');
+            }
+        }
+
+        // Initially check on page load
+        toggleCarFields();
+
+        // Add event listener for changes in training type
+        trainingType.addEventListener('change', toggleCarFields);
+    });
+</script>
 @endsection

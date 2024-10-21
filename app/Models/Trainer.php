@@ -9,15 +9,20 @@ class Trainer extends Model
 {
     use HasFactory;
 
-    // Specify which attributes are mass assignable
     protected $fillable = [
         'trainer_name',
         'phone_number',
         'email',
         'experience',
+        'training_type',
+        'category', 
+        'car_name',
         'plate_no',
-        //'car_id',      // Include car_id if you are using it
-        'car_name',    // Include car_name to allow mass assignment
-        'category',     // Include category if you are using it
     ];
+
+    // Define the relationship with TrainerAssigning
+//     public function trainerAssignings()
+// {
+//     return $this->hasMany(TrainerAssigning::class, 'trainer_id'); // Use trainer_id as the foreign key
+// }
 }

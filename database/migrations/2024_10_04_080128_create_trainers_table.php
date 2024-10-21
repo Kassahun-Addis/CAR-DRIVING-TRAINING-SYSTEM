@@ -14,9 +14,11 @@ class CreateTrainersTable extends Migration
         $table->string('phone_number', 20); // Trainer's phone number
         $table->string('email')->unique(); // Trainer's email, must be unique
         $table->integer('experience'); // Trainer's years of experience
-        $table->string('plate_no'); // Trainer's area of plate number
-        $table->string('car_name'); // Car make (input field)
-        $table->string('category'); // Change this to store the car category name
+        $table->string('training_type'); // Training type (Theoretical, Practical, Both)
+        $table->string('car_name')->nullable(); // Car name (input field, nullable)
+        $table->string('plate_no')->nullable(); // Plate number (nullable)
+        $table->string('category')->nullable();; // Change this to store the car category name
+       //$table->unsignedBigInteger('category_id')->nullable(); // Foreign key for car category
         $table->timestamps(); // Created at and updated at timestamps
     });
 }

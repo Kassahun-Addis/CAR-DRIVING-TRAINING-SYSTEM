@@ -38,8 +38,12 @@
                         <label for="trainer_name">Trainer Name:</label>
                         <select class="form-control" id="trainer_name" name="trainer_name" required>
                             <option value="">Select a Trainer</option>
-                            @foreach($trainers as $trainer)
-                                <option value="{{ $trainer->id }}">{{ $trainer->trainer_name }}</option>
+                            @foreach($sortedTrainers as $trainer)
+                                @if($trainer->training_type === 'Practical' || $trainer->training_type === 'Both')
+                                    <option value="{{ $trainer->trainer_name }}">
+                                        {{ $trainer->trainer_name }} ({{ $trainerCounts[$trainer->trainer_name] ?? 0 }} Trainees)
+                                    </option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -71,21 +75,20 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Add an event listener for when a trainer is selected
+    // Call the function to populate the dropdown on page load
     $('#trainer_name').on('change', function() {
-        var trainerId = $(this).val(); // Get the selected trainer ID
+        var trainerName = $(this).val(); // Get the selected trainer name
 
         // Clear previous values
         $('#category_id').val('');
         $('#plate_no').val('');
         $('#car_name').val('');
 
-        if (trainerId) {
-            // Make an AJAX request to fetch the trainer details
+        if (trainerName) {
+            // Make an AJAX request to fetch the trainer details using the trainer name
             $.ajax({
-                url: '/trainers/' + trainerId + '/details', // API endpoint to fetch trainer details
+                url: '/trainers/' + encodeURIComponent(trainerName) + '/details',
                 type: 'GET',
                 success: function(data) {
                     // Fill the fields with the fetched data

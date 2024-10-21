@@ -9,21 +9,23 @@ use App\Models\CarCategory; // Import the CarCategory model
 
 class TrainerController extends Controller
 {
-
-    public function getDetails($id)
+    public function getDetails(Request $request, $trainerName)
     {
-        // Fetch the trainer's details from the database
-        $trainer = Trainer::find($id);
-    
-        if ($trainer) {
-            return response()->json([
-                'category' => $trainer->category,
-                'plate_no' => $trainer->plate_no,
-                'car_name' => $trainer->car_name,
-            ]);
-        } else {
+        \Log::info('Trainer Name:', ['trainer_name' => $trainerName]);
+
+        // Fetch the trainer's details by their name
+        $trainer = Trainer::where('trainer_name', $trainerName)->first();
+
+        if (!$trainer) {
             return response()->json(['error' => 'Trainer not found'], 404);
         }
+
+        // Return the trainer's details as a JSON response
+        return response()->json([
+            'category' => $trainer->category,
+            'plate_no' => $trainer->plate_no,
+            'car_name' => $trainer->car_name,
+        ]);
     }
 
     // Display a listing of the training cars
@@ -49,26 +51,30 @@ class TrainerController extends Controller
     }
 
     
-    // Store a newly created trainer in the database
     public function store(Request $request)
 {
     // Log the incoming request data
     \Log::info('Incoming request data:', $request->all());
 
+    // Validate based on the training type
     $request->validate([
         'trainer_name' => 'required|string|max:255',
         'phone_number' => 'required|string|max:20',
         'email' => 'required|email|unique:trainers,email',
         'experience' => 'required|integer',
-        'plate_no' => 'required|string|max:255',
-        'category' => 'required|exists:car_categories,id', // Validate category ID
-        'car_name' => 'required|string|max:255', // Validate car make
+        'training_type' => 'required|string|in:Theoretical,Practical,Both',
+        // Only validate these fields if the training type is not 'Theoretical'
+        'plate_no' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
+        'category' => $request->training_type !== 'Theoretical' ? 'required|exists:car_categories,id' : 'nullable',
+        'car_name' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
     ]);
 
-    // Fetch the car category name based on the provided category ID
-    $carCategory = \DB::table('car_categories')->where('id', $request->category)->first();
+    // Fetch the car category name based on the provided category ID if applicable
+    $carCategory = $request->training_type !== 'Theoretical'
+        ? \DB::table('car_categories')->where('id', $request->category)->first()
+        : null;
 
-    if (!$carCategory) {
+    if ($request->training_type !== 'Theoretical' && !$carCategory) {
         return redirect()->back()->withErrors(['category' => 'Invalid car category selected.']);
     }
 
@@ -78,9 +84,10 @@ class TrainerController extends Controller
         'phone_number' => $request->phone_number,
         'email' => $request->email,
         'experience' => $request->experience,
-        'plate_no' => $request->plate_no,
-        'car_name' => $request->car_name, // Store the car make
-        'category' => $carCategory->car_category_name, // Save the car category name
+        'plate_no' => $request->training_type !== 'Theoretical' ? $request->plate_no : null,
+        'car_name' => $request->training_type !== 'Theoretical' ? $request->car_name : null,
+        'category' => $request->training_type !== 'Theoretical' ? $carCategory->car_category_name : null,
+        'training_type' => $request->training_type, // Save the training type
     ]);
 
     return redirect()->route('trainers.index')->with('success', 'Trainer registered successfully!');
@@ -94,35 +101,55 @@ class TrainerController extends Controller
         return view('trainer.edit', compact('trainer', 'trainingCars', 'carCategories')); // Return edit view with car categories
     }
 
-    // Update the specified trainer in the database
     public function update(Request $request, Trainer $trainer)
-    {
-        $request->validate([
-            'trainer_name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            'email' => 'required|email|unique:trainers,email,' . $trainer->id,
-            'experience' => 'required|integer',
-            'plate_no' => 'required|string|max:255',
-            'car_id' => 'required|exists:training_cars,id',
-            'category' => 'required|exists:car_categories,id', // Validate category ID
-        ]);
-    
-        $trainer->update($request->all());
-    
-        return redirect()->route('trainers.index')->with('success', 'Trainer updated successfully!');
-    }
+{
+    // Validate based on the training type
+    $request->validate([
+        'trainer_name' => 'required|string|max:255',
+        'phone_number' => 'required|string|max:20',
+        'email' => 'required|email|unique:trainers,email,' . $trainer->id,
+        'experience' => 'required|integer',
+        'training_type' => 'required|string|in:Theoretical,Practical,Both',
+        // Only validate these fields if the training type is not 'Theoretical'
+        'plate_no' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
+        'category' => $request->training_type !== 'Theoretical' ? 'required|exists:car_categories,id' : 'nullable',
+        'car_name' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
+    ]);
 
-    // Remove the specified trainer from the database
-    public function destroy(Trainer $trainer)
-    {
-        $trainer->delete(); // Delete the trainer record
-        return redirect()->route('trainers.index')->with('success', 'Trainer deleted successfully!');
-    }
+    // Fetch the car category name if applicable
+    $carCategory = $request->training_type !== 'Theoretical'
+        ? \DB::table('car_categories')->where('id', $request->category)->first()
+        : null;
+
+    // Update the Trainer
+    $trainer->update([
+        'trainer_name' => $request->trainer_name,
+        'phone_number' => $request->phone_number,
+        'email' => $request->email,
+        'experience' => $request->experience,
+        'plate_no' => $request->training_type !== 'Theoretical' ? $request->plate_no : null,
+        'car_name' => $request->training_type !== 'Theoretical' ? $request->car_name : null,
+        'category' => $request->training_type !== 'Theoretical' ? $carCategory->car_category_name : null,
+        'training_type' => $request->training_type, // Update the training type
+    ]);
+
+    return redirect()->route('trainers.index')->with('success', 'Trainer updated successfully!');
+}
 
     public function getCarsByCategory($categoryId)
 {
     $cars = TrainingCar::where('category', $categoryId)->get(['id', 'name']); // Fetch cars by category
     return response()->json($cars); // Return JSON response
+}
+
+public function destroy(Trainer $trainer)
+{
+    // Delete the trainer from the database
+    $trainer->delete();
+
+    // Redirect back to the trainers list with a success message
+    return redirect()->route('trainers.index')
+        ->with('success', 'Trainer deleted successfully.');
 }
 
 }

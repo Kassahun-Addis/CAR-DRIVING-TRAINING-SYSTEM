@@ -117,6 +117,12 @@
             padding-left: 10px;
             padding-right: -10px;
         }
+
+#success-alert {
+    opacity: 1; /* Ensure it's fully visible when shown */
+    transition: opacity 0.5s ease-out; /* Add this if not already defined */
+}
+
     </style>
 </head>
 <body>

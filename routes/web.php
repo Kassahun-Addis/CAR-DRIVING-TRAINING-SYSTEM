@@ -139,9 +139,9 @@ Route::post('/trainer_assigning', [TrainerAssigningController::class, 'store'])-
 Route::get('/trainer_assigning/{trainer_assigning}/edit', [TrainerAssigningController::class, 'edit'])->name('trainer_assigning.edit'); // Show form to edit a specific trainer_assigning
 Route::put('/trainer_assigning/{trainer_assigning}', [TrainerAssigningController::class, 'update'])->name('trainer_assigning.update'); // Update a specific trainer_assigning
 Route::delete('/trainer_assigning/{trainer_assigning}', [TrainerAssigningController::class, 'destroy'])->name('trainer_assigning.destroy'); // Delete a specific bank
-Route::get('/car-category/{categoryId}/plates', [TrainerAssigningController::class, 'getPlatesByCategory']); // New route for fetching plates
-Route::get('/car-category/{categoryId}/plates-with-count', [TrainerAssigningController::class, 'getPlatesWithCount']);
-Route::get('/trainers/{trainer}/details', [TrainerController::class, 'getDetails']);
+// Route::get('/car-category/{categoryId}/plates', [TrainerAssigningController::class, 'getPlatesByCategory']); // New route for fetching plates
+//Route::get('/trainer_assigning/trainers-with-count', [TrainerAssigningController::class, 'getTrainersWithCount']);
+Route::get('/trainers/{trainerName}/details', [TrainerController::class, 'getDetails']);
 
 
 // Auth routes (if you are using built-in authentication)

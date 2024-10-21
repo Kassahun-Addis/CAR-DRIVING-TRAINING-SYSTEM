@@ -76,6 +76,7 @@
                 <th>Phone Number</th>
                 <th>Email</th>
                 <th>Experience (Years)</th>
+                <th>Training Type</th>
                 <th>Category</th>
                 <th>Car Name</th>
                 <th>Plate No</th>
@@ -91,6 +92,7 @@
                     <td>{{ $trainer->phone_number }}</td>
                     <td>{{ $trainer->email }}</td>
                     <td>{{ $trainer->experience }}</td>
+                    <td>{{ $trainer->training_type }}</td>
                     <td>{{ $trainer->category }}</td>
                     <td>{{ $trainer->car_name }}</td>
                     <td>{{ $trainer->plate_no }}</td>
