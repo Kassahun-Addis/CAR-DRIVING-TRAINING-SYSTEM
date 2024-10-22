@@ -67,24 +67,26 @@ class TheoreticalClassController extends Controller
 
     
     public function edit(TheoreticalClass $theoreticalClass)
-    {
-         $classes = Classes::all();
-        // Fetch all trainees
-        $trainees = Trainee::all();
- 
-        // Calculate the number of trainees per class
-        $traineeCounts = TheoreticalClass::select('class_name', DB::raw('count(*) as count'))
-            ->groupBy('class_name')
-            ->pluck('count', 'class_name')
-            ->toArray();
- 
-        // Sort trainees by the count of trainees in ascending order
-        $sortedClasses = $trainees->sortBy(function($trainee) use ($traineeCounts) {
-            return $traineeCounts[$trainee->class_name] ?? 0;
-        });
- 
-        return view('theoretical_classes.edit', compact('theoreticalClass', 'sortedClasses', 'traineeCounts'));
-    }
+{
+    // Fetch all classes
+    $classes = Classes::all();
+
+    // Fetch all trainees
+    $trainees = Trainee::all(); // Ensure this is included
+
+    // Calculate the number of trainees per class
+    $traineeCounts = TheoreticalClass::select('class_name', DB::raw('count(*) as count'))
+        ->groupBy('class_name')
+        ->pluck('count', 'class_name')
+        ->toArray();
+
+    // Sort trainees by the count of trainees in ascending order
+    $sortedClasses = $trainees->sortBy(function($trainee) use ($traineeCounts) {
+        return $traineeCounts[$trainee->class_name] ?? 0;
+    });
+
+    return view('theoretical_classes.edit', compact('theoreticalClass', 'sortedClasses', 'traineeCounts', 'trainees')); // Pass the trainees variable here
+}
 
     public function update(Request $request, TheoreticalClass $theoreticalClass)
     {

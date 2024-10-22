@@ -40,19 +40,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="trainee_name">Trainee Name:</label>
-                        <input type="text" class="form-control" id="trainee_name" name="trainee_name" value="{{ $theoreticalClass->trainee_name }}" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="trainee_name">Trainee Name:</label>
-                        <select class="form-control" id="trainee_name" name="trainee_name" required>
-                            <option value=""style="width: 100%;">Select a Trainee</option>
-                            @foreach($trainees as $trainee)
-                                <option value="{{ $trainee->full_name }}">{{ $trainee->full_name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+    <label for="trainee_name">Trainee Name:</label>
+    <select class="form-control" id="trainee_name" name="trainee_name" required>
+        <option value="" style="width: 100%;">Select a Trainee</option>
+        @foreach($trainees as $trainee)
+            <option value="{{ $trainee->full_name }}">{{ $trainee->full_name }}</option>
+        @endforeach
+    </select>
+</div>
                     <div class="form-group">
                         <label for="class_name">Class Name:</label>
                         <select class="form-control" id="class_name" name="class_name" required>
