@@ -71,7 +71,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>No</th>
                 <th>Car Category Name</th>
                 <th>Actions</th>
             </tr>

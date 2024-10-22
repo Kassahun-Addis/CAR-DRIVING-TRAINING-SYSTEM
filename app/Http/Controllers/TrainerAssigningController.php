@@ -8,17 +8,14 @@ use App\Models\TrainerAssigning;
 use Illuminate\Validation\Rule;
 use App\Models\TrainingCar;
 use App\Models\Trainer;
+use App\Models\Trainee;
 use Illuminate\Support\Facades\DB;
 
 
 
 class TrainerAssigningController extends Controller
 {
-
-    // Method to fetch trainer details based on the trainer's ID
- 
-
-    // Display a listing of the training cars
+// Display a listing of the training cars
     public function index(Request $request)
 {
     \Log::info('Request data:', $request->all());
@@ -43,6 +40,9 @@ public function create()
     // Fetch all trainers
     $trainers = Trainer::all();
 
+    // Fetch all trainees
+    $trainees = Trainee::all(); // Assuming you have a Trainee model
+
     // Calculate trainerCounts
     $trainerCounts = TrainerAssigning::select('trainer_name', DB::raw('count(*) as count'))
         ->groupBy('trainer_name')
@@ -54,7 +54,7 @@ public function create()
         return $trainerCounts[$trainer->trainer_name] ?? 0;
     });
 
-    return view('trainer_assigning.create', compact('sortedTrainers', 'trainerCounts'));
+    return view('trainer_assigning.create', compact('sortedTrainers', 'trainerCounts', 'trainees'));
 }
 
 
@@ -73,14 +73,6 @@ public function create()
         'plate_no' => 'required|numeric', 
         'car_name' => 'required|string|max:255',
     ]);
-
-    // // Find the category id based on the category name
-    // $categoryId = \DB::table('trainers')->where('category', $request->category_id)->value('id');
-
-    // // Check if the category ID was found
-    // if (!$categoryId) {
-    //     return redirect()->back()->withErrors(['category_id' => 'Selected category is invalid.']);
-    // }
 
     // Create the TrainerAssigning record
     $trainer_assigning = TrainerAssigning::create([
@@ -120,21 +112,22 @@ public function edit($id)
     // Update the specified trainer in the database
 
     public function update(Request $request, TrainerAssigning $trainer_assigning)
-    {
-        $request->validate([
-            'trainee_name' => 'required|string|max:255',
-            'trainer_name' => 'required|string|max:255',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'category_id' => 'required|exists:trainers,category',
-            'plate_no' => 'required|string|max:255',
-            'car_name' => 'required|string|max:255',
-        ]);
-    
-        $trainer_assigning->update($request->all());
-    
-        return redirect()->route('trainer_assigning.index')->with('success', 'Trainer updated successfully!');
-    }
+{
+    $request->validate([
+        'trainee_name' => 'required|string|max:255',
+        'trainer_name' => 'required|string|max:255',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after_or_equal:start_date',
+        'category_id' => 'required|exists:trainers,category',
+        'plate_no' => 'required|string|max:255',
+        'car_name' => 'required|string|max:255',
+    ]);
+
+    $trainer_assigning->update($request->all());
+
+    session()->flash('success', 'Trainer assignment updated successfully!');
+    return redirect()->route('trainer_assigning.index');
+}
 
     // Remove the specified trainer from the database
     public function destroy(TrainerAssigning $trainer_assigning)

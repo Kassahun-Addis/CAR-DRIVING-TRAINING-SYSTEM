@@ -118,11 +118,6 @@
             padding-right: -10px;
         }
 
-#success-alert {
-    opacity: 1; /* Ensure it's fully visible when shown */
-    transition: opacity 0.5s ease-out; /* Add this if not already defined */
-}
-
     </style>
 </head>
 <body>
@@ -130,5 +125,6 @@
     <div class="main-content">
         @yield('content') <!-- This is where child views will insert their content -->
     </div>
+    
 </body>
 </html>

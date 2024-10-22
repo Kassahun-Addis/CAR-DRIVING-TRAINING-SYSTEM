@@ -201,6 +201,10 @@
                         <label for="receipt_no">Receipt No/የደረሰኝ ቁጥር</label>
                         <input type="text" class="form-control" id="receipt_no" name="receipt_no" value="{{ old('receipt_no', $trainee->receipt_no) }}">
                     </div>
+                    <div class="form-group">
+                        <label for="n_number">N-Number</label>
+                        <input type="text" class="form-control" id="n_number" name="n_number" value="{{ old('n_number', $trainee->n_number) }}">
+                    </div>
                 </div>
             </div>
 

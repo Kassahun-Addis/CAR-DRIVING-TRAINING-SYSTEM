@@ -20,6 +20,8 @@
         </div>
     @endif
 
+
+
     <div class="form-section">
         <form action="{{ route('trainer_assigning.update', $trainer_assigning->assigning_id) }}" method="POST">
             @csrf
@@ -43,18 +45,18 @@
                     </div>
 
                     <div class="form-group">
-    <label for="trainer_name">Trainer Name:</label>
-    <select class="form-control" id="trainer_name" name="trainer_name" required>
-        <option value="">Select a Trainer</option>
-        @foreach($sortedTrainers as $trainer)
-            @if($trainer->training_type === 'Practical' || $trainer->training_type === 'Both')
-                <option value="{{ $trainer->trainer_name }}" {{ $trainer->trainer_name == $trainer_assigning->trainer_name ? 'selected' : '' }}>
-                    {{ $trainer->trainer_name }} ({{ $trainerCounts[$trainer->trainer_name] ?? 0 }} Trainees)
-                </option>
-            @endif
-        @endforeach
-    </select>
-</div>
+                        <label for="trainer_name">Trainer Name:</label>
+                        <select class="form-control" id="trainer_name" name="trainer_name" required>
+                            <option value="">Select a Trainer</option>
+                            @foreach($sortedTrainers as $trainer)
+                                @if($trainer->training_type === 'Practical' || $trainer->training_type === 'Both')
+                                    <option value="{{ $trainer->trainer_name }}" {{ $trainer->trainer_name == $trainer_assigning->trainer_name ? 'selected' : '' }}>
+                                        {{ $trainer->trainer_name }} ({{ $trainerCounts[$trainer->trainer_name] ?? 0 }} Trainees)
+                                    </option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="form-group">
                         <label for="category_id">Car Category:</label>
@@ -83,13 +85,39 @@
     </div>
 </div>
 
+    <style>
+        #success-alert {
+            opacity: 1; 
+            transition: opacity 0.5s ease-out; 
+        }
+    </style>
 <script>
+   // Fetch car details when the trainer is selected
+document.addEventListener('DOMContentLoaded', function() {
+
+// Fetch the success alert element after the DOM has fully loaded
+var successAlert = document.getElementById('success-alert');
+
+// Log the success alert element to the console (after it has been defined)
+console.log('Script running, success alert:', successAlert);
+
+// Check if the success alert exists on the page
+if (successAlert) {
+    // Fade out the alert after 3 seconds
+    setTimeout(function() {
+        successAlert.style.opacity = '0'; // Start fade out effect
+
+        // After the fade-out completes, hide the element from view
+        setTimeout(function() {
+            successAlert.style.display = 'none'; // Hide the alert completely
+        }, 500); // Match the fade-out transition duration (0.5 seconds)
+    }, 3000); // Wait 3 seconds before starting fade out
+}
     // Fetch car details when the trainer is selected
     document.getElementById('trainer_name').addEventListener('change', function() {
         var selectedTrainer = this.value;
 
         if (selectedTrainer) {
-            // Use the existing route for fetching car details
             fetch(`/trainers/${encodeURIComponent(selectedTrainer)}/details`)
                 .then(response => response.json())
                 .then(data => {
@@ -98,7 +126,6 @@
                         document.getElementById('plate_no').value = data.plate_no;
                         document.getElementById('car_name').value = data.car_name;
                     } else {
-                        // Clear the fields if no details found
                         document.getElementById('category_id').value = '';
                         document.getElementById('plate_no').value = '';
                         document.getElementById('car_name').value = '';
@@ -111,49 +138,29 @@
     });
 
     // Pre-fill the dropdown and other fields when the page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        // Pre-fill the dropdown with the selected trainer
-        var selectedTrainer = "{{ $trainer_assigning->trainer_name }}";
-        var trainerSelect = document.getElementById('trainer_name');
+    var selectedTrainer = "{{ $trainer_assigning->trainer_name }}";
+    var trainerSelect = document.getElementById('trainer_name');
 
-        // Set the selected trainer on page load
-        if (selectedTrainer) {
-            trainerSelect.value = selectedTrainer;
+    if (selectedTrainer) {
+        trainerSelect.value = selectedTrainer;
 
-            // Fetch car details for the selected trainer
-            fetch(`/trainers/${encodeURIComponent(selectedTrainer)}/details`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data) {
-                        document.getElementById('category_id').value = data.category || "{{ $trainer_assigning->category }}";
-                        document.getElementById('plate_no').value = data.plate_no || "{{ $trainer_assigning->plate_no }}";
-                        document.getElementById('car_name').value = data.car_name || "{{ $trainer_assigning->car_name }}";
-                    } else {
-                        document.getElementById('category_id').value = "{{ $trainer_assigning->category }}";
-                        document.getElementById('plate_no').value = "{{ $trainer_assigning->plate_no }}";
-                        document.getElementById('car_name').value = "{{ $trainer_assigning->car_name }}";
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching car details:', error);
-                });
-        }
-
-        // Hide the success message after 3 seconds
-        var successAlert = document.getElementById('success-alert');
-        if (successAlert) {
-            console.log('Success alert element found:', successAlert); // Check if the alert is found
-            setTimeout(function() {
-                console.log('Hiding success alert'); // Check if this line runs
-                successAlert.style.transition = 'opacity 0.5s ease-out';
-                successAlert.style.opacity = '0'; // Start fade out
-                setTimeout(function() {
-                    successAlert.style.display = 'none'; // Remove from the document
-                }, 500); // Wait for the fade-out transition to complete
-            }, 3000); // 3000 milliseconds = 3 seconds
-        }
-    });
+        fetch(`/trainers/${encodeURIComponent(selectedTrainer)}/details`)
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    document.getElementById('category_id').value = data.category || "{{ $trainer_assigning->category }}";
+                    document.getElementById('plate_no').value = data.plate_no || "{{ $trainer_assigning->plate_no }}";
+                    document.getElementById('car_name').value = data.car_name || "{{ $trainer_assigning->car_name }}";
+                } else {
+                    document.getElementById('category_id').value = "{{ $trainer_assigning->category }}";
+                    document.getElementById('plate_no').value = "{{ $trainer_assigning->plate_no }}";
+                    document.getElementById('car_name').value = "{{ $trainer_assigning->car_name }}";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching car details:', error);
+            });
+    }
+});
 </script>
-
-
 @endsection

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>Trainer Assigning</h1>
+    <h1>Class Assigning</h1>
 
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -21,7 +21,7 @@
     @endif
     
     <div class="form-section">
-        <form action="{{ route('trainer_assigning.store') }}" method="POST">
+        <form action="{{ route('theoretical_class.store') }}" method="POST">
             @csrf
             <div class="row">
                 <div class="col-12">
@@ -47,32 +47,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="trainer_name">Trainer Name:</label>
-                        <select class="form-control" id="trainer_name" name="trainer_name" required>
-                            <option value="">Select a Trainer</option>
-                            @foreach($sortedTrainers as $trainer)
-                                @if($trainer->training_type === 'Practical' || $trainer->training_type === 'Both')
-                                    <option value="{{ $trainer->trainer_name }}"style="width: 100%;">
-                                        {{ $trainer->trainer_name }} ({{ $trainerCounts[$trainer->trainer_name] ?? 0 }} Trainees)
-                                    </option>
-                                @endif
+                        <label for="class_name">Class Name:</label>
+                        <select class="form-control" id="class_name" name="class_name" required>
+                            <option value="">Select Class with Small No of Trainee</option>
+                            @foreach($sortedClasses as $class)
+                                <option value="{{ $class->class_name }}">
+                                    {{ $class->class_name }} ({{ $classCounts[$class->class_name] ?? 0 }} Trainees)
+                                </option>
                             @endforeach
                         </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="category_id">Car Category:</label>
-                        <input type="text" class="form-control" id="category_id" name="category_id" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="plate_no">Plate No:</label>
-                        <input type="text" class="form-control" id="plate_no" name="plate_no" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="car_name">Car Name:</label>
-                        <input type="text" class="form-control" id="car_name" name="car_name" readonly>
                     </div>
 
                 </div>
@@ -81,7 +64,7 @@
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary btn-custom">Save</button>
                 <button type="reset" class="btn btn-secondary btn-custom">Reset</button>
-                <a href="{{ route('trainer_assigning.index') }}" class="btn btn-secondary btn-custom">Back to list</a>
+                <a href="{{ route('theoretical_class.index') }}" class="btn btn-secondary btn-custom">Back to list</a>
             </div>
         </form>
     </div>

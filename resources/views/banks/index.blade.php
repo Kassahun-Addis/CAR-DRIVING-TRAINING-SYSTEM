@@ -71,7 +71,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>NO</th>
                 <th>Bank Name</th>
                 <th>Actions</th>
             </tr>

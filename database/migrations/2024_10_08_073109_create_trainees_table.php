@@ -40,6 +40,7 @@ return new class extends Migration
             $table->string('education_level')->nullable();
             $table->string('blood_type');
             $table->string('receipt_no')->nullable();
+            $table->string('n_number')->nullable();
             $table->timestamps(0);
         });
     }

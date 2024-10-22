@@ -11,6 +11,8 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CarCategoryController;
+use App\Http\Controllers\TheoreticalClassController;
+use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\TrainerAssigningController;
 use App\Http\Controllers\AccountController; // Make sure to import your controller
 
@@ -132,7 +134,7 @@ Route::get('/car_category/{CarCategory}/edit', [CarCategoryController::class, 'e
 Route::put('/car_category/{CarCategory}', [CarCategoryController::class, 'update'])->name('car_category.update'); // Update a specific CarCategory
 Route::delete('/car_category/{CarCategory}', [CarCategoryController::class, 'destroy'])->name('car_category.destroy'); // Delete a specific bank
 
-// trainer_assigning Routes
+// theoretical_class Routes
 Route::get('/trainer_assigning', [TrainerAssigningController::class, 'index'])->name('trainer_assigning.index'); // List all trainer_assigning
 Route::get('/trainer_assigning/create', [TrainerAssigningController::class, 'create'])->name('trainer_assigning.create'); // Show form to create a new CarCategory
 Route::post('/trainer_assigning', [TrainerAssigningController::class, 'store'])->name('trainer_assigning.store'); // Store a new CarCategory
@@ -142,6 +144,19 @@ Route::delete('/trainer_assigning/{trainer_assigning}', [TrainerAssigningControl
 // Route::get('/car-category/{categoryId}/plates', [TrainerAssigningController::class, 'getPlatesByCategory']); // New route for fetching plates
 //Route::get('/trainer_assigning/trainers-with-count', [TrainerAssigningController::class, 'getTrainersWithCount']);
 Route::get('/trainers/{trainerName}/details', [TrainerController::class, 'getDetails']);
+
+
+Route::get('/theoretical_class', [TheoreticalClassController::class, 'index'])->name('theoretical_class.index'); // List all theoretical_class
+Route::get('/theoretical_class/create', [TheoreticalClassController::class, 'create'])->name('theoretical_class.create'); // Show form to create a new CarCategory
+Route::post('/theoretical_class', [TheoreticalClassController::class, 'store'])->name('theoretical_class.store'); // Store a new CarCategory
+Route::get('/theoretical_class/{theoreticalClass}/edit', [TheoreticalClassController::class, 'edit'])->name('theoretical_class.edit'); // Show form to edit a specific theoretical_class
+Route::put('/theoretical_class/{theoreticalClass}', [TheoreticalClassController::class, 'update'])->name('theoretical_class.update'); // Update a specific theoretical_class
+Route::delete('/theoretical_class/{theoretical_class}', [TheoreticalClassController::class, 'destroy'])->name('theoretical_class.destroy');// Route::get('/car-category/{categoryId}/plates', [TheoreticalClassController::class, 'getPlatesByCategory']); // New route for fetching plates
+//Route::get('/theoretical_class/trainers-with-count', [TheoreticalClassController::class, 'getTrainersWithCount']);
+Route::get('/trainers/{trainerName}/details', [TrainerController::class, 'getDetails']);
+
+
+Route::resource('classes', ClassesController::class);
 
 
 // Auth routes (if you are using built-in authentication)
