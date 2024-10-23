@@ -43,8 +43,9 @@ public function create()
     // Fetch all trainees
     $trainees = Trainee::all(); // Assuming you have a Trainee model
 
-    // Calculate trainerCounts
-    $trainerCounts = TrainerAssigning::select('trainer_name', DB::raw('count(*) as count'))
+    // Calculate trainerCounts excluding assignments with passed end dates
+    $trainerCounts = TrainerAssigning::where('end_date', '>=', now()) // Only include current or future assignments
+        ->select('trainer_name', DB::raw('count(*) as count'))
         ->groupBy('trainer_name')
         ->pluck('count', 'trainer_name')
         ->toArray();
@@ -95,8 +96,12 @@ public function edit($id)
     // Fetch all trainers
     $trainers = Trainer::all();
 
-    // Calculate trainerCounts
-    $trainerCounts = TrainerAssigning::select('trainer_name', DB::raw('count(*) as count'))
+     // Fetch all trainees
+     $trainees = Trainee::all();
+
+    // Calculate trainerCounts excluding assignments with passed end dates
+    $trainerCounts = TrainerAssigning::where('end_date', '>=', now()) // Only include current or future assignments
+        ->select('trainer_name', DB::raw('count(*) as count'))
         ->groupBy('trainer_name')
         ->pluck('count', 'trainer_name')
         ->toArray();
@@ -106,7 +111,7 @@ public function edit($id)
         return $trainerCounts[$trainer->trainer_name] ?? 0;
     });
 
-    return view('trainer_assigning.edit', compact('trainer_assigning', 'sortedTrainers', 'trainerCounts'));
+    return view('trainer_assigning.edit', compact('trainer_assigning', 'trainees', 'sortedTrainers', 'trainerCounts'));
 }
 
     // Update the specified trainer in the database

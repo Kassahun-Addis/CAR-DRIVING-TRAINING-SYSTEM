@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Trainee;
+use App\Models\CarCategory;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\TraineeExport;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +16,9 @@ class TraineeController extends Controller
 {
     public function create()
     {
-        return view('Trainee.addTrainee'); // The path to your form view
+        $carCategories = CarCategory::all(); // Fetch all car categories
+
+        return view('Trainee.addTrainee', compact('carCategories')); // The path to your form view
     }
 
     public function store(Request $request)

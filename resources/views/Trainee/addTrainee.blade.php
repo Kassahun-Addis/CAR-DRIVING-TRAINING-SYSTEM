@@ -139,16 +139,18 @@
                     <div class="form-group">
                         <label for="driving_license_no" class="required">Existing Driving License No</label>
                         <input type="text" class="form-control" id="driving_license_no" name="driving_license_no">
-                    </div> 
-                    <div class="form-group">
-                        <label for="license_type" class="required">License Type</label>
-                        <select class="form-control" id="license_type" name="license_type" required>
-                            <option value="">Please select</option>
-                            <option value="Motor Cycle">Motor Cycle</option>
-                            <option value="Car">Car</option>
-                            <option value="Truck">Truck</option>
-                        </select>
                     </div>
+
+                    <div class="form-group car-fields">
+            <label for="license_type" class="required">License Type</label>
+            <select class="form-control" id="license_type" name="license_type"required>
+                <option value="">Select a category</option>
+                @foreach($carCategories as $category)
+                    <option value="{{ $category->id }}">{{ $category->car_category_name }}</option>
+                @endforeach
+            </select>
+        </div>
+
                     <div class="form-group">
                         <label for="education_level">Education Level/የትምህርት ደረጃ</label>
                         <input type="text" class="form-control" id="education_level" name="education_level">

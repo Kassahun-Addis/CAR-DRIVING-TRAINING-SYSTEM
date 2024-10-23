@@ -66,7 +66,7 @@
     </div>
 </div>
 
-    <!-- Responsive table wrapper -->
+<!-- Responsive table wrapper -->
 <div class="table-responsive">
     <table class="table table-bordered">
         <thead>
@@ -80,7 +80,7 @@
                 <th>Category</th>
                 <th>Car Name</th>
                 <th>Plate No</th>
-                <!-- <th>Training Car</th> -->
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -96,7 +96,12 @@
                     <td>{{ $trainer->category }}</td>
                     <td>{{ $trainer->car_name }}</td>
                     <td>{{ $trainer->plate_no }}</td>
-                    <!-- <td>{{ $trainer->trainingCar ? $trainer->trainingCar->name : 'N/A' }}</td> -->
+                    <td class="text-nowrap">
+                        <!-- Toggle Active/Inactive Button -->
+                        <button class="btn btn-sm toggle-status {{ $trainer->status === 'active' ? 'btn-success' : 'btn-secondary' }}" data-id="{{ $trainer->id }}">
+                            {{ $trainer->status === 'active' ? 'Active' : 'Inactive' }}
+                        </button>
+                    </td>
                     <td class="text-nowrap">
                         <a href="{{ route('trainers.edit', $trainer->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <form action="{{ route('trainers.destroy', $trainer->id) }}" method="POST" style="display:inline;">
@@ -110,6 +115,9 @@
         </tbody>
     </table>
 </div>
+
+
+
 
 
 <!-- Showing entries information -->
@@ -147,4 +155,50 @@
     </div>
 </div>
 </div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toggle-status').forEach(button => {
+        button.addEventListener('click', function() {
+            const currentStatus = this.textContent.trim();
+            const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+            const trainerId = this.getAttribute('data-id');
+
+            // Toggle the button text and class
+            this.textContent = newStatus;
+            this.classList.toggle('btn-success');
+            this.classList.toggle('btn-secondary');
+
+            // Send an AJAX request to update the status in the database
+            fetch(`/trainers/${trainerId}/toggle-status`, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: newStatus.toLowerCase() })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'success') {
+                    console.error('Error updating status:', data.message);
+                    // Optionally, revert the button state if the update fails
+                    this.textContent = currentStatus;
+                    this.classList.toggle('btn-success');
+                    this.classList.toggle('btn-secondary');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating status:', error);
+                // Optionally, revert the button state if the update fails
+                this.textContent = currentStatus;
+                this.classList.toggle('btn-success');
+                this.classList.toggle('btn-secondary');
+            });
+        });
+    });
+});
+</script>
 @endsection

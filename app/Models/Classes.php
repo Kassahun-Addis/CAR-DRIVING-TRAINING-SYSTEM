@@ -14,4 +14,15 @@ class Classes extends Model
         'class_name',
 
     ];
+
+    // public function trainees()
+    // {
+    //     return $this->hasMany(Trainee::class, 'id'); // Adjust 'class_id' if necessary
+    // }
+
+    // public function trainees()
+    // {
+    //     return $this->hasMany(Trainee::class, 'class_name', 'class_name'); 
+    //     // Adjust foreign key and local key if needed
+    // }
 }

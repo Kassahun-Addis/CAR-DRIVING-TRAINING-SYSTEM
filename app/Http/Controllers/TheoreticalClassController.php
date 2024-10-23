@@ -29,8 +29,12 @@ class TheoreticalClassController extends Controller
     // Fetch all trainees
     $trainees = Trainee::all(); // Assuming you have a Trainee model
 
-    // Calculate the number of trainees per class
-    $classCounts = TheoreticalClass::select('class_name', DB::raw('count(*) as count'))
+    // Get the current date
+    $currentDate = now();
+
+    // Calculate the number of trainees per class where the end_date is greater than or equal to the current date
+    $classCounts = TheoreticalClass::where('end_date', '>=', $currentDate)
+        ->select('class_name', DB::raw('count(*) as count'))
         ->groupBy('class_name')
         ->pluck('count', 'class_name')
         ->toArray();
@@ -65,27 +69,33 @@ class TheoreticalClassController extends Controller
         return view('theoretical_classes.show', compact('theoreticalClass'));
     }
 
-    
-    public function edit(TheoreticalClass $theoreticalClass)
+    public function edit($id)
 {
+    // Fetch the theoretical class being edited
+    $theoreticalClass = TheoreticalClass::findOrFail($id);
+    
     // Fetch all classes
     $classes = Classes::all();
 
-    // Fetch all trainees
-    $trainees = Trainee::all(); // Ensure this is included
+    // Get the current date
+    $currentDate = now();
 
-    // Calculate the number of trainees per class
-    $traineeCounts = TheoreticalClass::select('class_name', DB::raw('count(*) as count'))
+    // Manually count trainees per class for classes where end_date >= current date
+    $traineeCounts = DB::table('theoretical_classes')
+        ->where('end_date', '>=', $currentDate) // Only consider classes that haven't ended
+        ->select('class_name', DB::raw('COUNT(*) as count'))
         ->groupBy('class_name')
-        ->pluck('count', 'class_name')
-        ->toArray();
+        ->pluck('count', 'class_name');
 
-    // Sort trainees by the count of trainees in ascending order
-    $sortedClasses = $trainees->sortBy(function($trainee) use ($traineeCounts) {
-        return $traineeCounts[$trainee->class_name] ?? 0;
+    // Sort classes by the count of trainees in ascending order
+    $sortedClasses = $classes->sortBy(function($class) use ($traineeCounts) {
+        return $traineeCounts[$class->class_name] ?? 0;  // Default to 0 if no trainees
     });
 
-    return view('theoretical_classes.edit', compact('theoreticalClass', 'sortedClasses', 'traineeCounts', 'trainees')); // Pass the trainees variable here
+    // Fetch all trainees
+    $trainees = Trainee::all();
+
+    return view('theoretical_classes.edit', compact('theoreticalClass', 'trainees', 'sortedClasses', 'traineeCounts'));
 }
 
     public function update(Request $request, TheoreticalClass $theoreticalClass)

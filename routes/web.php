@@ -85,6 +85,8 @@ Route::get('/welcome', [AdminDashboardController::class, 'index'])
     Route::get('/trainers/edit/{trainer}', [TrainerController::class, 'edit'])->name('trainers.edit'); // Update here
     Route::put('/trainers/update/{trainer}', [TrainerController::class, 'update'])->name('trainers.update'); // Update here
     Route::delete('/trainers/destroy/{trainer}', [TrainerController::class, 'destroy'])->name('trainers.destroy');
+    Route::patch('/trainers/{trainer}/toggle-status', [TrainerController::class, 'toggleStatus']);
+
 });
 
 // Training Car Routes

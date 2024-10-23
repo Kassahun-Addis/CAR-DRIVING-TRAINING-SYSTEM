@@ -104,25 +104,7 @@
     width: 100%;
     z-index: 50;
 }
-
-
-/* Prevent main content from hiding behind the fixed header */
-.main-content {
-    margin-top: 65px; /* Adjust this based on your header height */
-    position: relative; /* Ensure main content stays below sidebar */
-    z-index: 1; /* Lower z-index to ensure it stays below sidebar */
-    margin-left: 250px; /* Keep fixed margin for larger screens */
-    margin-right: 40px; /* Keep fixed margin for larger screens */
-}
-
-/* Hide menu toggle button on large devices */
-    @media (min-width: 769px) {
-        #menu-toggle {
-            display: none; /* Hide menu toggle button on large devices */
-        }
-    }
-
-    /* Overlay for mobile menu */
+/* Overlay for mobile menu */
     #overlay {
         position: fixed;
         inset: 0;
@@ -237,8 +219,8 @@
                 <i class="fas fa-chevron-down"></i>
             </a>
             <ul class="ml-0 hidden" id="order-submenu">
-            <li><a href="{{ route('trainer_assigning.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Theoretical Training</a></li>
-            <li><a href="{{ route('theoretical_class.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Practical Training</a></li>
+            <li><a href="{{ route('trainer_assigning.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Practical Training </a></li>
+            <li><a href="{{ route('theoretical_class.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Theoretical Training </a></li>
             </ul>
             </li>
     </ul>

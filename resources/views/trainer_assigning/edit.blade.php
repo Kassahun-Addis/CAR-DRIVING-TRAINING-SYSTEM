@@ -39,9 +39,21 @@
                         <input type="date" class="form-control" id="end_date" name="end_date" value="{{ $trainer_assigning->end_date }}" required>
                     </div>
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="trainee_name">Trainee Name:</label>
                         <input type="text" class="form-control" id="trainee_name" name="trainee_name" value="{{ $trainer_assigning->trainee_name }}" required>
+                    </div> -->
+
+                    <div class="form-group">
+                        <label for="trainee_name">Trainee Name:</label>
+                        <select class="form-control" id="trainee_name" name="trainee_name" required>
+                            <option value="" style="width: 100%;">Select a Trainee</option>
+                            @foreach($trainees as $trainee)
+                                <option value="{{ $trainee->full_name }}" {{ $trainee->full_name == $trainer_assigning->trainee_name ? 'selected' : '' }}>
+                                    {{ $trainee->full_name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="form-group">

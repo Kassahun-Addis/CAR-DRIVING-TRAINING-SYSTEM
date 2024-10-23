@@ -40,25 +40,29 @@
                     </div>
 
                     <div class="form-group">
-    <label for="trainee_name">Trainee Name:</label>
-    <select class="form-control" id="trainee_name" name="trainee_name" required>
-        <option value="" style="width: 100%;">Select a Trainee</option>
-        @foreach($trainees as $trainee)
-            <option value="{{ $trainee->full_name }}">{{ $trainee->full_name }}</option>
-        @endforeach
-    </select>
-</div>
-                    <div class="form-group">
-                        <label for="class_name">Class Name:</label>
-                        <select class="form-control" id="class_name" name="class_name" required>
-                            <option value="">Select Class with Small No of Trainee</option>
-                            @foreach($sortedClasses as $class)
-                                <option value="{{ $class->class_name }}" {{ $class->class_name == $theoreticalClass->class_name ? 'selected' : '' }}>
-                                    {{ $class->class_name }} ({{ $traineeCounts[$class->class_name] ?? 0 }} Trainees)
+                        <label for="trainee_name">Trainee Name:</label>
+                        <select class="form-control" id="trainee_name" name="trainee_name" required>
+                            <option value="" style="width: 100%;">Select a Trainee</option>
+                            @foreach($trainees as $trainee)
+                                <option value="{{ $trainee->full_name }}" {{ $trainee->full_name == $theoreticalClass->trainee_name ? 'selected' : '' }}>
+                                    {{ $trainee->full_name }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
+
+                    <div class="form-group">
+    <label for="class_name">Class Name:</label>
+    <select class="form-control" id="class_name" name="class_name" required>
+        <option value="">Select Class with Small No of Trainee</option>
+        @foreach($sortedClasses as $class)
+            <option value="{{ $class->class_name }}" 
+                {{ (string)$class->class_name === (string)$theoreticalClass->class_name ? 'selected' : '' }}>
+                {{ $class->class_name }} ({{ $traineeCounts[$class->class_name] ?? 0 }} Trainees)
+            </option>
+        @endforeach
+    </select>
+</div>
 
                 </div>
             </div>

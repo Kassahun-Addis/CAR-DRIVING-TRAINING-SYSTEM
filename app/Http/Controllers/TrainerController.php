@@ -9,6 +9,31 @@ use App\Models\CarCategory; // Import the CarCategory model
 
 class TrainerController extends Controller
 {
+
+       // TrainerController.php
+public function toggleStatus(Request $request, Trainer $trainer)
+{
+    try {
+        // Validate the incoming status
+        $validatedData = $request->validate([
+            'status' => 'required|string|in:active,inactive',
+        ]);
+
+        // Update the trainer's status
+        $trainer->status = $validatedData['status'];
+        $trainer->save();
+
+        // Return a JSON response
+        return response()->json(['status' => 'success', 'newStatus' => $trainer->status]);
+    } catch (\Exception $e) {
+        // Log the error for debugging
+        \Log::error('Error updating trainer status: ' . $e->getMessage());
+
+        // Return a JSON error response
+        return response()->json(['status' => 'error', 'message' => 'Failed to update status'], 500);
+    }
+}
+
     public function getDetails(Request $request, $trainerName)
     {
         \Log::info('Trainer Name:', ['trainer_name' => $trainerName]);
