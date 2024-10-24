@@ -18,7 +18,8 @@ class CreateTrainersTable extends Migration
         $table->string('car_name')->nullable(); // Car name (input field, nullable)
         $table->string('plate_no')->nullable(); // Plate number (nullable)
         $table->string('category')->nullable();; // Change this to store the car category name
-       //$table->unsignedBigInteger('category_id')->nullable(); // Foreign key for car category
+        $table->string('status')->default('active');
+        //$table->unsignedBigInteger('category_id')->nullable(); // Foreign key for car category
         $table->timestamps(); // Created at and updated at timestamps
     });
 }

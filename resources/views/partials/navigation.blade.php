@@ -152,9 +152,17 @@
     list-style-type: none;
 }
 
+.logo-small {
+        height: 47px; /* Adjust the height as needed */
+        width: auto;  /* Maintain aspect ratio */
+    }
+
 /* Header font size for small devices */
 @media (max-width: 768px) {
         .header h2 {
+            font-size: 1.25rem; /* Adjust this value as needed */
+        }
+        .header h4 {
             font-size: 1.25rem; /* Adjust this value as needed */
         }
 
@@ -167,6 +175,10 @@
         .header-user-info {
             display: none;
         }
+        .logo-small {
+        height: 34px; /* Adjust the height as needed */
+        width: auto;  /* Maintain aspect ratio */
+    }
     }
     
 </style>
@@ -174,7 +186,8 @@
 <body>
 <!-- Header Section -->
 <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
-    <h2 class="text-2xl font-bold">CAR Driving Training System</h2>
+<img src="{{ asset('storage/trainee_photos/12.jfif') }}" alt="Logo" class="logo-small">    
+<h4 class="text-2xl font-bold d-none d-sm-block" style="margin-left: 15px;">CAR Driver Training System</h4>
     <!-- ... existing code ... -->
     <div class="flex items-center ml-auto relative"> <!-- Use ml-auto to push this div to the right -->
         <a href="#" class="text-white flex items-center mr-4" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

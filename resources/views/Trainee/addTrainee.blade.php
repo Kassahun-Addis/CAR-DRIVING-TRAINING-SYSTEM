@@ -146,7 +146,7 @@
             <select class="form-control" id="license_type" name="license_type"required>
                 <option value="">Select a category</option>
                 @foreach($carCategories as $category)
-                    <option value="{{ $category->id }}">{{ $category->car_category_name }}</option>
+                    <option value="{{ $category->car_category_name }}">{{ $category->car_category_name }}</option>
                 @endforeach
             </select>
         </div>

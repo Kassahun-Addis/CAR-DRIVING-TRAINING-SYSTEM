@@ -35,6 +35,7 @@
         display: none; /* Ensure hidden elements are not displayed */
     }
 
+
     /* Hide sidebar off-screen on small devices */
     @media (max-width: 768px) {
         #sidebar {
@@ -63,10 +64,21 @@
         list-style-type: none;
     }
 
+    .header h4 {
+            font-size: 1.25rem; /* Adjust this value as needed */
+            margin-left: 10px;
+        }
+
+        .logo-small {
+        height: 47px; /* Adjust the height as needed */
+        width: auto;  /* Maintain aspect ratio */
+    }
+
     /* Header font size for small devices */
     @media (max-width: 768px) {
-        .header h2 {
+        .header h4 {
             font-size: 1.25rem; /* Adjust this value as needed */
+            margin-left: 10px;
         }
 
         /* Show user info in sidebar */
@@ -78,6 +90,11 @@
         .header-user-info {
             display: none;
         }
+
+        .logo-small {
+        height: 34px; /* Adjust the height as needed */
+        width: auto;  /* Maintain aspect ratio */
+    }
     }
 
     /* Header font size for larger devices */
@@ -96,7 +113,8 @@
 
 <!-- Header Section -->
 <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
-    <h2 class="text-2xl font-bold">CAR Driving Training System</h2>
+<img src="{{ asset('storage/trainee_photos/12.jfif') }}" alt="Logo" class="logo-small">    
+<h4 class="text-2xl font-bold d-none d-sm-block" style="margin-left: 15px;">CAR Driver Training System</h4>
     <div class="header-user-info flex items-center ml-auto hidden md:flex">
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf

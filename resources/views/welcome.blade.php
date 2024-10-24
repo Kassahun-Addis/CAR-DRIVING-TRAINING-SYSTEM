@@ -18,6 +18,8 @@
 <!-- Include Popper.js (for Bootstrap dropdowns) -->
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <!-- Include Bootstrap JS -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
@@ -185,9 +187,17 @@
     list-style-type: none;
 }
 
+ .logo-small {
+    height: 47px; /* Adjust the height as needed */
+    width: auto;  /* Maintain aspect ratio */
+}
+
 /* Header font size for small devices */
 @media (max-width: 768px) {
         .header h2 {
+            font-size: 1.25rem; /* Adjust this value as needed */
+        }
+        .header h4 {
             font-size: 1.25rem; /* Adjust this value as needed */
         }
 
@@ -200,14 +210,20 @@
         .header-user-info {
             display: none;
         }
+        .logo-small {
+        height: 34px; /* Adjust the height as needed */
+        width: auto;  /* Maintain aspect ratio */
     }
+    }
+
+   
 </style>
 </head>
 <body>
 <!-- Header Section -->
 <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
-    <h2 class="text-2xl font-bold">CAR Driving Training System</h2>
-    <!-- ... existing code ... -->
+<img src="{{ asset('storage/trainee_photos/12.jfif') }}" alt="Logo" class="logo-small">    
+<h4 class="text-2xl font-bold d-none d-sm-block" style="margin-left: 15px;">CAR Driver Training System</h4>    <!-- ... existing code ... -->
     <div class="flex items-center ml-auto relative"> <!-- Use ml-auto to push this div to the right -->
         <a href="#" class="text-white flex items-center mr-4" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-user mr-1"></i>
@@ -248,16 +264,6 @@
             <li><a href="{{ route('classes.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-tags mr-2"></i>Class Lists</a></li>
             <li><a href="{{ route('trainer_assigning.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Practical Training </a></li>
             <li><a href="{{ route('theoretical_class.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Theoretical Training </a></li>
-            <!-- <li>
-            <a href="#" class="flex items-center justify-between p-2 hover:bg-gray-700 rounded" id="order-toggle">
-                <span><i class="fas fa-folder-open mr-2"></i>Trainer Assigning</span>
-                <i class="fas fa-chevron-down"></i>
-            </a>
-            <ul class="ml-0 hidden" id="order-submenu">
-            <li><a href="{{ route('trainer_assigning.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Practical Training </a></li>
-            <li><a href="{{ route('theoretical_class.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Theoretical Training </a></li>
-            </ul>
-            </li> -->
     </ul>
     @else
         <ul class="mt-0 space-y-1 pl-0 list-none">
@@ -268,35 +274,159 @@
 </div>
 
 <div class="main-content">
-<div class = "dashboared">
-<h2 style = "background: red">Here is sample pie chart, graph....</h2>
-</div>
+    <div class="container">
+        <h2 class="text-center my-4">Dashboard Overview</h2>
+        <div class="row text-center">
+            <!-- Card 1 -->
+            <div class="col-md-3">
+                <div class="card text-white bg-primary shadow mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-users" ></i> Total Trainees
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title display-4" style="font-size: 1.5rem;">{{ $totalTrainees }}</h5>
+                        <a href="{{ route('trainee.index') }}" class="btn btn-outline-light btn-block mt-3">View List</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="col-md-3">
+                <div class="card text-white bg-success shadow mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chalkboard-teacher"></i> Total Trainers
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title display-4" style="font-size: 1.5rem;">{{ $totalTrainers }}</h5>
+                        <a href="{{ route('trainers.index') }}" class="btn btn-outline-light btn-block mt-3">View List</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="col-md-3">
+                <div class="card text-white bg-warning shadow mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-coins"></i> Total Amount Paid
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title display-4" style="font-size: 1.5rem;">{{ number_format($totalAmountPaid, 2) }} Birr</h5>
+                        <a href="{{ route('payments.index') }}" class="btn btn-outline-light btn-block mt-3">View List</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 4 -->
+            <div class="col-md-3">
+                <div class="card text-white bg-danger shadow mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-exclamation-triangle"></i> Total Remaining Balance
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title display-4" style="font-size: 1.5rem;">{{ number_format($totalRemainingBalance, 2) }} Birr</h5>
+                        <a href="{{ route('payments.index') }}" class="btn btn-outline-light btn-block mt-3">View List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+    <div class="col-md-6">
+        <div class="card shadow" style="height: 450px;"> <!-- Set a fixed height on the card -->
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-chart-bar"></i> Trainees Progress
+            </div>
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <canvas id="barChart" style="max-height: 400px; width: 100%;"></canvas> <!-- Ensure canvas fills the card -->
+            </div>
+        </div>
+    </div>
+        <div class="col-md-6">
+        <div class="card shadow" style="height: 450px;">
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-chart-pie"></i> Trainee Distribution
+            </div>
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <canvas id="pieChart" style="max-height: 400px; width: 100%;"></canvas>
+            </div>
+        </div>
+    </div>
 </div>
 
-    <!-- Overlay for mobile menu -->
+<!-- Overlay for mobile menu -->
 <div id="overlay" class="overlay"></div>
 
-
-
 <script>
-    console.log("The err exsists bellow these");
     document.addEventListener('DOMContentLoaded', function () {
     const menuToggle = document.getElementById('menu-toggle');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
-
     // Toggle the sidebar for mobile devices
-    menuToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('active'); // Show/hide sidebar
-        overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none'; // Show/hide overlay
-    });
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active'); // Show/hide sidebar
+            overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none'; // Show/hide overlay
+        });
+    } else {
+        console.error('menuToggle is not found in the DOM.');
+    }
 
-    // Close sidebar when clicking on overlay
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('active'); // Hide sidebar
-        overlay.style.display = 'none'; // Hide overlay
+
+        // Bar Chart
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        const barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                datasets: [{
+                    label: 'Total Trainees',
+                    data: @json(array_values($monthlyTrainees)),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false, // Disable aspect ratio to allow custom sizing
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+        // Pie Chart
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        const pieChart = new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: @json(array_keys($assignmentsByCategory)), // Category IDs as labels
+                datasets: [{
+                    label: ' Number of Trainee ',
+                    data: @json(array_values($assignmentsByCategory)), // Counts as data
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(153, 102, 255)',
+                        'rgb(255, 159, 64)'
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
     });
-});
 </script>
 
 </body>

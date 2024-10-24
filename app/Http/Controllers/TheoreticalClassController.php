@@ -23,11 +23,13 @@ class TheoreticalClassController extends Controller
 
     public function create()
 {
+
     // Fetch all classes
     $classes = Classes::all();
 
-    // Fetch all trainees
-    $trainees = Trainee::all(); // Assuming you have a Trainee model
+    // Fetch all active trainees
+    $trainees = Trainee::where('status', 'active')->get();
+
 
     // Get the current date
     $currentDate = now();

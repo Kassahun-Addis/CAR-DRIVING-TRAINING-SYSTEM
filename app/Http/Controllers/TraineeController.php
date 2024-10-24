@@ -14,12 +14,36 @@ use Illuminate\Support\Facades\Response;
 
 class TraineeController extends Controller
 {
+    public function toggleStatus(Request $request, Trainee $trainee)
+{
+    try {
+        // Validate the incoming status
+        $validatedData = $request->validate([
+            'status' => 'required|string|in:active,inactive',
+        ]);
+
+        // Update the trainer's status
+        $trainee->status = $validatedData['status'];
+        $trainee->save();
+
+        // Return a JSON response
+        return response()->json(['status' => 'success', 'newStatus' => $trainee->status]);
+    } catch (\Exception $e) {
+        // Log the error for debugging
+        \Log::error('Error updating trainer status: ' . $e->getMessage());
+
+        // Return a JSON error response
+        return response()->json(['status' => 'error', 'message' => 'Failed to update status'], 500);
+    }
+}
+
     public function create()
     {
         $carCategories = CarCategory::all(); // Fetch all car categories
 
         return view('Trainee.addTrainee', compact('carCategories')); // The path to your form view
     }
+    
 
     public function store(Request $request)
     {
@@ -149,11 +173,13 @@ class TraineeController extends Controller
 
     public function edit($id)
     {
+        $carCategories = CarCategory::all(); // Fetch all car categories
+
         // Find the trainee by id
         $trainee = Trainee::findOrFail($id);
 
         // Return the edit view with the trainee data
-        return view('Trainee.editTrainee', compact('trainee'));
+        return view('Trainee.editTrainee', compact('trainee', 'carCategories'));
     }
 
     public function update(Request $request, $id)

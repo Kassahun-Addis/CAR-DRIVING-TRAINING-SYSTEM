@@ -88,6 +88,7 @@
                 <th>Blood Type</th>
                 <th>Reciept No</th>
                 <th>DOB</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -117,6 +118,12 @@
                     <td>{{ $trainee->blood_type }}</td>
                     <td>{{ $trainee->receipt_no }}</td>
                     <td>{{ \Carbon\Carbon::parse($trainee->dob)->format('Y-m-d') }}</td>
+                    <td class="text-nowrap">
+                        <!-- Toggle Active/Inactive Button -->
+                        <button class="btn btn-sm toggle-status {{ $trainee->status === 'active' ? 'btn-success' : 'btn-secondary' }}" data-id="{{ $trainee->id }}">
+                            {{ $trainee->status === 'active' ? 'Active' : 'Inactive' }}
+                        </button>
+                    </td>
                     <td class="text-nowrap">
     <a href="{{ route('trainee.edit', $trainee->id) }}" class="btn btn-warning btn-sm">Edit</a>
     <form action="{{ route('trainee.destroy', $trainee->id) }}" method="POST" style="display:inline;">
@@ -301,5 +308,48 @@ printWindow.document.write('</body></html>');
 printWindow.document.close();
 printWindow.print();
 }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toggle-status').forEach(button => {
+        button.addEventListener('click', function() {
+            const currentStatus = this.textContent.trim();
+            const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+            const traineeId = this.getAttribute('data-id');
+
+            // Toggle the button text and class
+            this.textContent = newStatus;
+            this.classList.toggle('btn-success');
+            this.classList.toggle('btn-secondary');
+
+            // Send an AJAX request to update the status in the database
+            fetch(`/trainees/${traineeId}/toggle-status`, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: newStatus.toLowerCase() })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'success') {
+                    console.error('Error updating status:', data.message);
+                    // Optionally, revert the button state if the update fails
+                    this.textContent = currentStatus;
+                    this.classList.toggle('btn-success');
+                    this.classList.toggle('btn-secondary');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating status:', error);
+                // Optionally, revert the button state if the update fails
+                this.textContent = currentStatus;
+                this.classList.toggle('btn-success');
+                this.classList.toggle('btn-secondary');
+            });
+        });
+    });
+});
 </script>
 @endsection

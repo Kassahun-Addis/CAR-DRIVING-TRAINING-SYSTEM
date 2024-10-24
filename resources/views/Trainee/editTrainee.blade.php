@@ -158,21 +158,23 @@
 
                     <div class="form-group">
                         <label for="dob" class="required">DOB/የትውልድ ቀን</label>
-                        <input type="date" class="form-control" id="dob" name="dob" value="{{ old('dob', $trainee->dob) }}" required>
+                        <input type="date" class="form-control" id="dob" name="dob" value="{{ old('dob', $trainee->dob ? $trainee->dob->format('Y-m-d') : '') }}" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="driving_license_no" class="required">Existing Driving License No</label>
+                        <label for="driving_license_no" >Existing Driving License No</label>
                         <input type="text" class="form-control" id="driving_license_no" name="driving_license_no" value="{{ old('driving_license_no', $trainee->existing_driving_lic_no) }}">
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group car-fields">
                         <label for="license_type" class="required">License Type</label>
                         <select class="form-control" id="license_type" name="license_type" required>
-                            <option value="">Please select</option>
-                            <option value="Motor Cycle" {{ $trainee->license_type == 'Motor Cycle' ? 'selected' : '' }}>Motor Cycle</option>
-                            <option value="Car" {{ $trainee->license_type == 'Car' ? 'selected' : '' }}>Car</option>
-                            <option value="Truck" {{ $trainee->license_type == 'Truck' ? 'selected' : '' }}>Truck</option>
+                            <option value="">Select a category</option>
+                            @foreach($carCategories as $category)
+                                <option value="{{ $category->car_category_name }}" {{ $trainee->license_type == $category->car_category_name ? 'selected' : '' }}>
+                                    {{ $category->car_category_name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 

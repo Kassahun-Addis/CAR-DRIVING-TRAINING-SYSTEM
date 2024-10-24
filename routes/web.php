@@ -7,6 +7,7 @@ use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\TrainingCarController;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\Auth\LoginController;
@@ -37,6 +38,9 @@ Route::get('/welcome', [AdminDashboardController::class, 'index'])
     ->middleware('auth') // Protect the welcome route (admin)
     ->name('welcome');
 
+
+Route::get('/welcome', [DashboardController::class, 'index']);
+
 // Trainee Routes
 //Route::middleware('auth')->group(function () {
     Route::get('/trainee/create', [TraineeController::class, 'create'])->name('trainee.create');
@@ -49,7 +53,9 @@ Route::get('/welcome', [AdminDashboardController::class, 'index'])
     Route::get('/trainee/{id}/agreement', [TraineeController::class, 'showAgreement'])->name('trainee.agreement');
     Route::get('/trainee/{id}/agreement', [TraineeController::class, 'showAgreement'])->name('trainee.agreement');
     Route::get('/trainee/{id}/download-agreement', [TraineeController::class, 'downloadAgreement'])->name('download.agreement');
- //});
+    Route::patch('/trainees/{trainee}/toggle-status', [TraineeController::class, 'toggleStatus']);        
+ //}); 
+
 
 // Attendance Routes
 // Route::middleware('auth:trainee')->group(function () {
