@@ -3,65 +3,75 @@
 @section('content')
 
 <style>
-    /* Apply the background image to the container */
     .container {
-        background-image: url('{{ asset('storage/trainee_photos/Driving_Car.webp') }}'); /* Path to your background image */
-        background-size: cover;        /* Ensures the image covers the entire container */
-        background-position: center;   /* Centers the image within the container */
-        background-repeat: no-repeat;  /* Prevents the image from repeating */
-        padding: 20px;
-        border-radius: 10px;           /* Optional: adds rounded corners to the content area */
-        min-height: 950px;
-        min-width: 350px !important;   /* Force the minimum width to be applied */
-        max-width: 100%;               /* Ensure the container does not exceed the viewport */
-        position: relative;            /* Allow positioning of child elements */
-        overflow: hidden;              /* Hide overflow from child elements */
+        display: flex;                     /* Enable flexbox layout */
+        flex-direction: column;            /* Stack items vertically */
+        align-items: center;               /* Center items horizontally */
+        padding: 0;                        /* Remove padding */
+        min-height: 950px;                 /* Minimum height of the container */
+        min-width: 350px !important;       /* Force the minimum width to be applied */
+        max-width: 100%;                   /* Ensure the container does not exceed the viewport */
+        height: 100vh;                     /* Set height to full viewport height */
     }
 
-    /* Ensure the row expands with content */
-    .row {
-        height: 100%;
+    .image-container {
+        display: flex;                     /* Use flex for image layout */
+        justify-content: center;           /* Center the image */
+        margin-bottom: 0;                  /* Remove space below the image */
+        width: 100%;                       /* Make the image container take full width */
+        flex: 1;                           /* Allow the image container to grow and fill available space */
+        overflow: hidden;                  /* Hide overflow from image */
     }
 
-    /* Control the column width to make sure content fits well */
-    .col-md-8 {
-        max-width: 100%;
-        position: relative;           /* Allow positioning of the card */
-        z-index: 1;                  /* Ensure the card is above the background */
+    .image-container img {
+        max-width: 100%;                   /* Make sure the image is responsive */
+        width: 100%;                       /* Fill the width of the container */
+        height: auto;                      /* Maintain aspect ratio */
+        object-fit: cover;                 /* Ensure the image covers the area */
+        border-radius: 10px;               /* Optional: add rounded corners to the image */
+    }
+
+    /* Control the card width and height */
+    .card {
+        background: rgba(255, 255, 255, 0.9); /* Add a background color with transparency for better readability */
+        border: none;                      /* Optional: remove card border */
+        border-radius: 10px;              /* Optional: add rounded corners */
+        width: 100%;                       /* Set card to take full width */
+        max-width: 100%;                  /* Limit the card width */
+        margin-top: 20px;                 /* Add space above the card */
+        flex: 0 0 auto;                   /* Prevent card from stretching */
+        z-index: 1;                       /* Ensure the card is above other elements */
+        position: relative;                /* Allow z-index to work */
     }
 
     /* Media query for smaller devices */
     @media (max-width: 768px) {
         .container {
-            min-height: 600px;         /* Adjust the height for smaller screens */
-            padding: 10px;             /* Reduce padding on smaller screens */
+            min-height: 600px;             /* Adjust the height for smaller screens */
         }
-        
+
         .card {
-            margin-top: 20px;         /* Space between container and card */
-            margin-bottom: 10px;      /* Add a 10px gap below the card */
-            background: rgba(255, 255, 255, 0.9); /* Add a background color with transparency for better readability */
+            margin-top: 20px;              /* Space between container and card */
+            margin-bottom: 10px;           /* Add a 10px gap below the card */
         }
     }
 
     @media (max-width: 576px) {
         .container {
-            min-height: 500px;         /* Further adjust the height for very small screens */
-            padding: 5px;              /* Further reduce padding */
+            min-height: 500px;             /* Further adjust the height for very small screens */
         }
 
         .card {
-            margin-top: 20px;         /* Ensure space above the card */
-            margin-bottom: 10px;      /* Maintain 10px gap below the card */
+            margin-top: 20px;              /* Ensure space above the card */
+            margin-bottom: 10px;           /* Maintain 10px gap below the card */
         }
     }
 </style>
 
 <div class="container">
-    <div class="row justify-content-left">
-        <!-- Content goes here, you can add text or promotions -->
-        <div class="col-md-8">
-            <div class="card d-none d-md-block"> <!-- Hide on small devices -->
+    <div class="row justify-content-left" style="width: 100%; padding: 0;">
+        <div class="col-md-12" style="width: 100%;">
+            <div class="card"> <!-- Card is now above the image -->
                 <div class="card-header">{{ __('Welcome to Our Car Driving School') }}</div>
                 <div class="card-body">
                     <p>Join our car driving training system and learn how to drive like a professional. Enroll today to enjoy discounts!</p>
@@ -70,6 +80,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="image-container">
+        <img src="{{ asset('storage/trainee_photos/Driving_Car.webp') }}" alt="Driving Car"> <!-- Display the image -->
     </div>
 </div>
 
