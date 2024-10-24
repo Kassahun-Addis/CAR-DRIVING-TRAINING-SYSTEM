@@ -94,6 +94,7 @@
                     <td>{{ $trainer_assigning->start_date }}</td>
                     <td>{{ $trainer_assigning->end_date }}</td>
                     <td>{{ $trainer_assigning->category_id }}</td>
+                    <td>{{ $trainer_assigning->car_name }}</td>
                     <td>{{ $trainer_assigning->plate_no }}</td>
                     <td class="text-nowrap">
                         <a href="{{ route('trainer_assigning.edit', $trainer_assigning->assigning_id) }}" class="btn btn-warning btn-sm">Edit</a>

@@ -37,8 +37,8 @@ class TrainerAssigningController extends Controller
 
 public function create()
 {
-    // Fetch all trainers
-    $trainers = Trainer::all();
+    // Fetch only active trainers
+    $activeTrainers = Trainer::where('status', 'active')->get();
 
     // Fetch all trainees
     $trainees = Trainee::all(); // Assuming you have a Trainee model
@@ -50,8 +50,8 @@ public function create()
         ->pluck('count', 'trainer_name')
         ->toArray();
 
-    // Sort trainers by the count of trainees in ascending order
-    $sortedTrainers = $trainers->sortBy(function($trainer) use ($trainerCounts) {
+    // Sort active trainers by the count of trainees in ascending order
+    $sortedTrainers = $activeTrainers->sortBy(function($trainer) use ($trainerCounts) {
         return $trainerCounts[$trainer->trainer_name] ?? 0;
     });
 
@@ -93,21 +93,23 @@ public function edit($id)
 {
     $trainer_assigning = TrainerAssigning::find($id);
 
-    // Fetch all trainers
-    $trainers = Trainer::all();
+    if (!$trainer_assigning) {
+        return redirect()->route('trainer_assigning.index')->with('error', 'Trainer assignment not found.');
+    }
 
-     // Fetch all trainees
-     $trainees = Trainee::all();
+    // Debugging: Log the trainer_assigning data
+    \Log::info('Editing Trainer Assigning:', $trainer_assigning->toArray());
 
-    // Calculate trainerCounts excluding assignments with passed end dates
-    $trainerCounts = TrainerAssigning::where('end_date', '>=', now()) // Only include current or future assignments
+    $activeTrainers = Trainer::where('status', 'active')->get();
+    $trainees = Trainee::all();
+
+    $trainerCounts = TrainerAssigning::where('end_date', '>=', now())
         ->select('trainer_name', DB::raw('count(*) as count'))
         ->groupBy('trainer_name')
         ->pluck('count', 'trainer_name')
         ->toArray();
 
-    // Sort trainers by the count of trainees in ascending order
-    $sortedTrainers = $trainers->sortBy(function($trainer) use ($trainerCounts) {
+    $sortedTrainers = $activeTrainers->sortBy(function($trainer) use ($trainerCounts) {
         return $trainerCounts[$trainer->trainer_name] ?? 0;
     });
 
@@ -123,15 +125,23 @@ public function edit($id)
         'trainer_name' => 'required|string|max:255',
         'start_date' => 'required|date',
         'end_date' => 'required|date|after_or_equal:start_date',
-        'category_id' => 'required|exists:trainers,category',
+        'category_id' => 'required|string|exists:trainers,category',
         'plate_no' => 'required|string|max:255',
         'car_name' => 'required|string|max:255',
     ]);
 
-    $trainer_assigning->update($request->all());
+    // Update the trainer assigning record
+    $trainer_assigning->update([
+        'trainee_name' => $request->trainee_name,
+        'trainer_name' => $request->trainer_name,
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date,
+        'category_id' => $request->category_id,
+        'plate_no' => $request->plate_no,
+        'car_name' => $request->car_name,
+    ]);
 
-    session()->flash('success', 'Trainer assignment updated successfully!');
-    return redirect()->route('trainer_assigning.index');
+    return redirect()->route('trainer_assigning.index')->with('success', 'Trainer assignment updated successfully!');
 }
 
     // Remove the specified trainer from the database

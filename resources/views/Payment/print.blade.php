@@ -43,9 +43,9 @@
             <p>Address: Arada, Addis Ababa, Ethiopia</p>
         </div>
         <div class="col-md-6 text-right" style="margin-top: 90px;">
-            <p><strong>Invoice No:</strong> {{ $payment->PaymentID }}</p>
-            <p><strong>Customer TIN:</strong> {{ $payment->TinNo }}</p>
-            <p><strong>Payment Date:</strong> {{ $payment->PaymentDate }}</p>
+            <p><strong>Invoice No:</strong> {{ $payment->payment_id }}</p>
+            <p><strong>Customer TIN:</strong> {{ $payment->tin_no }}</p>
+            <p><strong>Payment Date:</strong> {{ $payment->payment_date }}</p>
         </div>
     </div>
 
@@ -57,11 +57,11 @@
         <tfoot>
             <tr>
                 <td colspan="4" style="text-align: right;"><strong>Sub Total:</strong></td>
-                <td style="text-align: right;">{{ number_format($payment->SubTotal, 2) }}</td>
+                <td style="text-align: right;">{{ number_format($payment->sub_total, 2) }}</td>
             </tr>
             <tr>
                 <td colspan="4" style="text-align: right;"><strong>VAT (15%):</strong></td>
-                <td style="text-align: right;">{{ number_format($payment->Vat, 2) }}</td>
+                <td style="text-align: right;">{{ number_format($payment->vat, 2) }}</td>
             </tr>
             <!-- <tr>
     <td colspan="4" style="text-align: right;"><strong>Withhold (2%):</strong></td>
@@ -71,7 +71,7 @@
 </tr> -->
             <tr>
                 <td colspan="4" style="text-align: right;"><strong>Total:</strong></td>
-                <td style="text-align: right;"><h5>{{ number_format($payment->Total, 2) }}</h5></td>
+                <td style="text-align: right;"><h5>{{ number_format($payment->total, 2) }}</h5></td>
             </tr>
         </tfoot>
     </table>
@@ -79,9 +79,9 @@
     <!-- Additional Payment Information -->
     <div class="row mt-3">
         <div class="col-md-6">
-            <p><strong>Payment Method:</strong> {{ $payment->PaymentMethod }}</p>
+            <p><strong>Payment Method:</strong> {{ $payment->payment_method }}</p>
             <!-- <p><strong>Bank Name:</strong> {{ $payment->BankName }}</p> -->
-            <p><strong>Transaction No:</strong> {{ $payment->TransactionNo }}</p>
+            <p><strong>Transaction No:</strong> {{ $payment->transaction_no }}</p>
         </div>
     </div>
 </div>

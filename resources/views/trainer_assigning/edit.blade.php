@@ -39,22 +39,17 @@
                         <input type="date" class="form-control" id="end_date" name="end_date" value="{{ $trainer_assigning->end_date }}" required>
                     </div>
 
-                    <!-- <div class="form-group">
-                        <label for="trainee_name">Trainee Name:</label>
-                        <input type="text" class="form-control" id="trainee_name" name="trainee_name" value="{{ $trainer_assigning->trainee_name }}" required>
-                    </div> -->
-
                     <div class="form-group">
-                        <label for="trainee_name">Trainee Name:</label>
-                        <select class="form-control" id="trainee_name" name="trainee_name" required>
-                            <option value="" style="width: 100%;">Select a Trainee</option>
-                            @foreach($trainees as $trainee)
-                                <option value="{{ $trainee->full_name }}" {{ $trainee->full_name == $trainer_assigning->trainee_name ? 'selected' : '' }}>
-                                    {{ $trainee->full_name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+    <label for="trainee_name">Trainee Name:</label>
+    <select class="form-control" id="trainee_name" name="trainee_name" required>
+        <option value="" style="width: 100%;">Select a Trainee</option>
+        @foreach($trainees as $trainee)
+            <option value="{{ $trainee->full_name }}" {{ trim(strtolower($trainee->full_name)) == trim(strtolower($trainer_assigning->trainee_name)) ? 'selected' : '' }}>
+                {{ $trainee->full_name }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
                     <div class="form-group">
                         <label for="trainer_name">Trainer Name:</label>
@@ -105,28 +100,20 @@
     </style>
 <script>
    // Fetch car details when the trainer is selected
-document.addEventListener('DOMContentLoaded', function() {
+   document.addEventListener('DOMContentLoaded', function() {
+    var successAlert = document.getElementById('success-alert');
 
-// Fetch the success alert element after the DOM has fully loaded
-var successAlert = document.getElementById('success-alert');
-
-// Log the success alert element to the console (after it has been defined)
-console.log('Script running, success alert:', successAlert);
-
-// Check if the success alert exists on the page
-if (successAlert) {
-    // Fade out the alert after 3 seconds
-    setTimeout(function() {
-        successAlert.style.opacity = '0'; // Start fade out effect
-
-        // After the fade-out completes, hide the element from view
+    if (successAlert) {
         setTimeout(function() {
-            successAlert.style.display = 'none'; // Hide the alert completely
-        }, 500); // Match the fade-out transition duration (0.5 seconds)
-    }, 3000); // Wait 3 seconds before starting fade out
-}
-    // Fetch car details when the trainer is selected
-    document.getElementById('trainer_name').addEventListener('change', function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+
+    var trainerSelect = document.getElementById('trainer_name');
+    trainerSelect.addEventListener('change', function() {
         var selectedTrainer = this.value;
 
         if (selectedTrainer) {
@@ -151,11 +138,8 @@ if (successAlert) {
 
     // Pre-fill the dropdown and other fields when the page loads
     var selectedTrainer = "{{ $trainer_assigning->trainer_name }}";
-    var trainerSelect = document.getElementById('trainer_name');
-
     if (selectedTrainer) {
         trainerSelect.value = selectedTrainer;
-
         fetch(`/trainers/${encodeURIComponent(selectedTrainer)}/details`)
             .then(response => response.json())
             .then(data => {

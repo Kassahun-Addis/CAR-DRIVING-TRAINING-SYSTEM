@@ -168,6 +168,7 @@
             display: none;
         }
     }
+    
 </style>
 </head>
 <body>
@@ -213,7 +214,9 @@
             <li><a href="{{ route('banks.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-university mr-2"></i>Bank</a></li>
             <li><a href="{{ route('car_category.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-tags mr-2"></i>Car Category</a></li>
             <li><a href="{{ route('classes.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-tags mr-2"></i>Class Lists</a></li>
-            <li>
+            <li><a href="{{ route('trainer_assigning.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Practical Training </a></li>
+            <li><a href="{{ route('theoretical_class.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Theoretical Training </a></li>
+            <!-- <li>
             <a href="#" class="flex items-center justify-between p-2 hover:bg-gray-700 rounded" id="order-toggle">
                 <span><i class="fas fa-folder-open mr-2"></i>Trainer Assigning</span>
                 <i class="fas fa-chevron-down"></i>
@@ -222,7 +225,7 @@
             <li><a href="{{ route('trainer_assigning.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Practical Training </a></li>
             <li><a href="{{ route('theoretical_class.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Theoretical Training </a></li>
             </ul>
-            </li>
+            </li> -->
     </ul>
     @else
         <ul class="mt-0 space-y-1 pl-0 list-none">
@@ -244,42 +247,32 @@
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
     const menuToggle = document.getElementById('menu-toggle');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
-    var orderToggle = document.getElementById('order-toggle');
-    var orderSubmenu = document.getElementById('order-submenu');
-
-
     // Toggle the sidebar for mobile devices
-    menuToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('active'); // Show/hide sidebar
-        overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none'; // Show/hide overlay
-    });
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active'); // Show/hide sidebar
+            overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none'; // Show/hide overlay
+        });
+    } else {
+        console.error('menuToggle is not found in the DOM.');
+    }
 
     // Close sidebar when clicking on overlay
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('active'); // Hide sidebar
-        overlay.style.display = 'none'; // Hide overlay
-    });
-
-    orderToggle.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent default anchor behavior
-            orderSubmenu.classList.toggle('hidden'); // Show/hide submenu
-    });
-
-    // Close sidebar when clicking on overlay
-    overlay.addEventListener('click', () => {
+    if (overlay) {
+        overlay.addEventListener('click', () => {
             sidebar.classList.remove('active'); // Hide sidebar
             overlay.style.display = 'none'; // Hide overlay
-            categorySubmenu.classList.add('hidden'); // Ensure submenu is hidden
-            orderSubmenu.classList.add('hidden'); // Ensure submenu is hidden
-
-   });
+        });
+    } else {
+        console.error('overlay is not found in the DOM.');
+    }
 });
 </script>
-@yield('scripts')
+
 </body>
 </html>
 

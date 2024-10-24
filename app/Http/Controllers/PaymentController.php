@@ -176,9 +176,12 @@ public function update(Request $request, Payment $payment)
         if ($payment->remaining_balance <= 0) {
             return redirect()->route('payments.index')->with('error', 'No remaining balance to pay.');
         }
-    
-        // Show a view for the user to pay the remaining balance
-        return view('Payment.pay_remaining', compact('payment'));
+
+        // Fetch the list of banks from the database
+        $banks = Bank::all();
+
+        // Pass the payment and banks data to the view
+        return view('Payment.pay_remaining', compact('payment', 'banks'));
     }
     
     public function processRemainingPayment(Request $request, Payment $payment)
