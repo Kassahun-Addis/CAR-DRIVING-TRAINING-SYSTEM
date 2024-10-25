@@ -14,6 +14,7 @@ return new class extends Migration
             $table->date('date')->nullable(false); // Attendance date
             $table->time('start_time')->nullable(false); // Start time of the session
             $table->time('finish_time')->nullable(false); // Finish time of the session
+            $table->string('difference')->nullable(false); // Difference of the session
             $table->enum('status', ['Present', 'Absent'])->default('Absent'); // Status of attendance
             $table->string('trainee_name', 100); // Trainee name
             $table->string('trainer_name', 100); // Trainer name

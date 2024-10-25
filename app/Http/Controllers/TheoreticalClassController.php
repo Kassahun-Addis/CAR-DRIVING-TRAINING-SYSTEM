@@ -23,13 +23,14 @@ class TheoreticalClassController extends Controller
 
     public function create()
 {
-
     // Fetch all classes
     $classes = Classes::all();
 
     // Fetch all active trainees
-    $trainees = Trainee::where('status', 'active')->get();
-
+    $assignedTrainees = TheoreticalClass::pluck('trainee_name')->toArray();
+    $trainees = Trainee::where('status', 'active')
+                       ->whereNotIn('full_name', $assignedTrainees)
+                       ->get();
 
     // Get the current date
     $currentDate = now();

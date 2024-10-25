@@ -59,6 +59,7 @@ public function create()
 }
 
 
+
     // Store a newly created trainer in the database
     public function store(Request $request)
 {

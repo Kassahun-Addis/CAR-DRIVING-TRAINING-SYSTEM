@@ -19,6 +19,7 @@ class Attendance extends Model
         'date',
         'start_time',
         'finish_time',
+        'difference',
         'trainee_name',
         'trainer_name',
         'status',
@@ -29,4 +30,6 @@ class Attendance extends Model
         'latitude', 
         'longitude', 
     ];
+
+    
 }

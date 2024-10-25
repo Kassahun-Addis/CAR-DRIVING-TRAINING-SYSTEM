@@ -68,7 +68,8 @@ Route::get('/welcome', [DashboardController::class, 'index']);
     Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy'); // Delete attendance
     //Route::get('/attendance/{trainee_id}', [AttendanceController::class, 'showAttendance'])->name('attendance.show');
     Route::get('/attendance/{traineeId?}', [AttendanceController::class, 'index'])->name('attendance.index');
-// });
+    // Route::post('/attendance/store', [AttendanceController::class, 'storeAttendanceData'])->name('attendance.store');
+    // });
 
 
 // // Attendance Routes

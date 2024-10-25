@@ -29,30 +29,32 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-
-
     <div class="form-section">
         <form action="{{ route('attendance.store') }}" method="POST">
             @csrf
-            <input type="hidden" name="status" value="Absent"> <!-- Default status -->
-            <input type="hidden" name="trainee_id" value="{{ Auth::guard('trainee')->user()->id }}"> <!-- Hidden field for Trainee ID -->
+            <input type="hidden" name="status" value="Absent">
+            <input type="hidden" name="trainee_id" value="{{ Auth::guard('trainee')->user()->id }}">
             <input type="hidden" id="latitude" name="latitude">
             <input type="hidden" id="longitude" name="longitude">
-            <input type="hidden" id="location" name="location"> <!-- Hidden field for location -->
+            <input type="hidden" id="location" name="location">
 
             <div class="row">
                 <div class="col-12 col-md-12">
                     <div class="form-group">
                         <label for="date" class="required">Date</label>
-                        <input type="date" class="form-control" id="date" name="date" required>
+                        <input type="date" class="form-control" id="date" name="date" value="{{ date('Y-m-d') }}" readonly required>
                     </div>
                     <div class="form-group">
                         <label for="start_time" class="required">Start Time</label>
-                        <input type="time" class="form-control" id="start_time" name="start_time" required>
+                        <input type="time" class="form-control" id="start_time" name="start_time" required onchange="calculateDifference()">
                     </div>
                     <div class="form-group">
                         <label for="finish_time" class="required">Finish Time</label>
-                        <input type="time" class="form-control" id="finish_time" name="finish_time" required>
+                        <input type="time" class="form-control" id="finish_time" name="finish_time" required onchange="calculateDifference()">
+                    </div>
+                    <div class="form-group">
+                        <label for="difference" class="required">Difference</label>
+                        <input type="text" class="form-control" id="difference" name="difference" readonly>
                     </div>
                     <div class="form-group">
                         <label for="trainee_name" class="required">Trainee Name</label>
@@ -60,7 +62,7 @@
                     </div>
                     <div class="form-group">
                         <label for="trainer_name" class="required">Trainer Name</label>
-                        <input type="text" class="form-control" id="trainer_name" name="trainer_name" required>
+                        <input type="text" class="form-control" id="trainer_name" name="trainer_name" value="{{ $trainerName }}" readonly required>
                     </div>
                     <div class="form-group">
                         <label for="present" class="required">Mark Present</label>
@@ -86,4 +88,22 @@
         </form>
     </div>
 </div>
+
+<script>
+function calculateDifference() {
+    const startTime = document.getElementById('start_time').value;
+    const finishTime = document.getElementById('finish_time').value;
+
+    if (startTime && finishTime) {
+        const start = new Date(`1970-01-01T${startTime}Z`);
+        const finish = new Date(`1970-01-01T${finishTime}Z`);
+        const diff = (finish - start) / (1000 * 60 * 60); // Difference in hours
+
+        document.getElementById('difference').value = diff.toFixed(2) + ' hours';
+    } else {
+        document.getElementById('difference').value = '';
+    }
+}
+</script>
+
 @endsection

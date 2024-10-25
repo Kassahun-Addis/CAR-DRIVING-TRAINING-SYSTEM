@@ -25,21 +25,23 @@
 <div>
     <button onclick="printAgreement()" class="btn btn-primary" style="float: left; margin-top: 1%;">Print Document</button>
 
-    <!-- Conditionally set the href based on whether the user is authenticated or not -->
     <a href="{{ auth()->check() ? route('trainee.index') : url('/home') }}" class="btn btn-secondary btn-custom" style="float: left; margin-top: 1%;">
-    <i class="fas fa-arrow-left mr-2"></i> Back
+        <i class="fas fa-arrow-left mr-2"></i> Back
     </a>
 </div>
-    
-    <div id="agreement-content">
+
+<div id="agreement-content">
+    <!-- Clear float -->
+    <h1 style="clear: both; margin-top: 5px; text-align: center;">ሰለሞን የአሽከርካሪዎች ማሰልጠኛ ተቋም</h1>
+
     <img src="{{ asset('storage/trainee_photos/' . $trainee->photo) }}" alt="Trainee Photo" style="width: 100px; height: 100px; margin-left: 75%;">
 
-      <h1 >የእጩ አሽከርካሪ ሰልጣኞች መመዝገቢያ እና የውል ፎርም</h1>
+    <h1>የእጩ አሽከርካሪ ሰልጣኞች መመዝገቢያ እና የውል ፎርም</h1>
     <p>
-        እኔ <strong><u>{{ $trainee->full_name }}</u></strong> 
-        በ አዲስ አበባ ክ/ከተማ <strong><u>{{ $trainee->city }}</u></strong> 
-        የትውልድ ስፍራ <strong><u>{{ $trainee->birth_place }}</u></strong> 
-        ወረዳ <strong><u>{{ $trainee->woreda }}</u></strong> 
+        እኔ <strong><u>{{ $trainee->ሙሉ_ስም }}</u></strong> 
+        በ አዲስ አበባ ክ/ከተማ <strong><u>{{ $trainee->ክፍለ_ከተማ }}</u></strong> 
+        የትውልድ ስፍራ <strong><u>{{ $trainee->የትዉልድ_ቦታ }}</u></strong> 
+        ወረዳ <strong><u>{{ $trainee->ወረዳ }}</u></strong> 
         የቤት ቁጥር <strong><u>{{ $trainee->house_no }}</u></strong> 
         ስልክ ቁጥር <strong><u>{{ $trainee->phone_no }}</u></strong> 
         ነዋሪ የሆንኩ ስሆን በሰሎሞን የአሽከርካሪዎች ማሠልጠኛ ተቋም ውስጥ 
@@ -88,8 +90,8 @@
     <ul>
         <li>ሰልጣኞች ክፍያቸው በ2 ዙር መክፈል ይችላሉ ፡፡ ሰልጣኙ ግማሽ ስልጠና ከወሰደ በሁዋላ 2ኛውን ዙር መክፈል አለበት፡፡ ነገር ግን ከግማሽ ስልጠና በሁዋላ ባሉት 10 ቀናት ካልከፈለ ውሉ ይሰረዛል ፡፡</li>
     </ul>
-    <p>አመልካች እኔ አቶ/ወ/ሮ/ወሪት <strong><u>{{ $trainee->full_name }}</u></strong> የተባልኩ ሰልጣኝ ከዚህ በላይ የተዘረዘሩት ውሎች እና መስፈርቶ አሟልቸ ፡ አምኘበት እና አክብሬ ልሰለጥን የተስማማሁ መሆኔ ከዚህ በታች ባለው ፊርማዬ አረጋግጣለሁ ፡፡</p>
-    <p> የዕጩ  ስልጣኝ  ሙሉ ስም <strong><u>{{ $trainee->full_name }}</u></strong> ፊርማ-------------ቀን-------------- </p>
+    <p>አመልካች እኔ አቶ/ወ/ሮ/ወሪት <strong><u>{{ $trainee->ሙሉ_ስም }}</u></strong> የተባልኩ ሰልጣኝ ከዚህ በላይ የተዘረዘሩት ውሎች እና መስፈርቶ አሟልቸ ፡ አምኘበት እና አክብሬ ልሰለጥን የተስማማሁ መሆኔ ከዚህ በታች ባለው ፊርማዬ አረጋግጣለሁ ፡፡</p>
+    <p> የዕጩ  ስልጣኝ  ሙሉ ስም <strong><u>{{ $trainee->ሙሉ_ስም }}</u></strong> ፊርማ-------------ቀን-------------- </p>
 
 
 
@@ -134,17 +136,17 @@
 </ul>
 <p>እና ሌሎች በማናውቃቸው ምክንያቶች የፈተና ሽግሽግ በሚኖርበት ጊዜ የተቋማችን አለመሆኑን እንዲረዱልን እና በትዕግስት ሁኔታዎች እስኪስተካከሉ እንዲጠብቁ  በአክብሮት እንገልጻለን፡፡</p>
 <p> 
-    አመልካች እኔ <strong><u>{{ $trainee->full_name }}</u></strong> ከላይ የተገለፀውን ሁሉ አውቄ ተረድቼና 
+    አመልካች እኔ <strong><u>{{ $trainee->ሙሉ_ስም }}</u></strong> ከላይ የተገለፀውን ሁሉ አውቄ ተረድቼና 
     ተስማምቼ ወስኜ የተመዘገብኩ መሆኑን በተለመደው ፊርማዬ አረጋግጣለው፡፡
 </p>     
 <p>እኔ ሰልጣኝ ለተቋሙ የሰጠውት ማንኛውም የትምህርት ሆነ የቀበሌ መታወቂያ ማስረጃ ትክክል መሆኑንም ከታች ባለው በፊርማዬ አረጋግጣለሁ፡፡</p>                                                                                     
-<p>የእጩ ሰልጣኝ ሙሉ ስም <strong><u>{{ $trainee->full_name }}</u></strong>  ፊርማ ______________ ቀን ______________</p>                                                        
+<p>የእጩ ሰልጣኝ ሙሉ ስም <strong><u>{{ $trainee->ሙሉ_ስም }}</u></strong>  ፊርማ ______________ ቀን ______________</p>                                                        
 
 <h4 style= "text-align:center;">የእጩ አሽከርካሪ ሰልጣኞች መመዝገቢያ ፎርም</h4>
 <p>
-    እኔ <strong><u>{{ $trainee->full_name }}</u></strong>
-    በ አዲስ አበባ ክ/ከተማ <strong><u>{{ $trainee->city }}</u></strong> 
-    ወረዳ <strong><u>{{ $trainee->woreda }}</u></strong> 
+    እኔ <strong><u>{{ $trainee->ሙሉ_ስም }}</u></strong>
+    በ አዲስ አበባ ክ/ከተማ <strong><u>{{ $trainee->ክፍለ_ከተማ }}</u></strong> 
+    ወረዳ <strong><u>{{ $trainee->ወረዳ }}</u></strong> 
     የቤት ቁጥር <strong><u>{{ $trainee->house_no }}</u></strong> 
     ስልክ ቁጥር <strong><u>{{ $trainee->phone_no }}</u></strong> 
     ነዋሪ የሆንኩ ስሆን ሰሎሞን የአሽከርካሪዎች ማሠልጠኛ ተቋም ውስጥ  
@@ -199,10 +201,10 @@
     <li>የባዕላት መኖር </li>
 </ul>
 <p>እና ሌሎች በማናውቃቸው ምክንያቶች የፈተና ሽግሽግ በሚኖርበት ጊዜ የተቋማችን አለመሆኑን እንዲረዱልን እና በትዕግስት ሁኔታዎች እስኪስተካከሉ እንዲጠብቁ  በአክብሮት እንገልጻለን፡፡</p>
-<p>አመልካች እኔ <strong><u>{{ $trainee->full_name }}</u></strong> ከላይ የተገለፀውን ሁሉ አውቄ ተረድቼና 
+<p>አመልካች እኔ <strong><u>{{ $trainee->ሙሉ_ስም }}</u></strong> ከላይ የተገለፀውን ሁሉ አውቄ ተረድቼና 
 ተስማምቼ ወስኜ የተመዘገብኩ መሆኑን በተለመደው ፊርማዬ አረጋግጣለው፡፡</p>     
 <p>እኔ ሰልጣኝ ለተቋሙ የሰጠውት ማንኛውም የትምህርት ሆነ የቀበሌ መታወቂያ ማስረጃ ትክክል መሆኑንም ከታች ባለው በፊርማዬ አረጋግጣለሁ፡፡</p>                                                                                     
-<p>የእጩ ሰልጣኝ ሙሉ ስም <strong><u>{{ $trainee->full_name }}</u></strong>  ፊርማ ______________ ቀን ______________</p>                                                        
+<p>የእጩ ሰልጣኝ ሙሉ ስም <strong><u>{{ $trainee->ሙሉ_ስም }}</u></strong>  ፊርማ ______________ ቀን ______________</p>                                                        
 
 </div>  
 </div>

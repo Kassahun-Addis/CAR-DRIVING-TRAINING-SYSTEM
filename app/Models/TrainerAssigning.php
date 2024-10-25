@@ -34,4 +34,9 @@ class TrainerAssigning extends Model
 // {
 //     return $this->belongsTo(Trainer::class, 'trainer_id'); // Use trainer_id as the foreign key
 // }
+
+public function trainee()
+    {
+        return $this->belongsTo(Trainee::class, 'trainee_name', 'full_name');
+    }
 }

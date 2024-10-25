@@ -4,17 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Trainee;
+use App\Models\TrainerAssigning;
 use Illuminate\Http\Request;
 //use App\Http\Controllers\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use DateTime;
 
 class AttendanceController extends Controller
 {
-        public function create()
-    {
-        // Return the view to create a new attendance record
-        return view('Attendance.attendance'); // Make sure this view exists
-    }
+    //     public function create()
+    // {
+    //     // Return the view to create a new attendance record
+    //     return view('Attendance.attendance'); // Make sure this view exists
+    // }
+
+   
+
+public function create()
+{
+    $traineeName = Auth::guard('trainee')->user()->full_name;
+    $trainerAssigning = TrainerAssigning::where('trainee_name', $traineeName)->first();
+
+    $trainerName = $trainerAssigning ? $trainerAssigning->trainer_name : null;
+
+    return view('Attendance.attendance', compact('trainerName'));
+}
 
     private function validateAttendance(Request $request)
 {
@@ -22,9 +37,10 @@ class AttendanceController extends Controller
         'date' => 'required|date',
         'start_time' => 'required',
         'finish_time' => 'required',
+        'difference' => 'required',
         'trainee_name' => 'required|string',
         'trainer_name' => 'required|string',
-        'status' => 'required|in:Present,Absent',
+        'status' => 'nullable|in:Present,Absent',
         'comment' => 'nullable|string',
     ]);
 }
@@ -78,6 +94,7 @@ public function store(Request $request)
         'date' => $request->date,
         'start_time' => $request->start_time,
         'finish_time' => $request->finish_time,
+        'difference' => $request->difference,
         'trainee_name' => $request->trainee_name,
         'trainer_name' => $request->trainer_name,
         'status' => $request->status,
@@ -91,15 +108,16 @@ public function store(Request $request)
     return redirect()->route('attendance.index')->with('success', 'Attendance recorded successfully.');
 }
 
+
+
 public function index(Request $request)
 {
-    $search = $request->input('search'); // Get the search term
-    $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+    $search = $request->input('search');
+    $perPage = $request->input('perPage', 10);
 
-    // If admin is logged in, show attendance for all trainees or a specific trainee
     if (Auth::guard('web')->check()) {
-        $traineeId = $request->input('trainee_id'); // Get trainee ID from request, if provided
-        $traineeName = $request->input('trainee_name'); // Get trainee name from request, if provided
+        $traineeId = $request->input('trainee_id');
+        $traineeName = $request->input('trainee_name');
 
         $attendances = Attendance::when($traineeId, function ($query) use ($traineeId) {
                 return $query->where('trainee_id', $traineeId);
@@ -112,9 +130,7 @@ public function index(Request $request)
                              ->orWhere('status', 'like', '%' . $search . '%');
             })
             ->paginate($perPage);
-    } 
-    // If trainee is logged in, only show their attendances
-    elseif (Auth::guard('trainee')->check()) {
+    } elseif (Auth::guard('trainee')->check()) {
         $traineeId = Auth::guard('trainee')->user()->id;
         $attendances = Attendance::where('trainee_id', $traineeId)
             ->when($search, function ($query) use ($search) {
@@ -124,6 +140,33 @@ public function index(Request $request)
     } else {
         return redirect()->route('login')->with('error', 'Please log in to view attendance.');
     }
+
+    $attendances->getCollection()->transform(function ($attendance) {
+        $start = new DateTime($attendance->start_time);
+        $finish = new DateTime($attendance->finish_time);
+        $interval = $start->diff($finish);
+        $attendance->difference = $interval->format('%h hours %i minutes');
+
+        $trainerAssignment = TrainerAssigning::where('trainee_name', $attendance->trainee_name)->first();
+        
+        if ($trainerAssignment) {
+            $attendance->start_date = $trainerAssignment->start_date;
+            $attendance->end_date = $trainerAssignment->end_date;
+            $attendance->category_id = $trainerAssignment->category_id;
+            $attendance->plate_no = $trainerAssignment->plate_no;
+        } else {
+            $attendance->start_date = 'N/A';
+            $attendance->end_date = 'N/A';
+            $attendance->category_id = 'N/A';
+            $attendance->plate_no = 'N/A';
+        }
+
+        // Fetch the trainee's phone number
+        $trainee = Trainee::where('full_name', $attendance->trainee_name)->first();
+        $attendance->trainee_phone = $trainee ? $trainee->phone_no : 'N/A';
+
+        return $attendance;
+    });
 
     return view('Attendance.index', compact('attendances'));
 }
@@ -182,6 +225,7 @@ public function edit($id)
 
 public function update(Request $request, $id)
 {
+    \Log::info('Update method called with request:', $request->all());
     // Validate the request data
     $this->validateAttendance($request);
 
@@ -201,6 +245,7 @@ public function update(Request $request, $id)
         'date' => $request->date,
         'start_time' => $request->start_time,
         'finish_time' => $request->finish_time,
+        'difference' => $request->difference,
         'trainee_name' => $request->trainee_name,
         'trainer_name' => $request->trainer_name,
         'status' => $request->status,
