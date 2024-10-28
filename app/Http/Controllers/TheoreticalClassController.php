@@ -32,6 +32,9 @@ class TheoreticalClassController extends Controller
                        ->whereNotIn('full_name', $assignedTrainees)
                        ->get();
 
+
+    $trainers = Trainer::where('status', 'active')
+                        ->get();
     // Get the current date
     $currentDate = now();
 
@@ -47,7 +50,7 @@ class TheoreticalClassController extends Controller
         return $classCounts[$class->class_name] ?? 0;
     });
 
-    return view('theoretical_classes.create', compact('sortedClasses', 'classCounts', 'trainees'));
+    return view('theoretical_classes.create', compact('sortedClasses', 'classCounts', 'trainees', 'trainers'));
 }
 
     public function store(Request $request)
@@ -55,6 +58,7 @@ class TheoreticalClassController extends Controller
         // Validate and store a new class
         $request->validate([
             'trainee_name' => 'required|string|max:255',
+            'trainer_name' => 'required|arr|max:255',
             'class_name' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -74,7 +78,7 @@ class TheoreticalClassController extends Controller
 
     public function edit($id)
 {
-    // Fetch the theoretical class being edited
+    // Fetch the theoretical class being edited 
     $theoreticalClass = TheoreticalClass::findOrFail($id);
     
     // Fetch all classes
@@ -98,7 +102,10 @@ class TheoreticalClassController extends Controller
     // Fetch all trainees
     $trainees = Trainee::all();
 
-    return view('theoretical_classes.edit', compact('theoreticalClass', 'trainees', 'sortedClasses', 'traineeCounts'));
+    // Fetch all trainees
+    $trainers = Trainer::all();
+
+    return view('theoretical_classes.edit', compact('theoreticalClass','trainers', 'trainees', 'sortedClasses', 'traineeCounts'));
 }
 
     public function update(Request $request, TheoreticalClass $theoreticalClass)
@@ -106,6 +113,7 @@ class TheoreticalClassController extends Controller
         // Validate and update class
         $request->validate([
             'trainee_name' => 'required|string|max:255',
+            'trainer_name' => 'required|string|max:255',
             'class_name' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',

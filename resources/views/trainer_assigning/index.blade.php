@@ -81,6 +81,7 @@
                 <th>Category</th>
                 <th>Car Name</th>
                 <th>Plate No</th>
+                <th>Total Time</th>
                 <!-- <th>Training Car</th> -->
                 <th>Actions</th>
             </tr>
@@ -96,6 +97,7 @@
                     <td>{{ $trainer_assigning->category_id }}</td>
                     <td>{{ $trainer_assigning->car_name }}</td>
                     <td>{{ $trainer_assigning->plate_no }}</td>
+                    <td>{{ $trainer_assigning->total_time }}</td> <!-- Display Total Time -->
                     <td class="text-nowrap">
                         <a href="{{ route('trainer_assigning.edit', $trainer_assigning->assigning_id) }}" class="btn btn-warning btn-sm">Edit</a>
 

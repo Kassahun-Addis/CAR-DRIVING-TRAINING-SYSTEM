@@ -75,6 +75,7 @@
             <tr>
                 <th>No</th>
                 <th>Trainee Name</th>
+                <th>Trainer Name</th>
                 <th>Class Name</th>
                 <th>Start Date</th>
                 <th>End Date</th>
@@ -87,6 +88,7 @@
                 <tr>
                     <td>{{ $key + 1 }}</td>
                     <td>{{ $theoreticalClass->trainee_name }}</td>
+                    <td>{{ $theoreticalClass->trainer_name }}</td>
                     <td>{{ $theoreticalClass->class_name }}</td>
                     <td>{{ $theoreticalClass->start_date }}</td>
                     <td>{{ $theoreticalClass->end_date }}</td>

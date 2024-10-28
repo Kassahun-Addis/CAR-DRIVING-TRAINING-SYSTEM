@@ -12,6 +12,7 @@ class TheoreticalClass extends Model
     protected $fillable = [
         'class_name',
         'trainee_name',
+        'trainer_name',
         'start_date',
         'end_date',
     ];

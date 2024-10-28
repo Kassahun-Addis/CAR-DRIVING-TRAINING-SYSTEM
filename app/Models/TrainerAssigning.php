@@ -22,6 +22,7 @@ class TrainerAssigning extends Model
         'category_id',
         'plate_no',
         'car_name',
+        'total_time',
     ];
 
     // Relationship to the Category model

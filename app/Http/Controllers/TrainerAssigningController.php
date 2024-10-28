@@ -74,6 +74,7 @@ public function create()
         'category_id' => 'required|string|exists:trainers,category', // Validate against car_category_name
         'plate_no' => 'required|numeric', 
         'car_name' => 'required|string|max:255',
+        'total_time' => 'required|numeric', // Add validation for total time
     ]);
 
     // Create the TrainerAssigning record
@@ -85,6 +86,8 @@ public function create()
         'category_id' => $request->category_id, // Use the found category id
         'plate_no' => $request->plate_no,
         'car_name' => $request->car_name,
+        'total_time' => $request->input('total_time'), // Store total time
+
     ]);
 
     return redirect()->route('trainer_assigning.index')->with('success', 'Trainer assigned successfully!');
@@ -129,6 +132,8 @@ public function edit($id)
         'category_id' => 'required|string|exists:trainers,category',
         'plate_no' => 'required|string|max:255',
         'car_name' => 'required|string|max:255',
+        'total_time' => 'required|numeric', // Add validation for total time
+
     ]);
 
     // Update the trainer assigning record
@@ -140,6 +145,7 @@ public function edit($id)
         'category_id' => $request->category_id,
         'plate_no' => $request->plate_no,
         'car_name' => $request->car_name,
+        'total_time' => $request->input('total_time'), // Update total time
     ]);
 
     return redirect()->route('trainer_assigning.index')->with('success', 'Trainer assignment updated successfully!');

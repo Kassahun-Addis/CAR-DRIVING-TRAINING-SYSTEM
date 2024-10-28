@@ -52,6 +52,18 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="trainer_name">Trainer Name:</label>
+                        <select class="form-control" id="trainer_name" name="trainer_name" required>
+                            <option value="" style="width: 100%;">Select a Trainer</option>
+                            @foreach($trainers as $trainer)
+                                <option value="{{ $trainer->trainer_name }}" {{ $trainer->trainer_name == $theoreticalClass->trainer_name ? 'selected' : '' }}>
+                                    {{ $trainer->trainer_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
     <label for="class_name">Class Name:</label>
     <select class="form-control" id="class_name" name="class_name" required>
         <option value="">Select Class with Small No of Trainee</option>

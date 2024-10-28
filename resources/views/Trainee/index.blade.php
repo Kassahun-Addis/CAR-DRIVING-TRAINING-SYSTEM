@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mt-5">
-<h2 style="text-align: center; padding:10px;">Trainee List</h2>
+    <h2 style="text-align: center; padding:10px;">Trainee List</h2>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
     </div>
@@ -13,58 +13,47 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-   <div class="row mb-3" style="display: flex; justify-content: space-between; align-items: center;">
-    <!-- Entries selection and Add New button -->
-    <div class="col-12 col-md-6 d-flex justify-content-between mb-2 mb-md-0">
-        <!-- Per Page Selection -->
-        <form action="{{ route('trainee.index') }}" method="GET" class="form-inline" style="flex: 1;">
-            <div class="form-group">
-                <span>Show
-                    <select name="perPage" class="form-control" onchange="this.form.submit()" style="display: inline-block; width: auto;">
-                        <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
-                        <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25</option>
-                        <option value="50" {{ request('perPage') == 50 ? 'selected' : '' }}>50</option>
-                        <option value="100" {{ request('perPage') == 100 ? 'selected' : '' }}>100</option>
-                    </select>
-                    entries
-                </span>
-            </div>
-        </form>
-
-        <!-- Add New Button -->
-        <a href="{{ route('trainee.create') }}" class="btn btn-primary ml-2">Add New</a>
-    </div>
-
-    <!-- Search and Export buttons -->
-    <div class="col-12 col-md-6 d-flex justify-content-end align-items-center">
-        <form action="{{ route('trainee.index') }}" method="GET" class="form-inline" style="flex: 1;">
-            <div class="form-group w-100" style="display: flex; align-items: center;">
-                <!-- Search input takes more space on small devices -->
-                <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request('search') }}" style="flex-grow: 1; margin-right: 5px; min-width: 0;">
-
-                <!-- Search button -->
-                <button type="submit" class="btn btn-primary mr-1">Search</button>
-
-                <!-- Export dropdown on small devices -->
-                <div class="d-block d-md-none dropdown ml-1">
-                    <button class="btn btn-primary dropdown-toggle" type="button" id="exportDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Export
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="exportDropdown">
-                        <a class="dropdown-item" href="javascript:void(0);" onclick="printAllBankDetails()">PDF</a>
-                        <a class="dropdown-item" href="{{ route('trainee.export') }}">Excel</a>
-                    </div>
+    <div class="row mb-3" style="display: flex; justify-content: space-between; align-items: center;">
+        <!-- Entries selection and Add New button -->
+        <div class="col-12 col-md-6 d-flex justify-content-between mb-2 mb-md-0">
+            <form action="{{ route('trainee.index') }}" method="GET" class="form-inline" style="flex: 1;">
+                <div class="form-group">
+                    <span>Show
+                        <select name="perPage" class="form-control" onchange="this.form.submit()" style="display: inline-block; width: auto;">
+                            <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('perPage') == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('perPage') == 100 ? 'selected' : '' }}>100</option>
+                        </select>
+                        entries
+                    </span>
                 </div>
+            </form>
+            <a href="{{ route('trainee.create') }}" class="btn btn-primary ml-2">Add New</a>
+        </div>
 
-                <!-- Separate buttons for larger devices -->
-                <div class="d-none d-md-block ml-1">
-                    <button type="button" class="btn btn-primary" onclick="printAllBankDetails()">PDF</button>
-                    <button type="button" class="btn btn-primary ml-1" onclick="window.location.href='{{ route('trainee.export') }}'">Excel</button>
+        <!-- Search and Export buttons -->
+        <div class="col-12 col-md-6 d-flex">
+            <form action="{{ route('trainee.index') }}" method="GET" class="form-inline" style="flex: 1;">
+                <div class="form-group w-100" style="display: flex; align-items: center;">
+                    <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request('search') }}" style="flex-grow: 1; margin-right: 5px; min-width: 0;">
+                    <button type="submit" class="btn btn-primary mr-1">Search</button>
                 </div>
+            </form>
+
+            <!-- Export buttons -->
+            <div class="d-flex">
+              <form action="{{ route('trainee.export') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="button" class="btn btn-primary mr-1" onclick="window.location.href='{{ route('trainee.exportPdf') }}'">PDF</button>
+
+                    <button type="submit" class="btn btn-primary">Excel</button>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
+
 
 <!-- Responsive table wrapper -->
 <div class="table-responsive">

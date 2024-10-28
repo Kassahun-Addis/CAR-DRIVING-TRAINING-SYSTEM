@@ -79,7 +79,11 @@
                         <label for="car_name">Car Name:</label>
                         <input type="text" class="form-control" id="car_name" name="car_name" value="{{ $trainer_assigning->car_name }}" readonly required>
                     </div>
-
+                    
+                    <div class="form-group">
+                        <label for="total_time" class="required">Total Time</label>
+                        <input type="number" class="form-control" id="total_time" name="total_time" value="{{ $trainer_assigning->total_time }}" required>
+                    </div>
                 </div>
             </div>
 

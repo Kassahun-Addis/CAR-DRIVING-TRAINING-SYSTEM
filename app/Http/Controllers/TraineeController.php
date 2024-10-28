@@ -8,12 +8,50 @@ use App\Models\CarCategory;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\TraineeExport;
 use Illuminate\Support\Facades\Storage;
-use Barryvdh\DomPDF\Facade as PDF;
+//use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\Response;
+use App\Exports\TraineesExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Mpdf\Mpdf;
+
+
+
 
 
 class TraineeController extends Controller
 {
+
+    // Add this method to your controller
+    public function exportToExcel()
+    {
+        return Excel::download(new TraineesExport, 'trainees.xlsx');
+    }
+
+        public function exportPdf()
+    {
+        $trainees = Trainee::all();
+        $html = view('Trainee.pdf', compact('trainees'))->render();
+    
+        // Initialize Mpdf and configure custom font settings
+        $mpdf = new Mpdf([
+            'format' => 'A4-L', // Landscape orientation
+            'default_font' => 'Nyala',
+            'fontDir' => [base_path('public/fonts')], // Specify custom font directory
+            'fontdata' => [
+                'nyala' => [
+                    'R' => 'nyala.ttf', // Regular Nyala font
+                ],
+            ],
+            'default_font_size' => 10, // Set the default font size
+        ]);
+    
+        $mpdf->WriteHTML($html);
+    
+        return $mpdf->Output('trainee_list.pdf', 'D');
+    }
+    
+
     public function toggleStatus(Request $request, Trainee $trainee)
 {
     try {
@@ -284,27 +322,6 @@ class TraineeController extends Controller
     return redirect()->route('login')->withErrors('You are not logged in.');
 }
 
-// Add this method to your controller
-public function exportToExcel()
-{
-    return Excel::download(new BankCategoryExport, 'trainees.xlsx');
-}
-
-// public function showPhoto($photoName)
-// {
-//     $path = base_path('uploads/trainee_photos/' . $photoName);
-
-//     if (!File::exists($path)) {
-//         abort(404, 'Image not found.');
-//     }
-
-//     $file = File::get($path);
-//     $mimeType = File::mimeType($path);
-
-//     return response($file)->header("Content-Type", $mimeType);
-// }
-
-
 public function showAgreement($id)
 {
     //dd($id); // Check if this outputs the correct ID
@@ -328,3 +345,4 @@ public function downloadAgreement($id)
 }
 
 }
+

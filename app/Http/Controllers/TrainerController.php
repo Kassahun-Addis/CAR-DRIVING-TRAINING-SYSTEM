@@ -6,9 +6,44 @@ use Illuminate\Http\Request;
 use App\Models\Trainer;
 use App\Models\TrainingCar;
 use App\Models\CarCategory; // Import the CarCategory model
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\TrainersExport;
+use Mpdf\Mpdf;
+
+
+
 
 class TrainerController extends Controller
 {
+
+public function exportPdf()
+    {
+        $trainers = Trainer::all();
+        $html = view('Trainer.pdf', compact('trainers'))->render();
+    
+        // Initialize Mpdf and configure custom font settings
+        $mpdf = new Mpdf([
+            'format' => 'A4-L', // Landscape orientation
+            'default_font' => 'Nyala',
+            'fontDir' => [base_path('public/fonts')], // Specify custom font directory
+            'fontdata' => [
+                'nyala' => [
+                    'R' => 'nyala.ttf', // Regular Nyala font
+                ],
+            ],
+            'default_font_size' => 10, // Set the default font size
+        ]);
+    
+        $mpdf->WriteHTML($html);
+    
+        return $mpdf->Output('trainers_list.pdf', 'D');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new TrainersExport, 'trainers_list.xlsx');
+    }
 
        // TrainerController.php
 public function toggleStatus(Request $request, Trainer $trainer)

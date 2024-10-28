@@ -17,6 +17,7 @@ class CreateTrainerAssigningsTable extends Migration
             $table->string('plate_no'); // Plate number of the car
             $table->string('car_name'); // Car name
             $table->string('category_id');  // Foreign key for category
+            $table->decimal('total_time', 8, 2)->nullable(false); // Add total_time column
             $table->timestamps(); // Created at and updated at timestamps
 
             // Foreign key constraint

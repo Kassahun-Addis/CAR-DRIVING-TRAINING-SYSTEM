@@ -110,6 +110,14 @@ public function store(Request $request)
 
 
 
+// app/Http/Controllers/AttendanceController.php
+
+// app/Http/Controllers/AttendanceController.php
+
+// app/Http/Controllers/AttendanceController.php
+
+// app/Http/Controllers/AttendanceController.php
+
 public function index(Request $request)
 {
     $search = $request->input('search');
@@ -145,20 +153,24 @@ public function index(Request $request)
         $start = new DateTime($attendance->start_time);
         $finish = new DateTime($attendance->finish_time);
         $interval = $start->diff($finish);
-        $attendance->difference = $interval->format('%h hours %i minutes');
+        $attendance->difference_in_hours = $interval->h + ($interval->i / 60); // Convert to hours
 
         $trainerAssignment = TrainerAssigning::where('trainee_name', $attendance->trainee_name)->first();
         
         if ($trainerAssignment) {
+            \Log::info('Trainer Assignment found:', ['trainee_name' => $attendance->trainee_name, 'total_time' => $trainerAssignment->total_time]);
             $attendance->start_date = $trainerAssignment->start_date;
             $attendance->end_date = $trainerAssignment->end_date;
             $attendance->category_id = $trainerAssignment->category_id;
             $attendance->plate_no = $trainerAssignment->plate_no;
+            $attendance->total_time = $trainerAssignment->total_time; // Ensure this is fetched correctly
         } else {
+            \Log::info('Trainer Assignment not found:', ['trainee_name' => $attendance->trainee_name]);
             $attendance->start_date = 'N/A';
             $attendance->end_date = 'N/A';
             $attendance->category_id = 'N/A';
             $attendance->plate_no = 'N/A';
+            $attendance->total_time = 'N/A'; // Default value if not found
         }
 
         // Fetch the trainee's phone number

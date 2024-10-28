@@ -50,11 +50,12 @@ Route::get('/welcome', [DashboardController::class, 'index']);
     Route::put('/trainee/update/{id}', [TraineeController::class, 'update'])->name('trainee.update');
     Route::delete('/trainee/destroy/{id}', [TraineeController::class, 'destroy'])->name('trainee.destroy');
     Route::post('trainee/export', [TraineeController::class, 'exportToExcel'])->name('trainee.export');
+    Route::get('trainee/export-pdf', [TraineeController::class, 'exportPdf'])->name('trainee.exportPdf');    
     Route::get('/trainee/{id}/agreement', [TraineeController::class, 'showAgreement'])->name('trainee.agreement');
     Route::get('/trainee/{id}/agreement', [TraineeController::class, 'showAgreement'])->name('trainee.agreement');
     Route::get('/trainee/{id}/download-agreement', [TraineeController::class, 'downloadAgreement'])->name('download.agreement');
     Route::patch('/trainees/{trainee}/toggle-status', [TraineeController::class, 'toggleStatus']);        
- //}); 
+ //}); Route::get('/trainee/export', [TraineeController::class, 'exportExcel'])->name('trainee.export');
 
 
 // Attendance Routes
@@ -93,6 +94,8 @@ Route::get('/welcome', [DashboardController::class, 'index']);
     Route::put('/trainers/update/{trainer}', [TrainerController::class, 'update'])->name('trainers.update'); // Update here
     Route::delete('/trainers/destroy/{trainer}', [TrainerController::class, 'destroy'])->name('trainers.destroy');
     Route::patch('/trainers/{trainer}/toggle-status', [TrainerController::class, 'toggleStatus']);
+    Route::get('/trainers/export-pdf', [TrainerController::class, 'exportPdf'])->name('trainers.exportPdf');
+    Route::post('/trainers/export-excel', [TrainerController::class, 'exportExcel'])->name('trainers.export');
 
 });
 
