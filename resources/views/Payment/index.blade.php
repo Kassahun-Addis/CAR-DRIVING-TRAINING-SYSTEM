@@ -36,34 +36,23 @@
         <a href="{{ route('payments.create') }}" class="btn btn-primary ml-2">Add New</a>
     </div>
 
-    <!-- Search and Export buttons -->
-    <div class="col-12 col-md-6 d-flex justify-content-end align-items-center">
-        <form action="{{ route('payments.index') }}" method="GET" class="form-inline" style="flex: 1;">
-            <div class="form-group w-100" style="display: flex; align-items: center;">
-                <!-- Search input takes more space on small devices -->
-                <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request('search') }}" style="flex-grow: 1; margin-right: 5px; min-width: 0;">
-
-                <!-- Search button -->
-                <button type="submit" class="btn btn-primary mr-1">Search</button>
-
-                <!-- Export dropdown on small devices -->
-                <div class="d-block d-md-none dropdown ml-1">
-                    <button class="btn btn-primary dropdown-toggle" type="button" id="exportDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Export
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="exportDropdown">
-                        <a class="dropdown-item" href="javascript:void(0);" onclick="printAllBankDetails()">PDF</a>
-                        <a class="dropdown-item" href="{{ route('trainee.export') }}">Excel</a>
-                    </div>
+            <!-- Search and Export buttons -->
+            <div class="col-12 col-md-6 d-flex">
+            <form action="{{ route('payments.index') }}" method="GET" class="form-inline" style="flex: 1;">
+                <div class="form-group w-100" style="display: flex; align-items: center;">
+                    <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request('search') }}" style="flex-grow: 1; margin-right: 5px; min-width: 0;">
+                    <button type="submit" class="btn btn-primary mr-1">Search</button>
                 </div>
+            </form>
 
-                <!-- Separate buttons for larger devices -->
-                <div class="d-none d-md-block ml-1">
-                    <button type="button" class="btn btn-primary" onclick="printAllBankDetails()">PDF</button>
-                    <button type="button" class="btn btn-primary ml-1" onclick="window.location.href='{{ route('trainee.export') }}'">Excel</button>
-                </div>
+            <div class="d-flex">
+                <form action="{{ route('payments.exportExcel') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="button" class="btn btn-primary mr-1" onclick="window.location.href='{{ route('payments.exportPdf') }}'">PDF</button>
+                    <button type="submit" class="btn btn-primary">Excel</button>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
     

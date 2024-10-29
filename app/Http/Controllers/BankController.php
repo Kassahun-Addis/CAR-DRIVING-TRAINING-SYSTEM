@@ -4,9 +4,43 @@ namespace App\Http\Controllers;
 
 use App\Models\Bank;
 use Illuminate\Http\Request;
+use App\Exports\BanksExport;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
+use Mpdf\Mpdf;
+
+
 
 class BankController extends Controller
 {
+
+    public function exportPdf()
+    {
+        $banks = Bank::all();
+        $html = view('banks.pdf', compact('banks'))->render();
+    
+        // Initialize Mpdf and configure custom font settings
+        $mpdf = new Mpdf([
+            'format' => 'A4-L', // Landscape orientation
+            'default_font' => 'Nyala',
+            'fontDir' => [base_path('public/fonts')], // Specify custom font directory
+            'fontdata' => [
+                'nyala' => [
+                    'R' => 'nyala.ttf', // Regular Nyala font
+                ],
+            ],
+            'default_font_size' => 10, // Set the default font size
+        ]);
+    
+        $mpdf->WriteHTML($html);
+    
+        return $mpdf->Output('bank_list.pdf', 'D');
+    }
+
+        public function exportExcel()
+    {
+        return Excel::download(new BanksExport, 'banks_list.xlsx');
+    }
    
     public function index(Request $request)
     {

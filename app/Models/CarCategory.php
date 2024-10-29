@@ -15,14 +15,19 @@ class CarCategory extends Model
     ];
 
    // Define the relationship with TrainingCar
-   public function trainingCars()
-   {
-       return $this->hasMany(TrainingCar::class);
-   }
+//    public function trainingCars()
+//    {
+//        return $this->hasMany(TrainingCar::class);
+//    }
 
    // CarCategory.php
 public function cars()
 {
     return $this->hasMany(Car::class); // Assuming a car belongs to a category
 }
+
+// public function trainingCars()
+// {
+//     return $this->hasMany(TrainingCar::class, 'category');
+// }
 }

@@ -55,7 +55,7 @@
             </div>
         </div>
     </div>
-</div>
+
 
 <!-- Responsive table wrapper -->
 <div class="table-responsive">

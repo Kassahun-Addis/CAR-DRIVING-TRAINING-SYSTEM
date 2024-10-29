@@ -6,8 +6,7 @@
 <div class="container mt-5">
 <h2 style="text-align: center; padding:10px;">Vehicles List</h2>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3"></div>
     
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -35,43 +34,32 @@
         <a href="{{ route('training_cars.create') }}" class="btn btn-primary ml-2">Add New</a>
     </div>
 
-    <!-- Search and Export buttons -->
-    <div class="col-12 col-md-6 d-flex justify-content-end align-items-center">
-        <form action="{{ route('training_cars.index') }}" method="GET" class="form-inline" style="flex: 1;">
-            <div class="form-group w-100" style="display: flex; align-items: center;">
-                <!-- Search input takes more space on small devices -->
-                <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request('search') }}" style="flex-grow: 1; margin-right: 5px; min-width: 0;">
-
-                <!-- Search button -->
-                <button type="submit" class="btn btn-primary mr-1">Search</button>
-
-                <!-- Export dropdown on small devices -->
-                <div class="d-block d-md-none dropdown ml-1">
-                    <button class="btn btn-primary dropdown-toggle" type="button" id="exportDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Export
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="exportDropdown">
-                        <a class="dropdown-item" href="javascript:void(0);" onclick="printAllBankDetails()">PDF</a>
-                        <a class="dropdown-item" href="{{ route('trainee.export') }}">Excel</a>
-                    </div>
+        <!-- Search and Export buttons -->
+            <div class="col-12 col-md-6 d-flex">
+            <form action="{{ route('training_cars.index') }}" method="GET" class="form-inline" style="flex: 1;">
+                <div class="form-group w-100" style="display: flex; align-items: center;">
+                    <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request('search') }}" style="flex-grow: 1; margin-right: 5px; min-width: 0;">
+                    <button type="submit" class="btn btn-primary mr-1">Search</button>
                 </div>
+            </form>
 
-                <!-- Separate buttons for larger devices -->
-                <div class="d-none d-md-block ml-1">
-                    <button type="button" class="btn btn-primary" onclick="printAllBankDetails()">PDF</button>
-                    <button type="button" class="btn btn-primary ml-1" onclick="window.location.href='{{ route('trainee.export') }}'">Excel</button>
-                </div>
+            <div class="d-flex">
+                <form action="{{ route('training_cars.exportExcel') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="button" class="btn btn-primary mr-1" onclick="window.location.href='{{ route('training_cars.exportPdf') }}'">PDF</button>
+                    <button type="submit" class="btn btn-primary">Excel</button>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
-</div>
 
     <!-- Responsive table wrapper -->
 <div class="table-responsive">
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Name</th>
+                <th>No</th>
+                <th>Vehicle Name</th>
                 <th>Category</th>
                 <th>Model</th>
                 <th>Year</th>
@@ -80,11 +68,12 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($trainingCars as $car)
+            @foreach($trainingCars as $key => $car)
                 <tr>
+                    <td>{{ $key + 1 }}</td>
                     <td>{{ $car->name }}</td>
                     <td>{{ $car->category }}</td>
-                    <td>{{ $car->model }}</td>
+                    <td>{{$car->model}}</td>
                     <td>{{ $car->year }}</td>
                     <td>{{ $car->plate_no }}</td>
                     <td class="text-nowrap">

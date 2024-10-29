@@ -52,7 +52,7 @@
             </div>
         </div>
     </div>
-</div>
+
 
 
 <!-- Responsive table wrapper -->

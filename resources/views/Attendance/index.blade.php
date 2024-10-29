@@ -46,14 +46,15 @@
         <div class="d-flex justify-content-end align-items-center" style="margin: 15px 0 0 10px;">
         <div class="form-group d-flex align-items-center">
             <label for="total_time" style="min-width: 100px;">Total Time</label>
-            <input type="number" class="form-control form-control-sm" id="total_time" name="total_time" style="width: 70px;" value="{{ $attendances->first()->total_time ?? 'N/A' }}" readonly>
+            <input type="text" class="form-control form-control-sm" id="total_time" name="total_time" style="width: 70px;" 
+                value="{{ $totalTime }}" readonly>
         </div>
         <div class="form-group d-flex align-items-center" style="margin-left: 25px;">
             <label for="remaining_time" class="mr-2" style="min-width: 100px;">Remaining Time</label>
             <input type="text" class="form-control form-control-sm" id="remaining_time" name="remaining_time" style="width: 70px;" readonly>
         </div>
-</div>
     </div>
+</div>
 
     <!-- Responsive table wrapper -->
     <div class="table-responsive">

@@ -30,8 +30,9 @@
                         <select class="form-control" id="category" name="category" required>
                             <option value="">Select a category</option>
                             @foreach($categories as $category) <!-- Updated variable to match controller -->
-                                <option value="{{ $category->id }}">{{ $category->car_category_name }}</option> <!-- Assuming you want to use category name -->
-                            @endforeach
+                                <!-- <option value="{{ $category->id }}">{{ $category->car_category_name }}</option> Assuming you want to use category name -->
+                                <option value="{{ $category->car_category_name }}">{{ $category->car_category_name }}</option> <!-- Assuming you want to use category name -->
+                                @endforeach
                         </select>
                     </div>
 

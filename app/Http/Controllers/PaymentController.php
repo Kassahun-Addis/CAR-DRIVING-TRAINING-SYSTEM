@@ -8,11 +8,28 @@ use App\Models\Student; // Assuming you still need this for some reason
 use Illuminate\Http\Request;
 use App\Models\PaymentHistory;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PaymentsExport;
 
 
 
 class PaymentController extends Controller
 {
+
+    public function exportPdf()
+{
+    $payments = Payment::all();
+    $pdf = Pdf::loadView('Payment.pdf', compact('payments'))
+              ->setPaper('a4', 'landscape');
+
+    return $pdf->download('payments_list.pdf');
+}
+
+public function exportExcel()
+{
+    return Excel::download(new PaymentsExport, 'payments_list.xlsx');
+}
     
     public function index(Request $request)
     {

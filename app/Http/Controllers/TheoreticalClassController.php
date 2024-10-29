@@ -9,9 +9,43 @@ use App\Models\TrainerAssigning;
 use Illuminate\Support\Facades\DB;
 use App\Models\Trainer;
 use App\Models\Classes;
+use App\Exports\TheoreticalClassesExport;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
+use Mpdf\Mpdf;
+
 
 class TheoreticalClassController extends Controller
 {
+
+    public function exportPdf()
+    {
+        $theoretical_classes = TheoreticalClass::all();
+        $html = view('theoretical_classes.pdf', compact('theoretical_classes'))->render();
+    
+        // Initialize Mpdf and configure custom font settings
+        $mpdf = new Mpdf([
+            'format' => 'A4-L', // Landscape orientation
+            'default_font' => 'Nyala',
+            'fontDir' => [base_path('public/fonts')], // Specify custom font directory
+            'fontdata' => [
+                'nyala' => [
+                    'R' => 'nyala.ttf', // Regular Nyala font
+                ],
+            ],
+            'default_font_size' => 10, // Set the default font size
+        ]);
+    
+        $mpdf->WriteHTML($html);
+    
+        return $mpdf->Output('class_assigning_list.pdf', 'D');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new TheoreticalClassesExport, 'theoretical_classes_list.xlsx');
+    } 
+
     public function index()
     {
         // Fetch all classes

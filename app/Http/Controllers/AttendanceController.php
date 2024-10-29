@@ -109,46 +109,48 @@ public function store(Request $request)
 }
 
 
-
-// app/Http/Controllers/AttendanceController.php
-
-// app/Http/Controllers/AttendanceController.php
-
-// app/Http/Controllers/AttendanceController.php
-
-// app/Http/Controllers/AttendanceController.php
-
 public function index(Request $request)
 {
     $search = $request->input('search');
     $perPage = $request->input('perPage', 10);
 
+    $traineeId = null;
+    $traineeName = null;
+    $totalTime = 'N/A';
+
+    // Determine the authenticated user and their role
     if (Auth::guard('web')->check()) {
         $traineeId = $request->input('trainee_id');
         $traineeName = $request->input('trainee_name');
-
-        $attendances = Attendance::when($traineeId, function ($query) use ($traineeId) {
-                return $query->where('trainee_id', $traineeId);
-            })
-            ->when($traineeName, function ($query) use ($traineeName) {
-                return $query->where('trainee_name', 'like', '%' . $traineeName . '%');
-            })
-            ->when($search, function ($query) use ($search) {
-                return $query->where('date', 'like', '%' . $search . '%')
-                             ->orWhere('status', 'like', '%' . $search . '%');
-            })
-            ->paginate($perPage);
     } elseif (Auth::guard('trainee')->check()) {
         $traineeId = Auth::guard('trainee')->user()->id;
-        $attendances = Attendance::where('trainee_id', $traineeId)
-            ->when($search, function ($query) use ($search) {
-                return $query->where('date', 'like', '%' . $search . '%')
-                             ->orWhere('status', 'like', '%' . $search . '%');
-            })->paginate($perPage);
+        $traineeName = Auth::guard('trainee')->user()->full_name;
     } else {
         return redirect()->route('login')->with('error', 'Please log in to view attendance.');
     }
 
+    // Fetch attendances based on the authenticated user's role
+    $attendances = Attendance::when($traineeId, function ($query) use ($traineeId) {
+            return $query->where('trainee_id', $traineeId);
+        })
+        ->when($traineeName, function ($query) use ($traineeName) {
+            return $query->where('trainee_name', 'like', '%' . $traineeName . '%');
+        })
+        ->when($search, function ($query) use ($search) {
+            return $query->where('date', 'like', '%' . $search . '%')
+                         ->orWhere('status', 'like', '%' . $search . '%');
+        })
+        ->paginate($perPage);
+
+    // Fetch total time from TrainerAssigning
+    if ($traineeName) {
+        $trainerAssignment = TrainerAssigning::where('trainee_name', $traineeName)->first();
+        if ($trainerAssignment) {
+            $totalTime = $trainerAssignment->total_time;
+        }
+    }
+
+    // Transform attendance records to include additional information
     $attendances->getCollection()->transform(function ($attendance) {
         $start = new DateTime($attendance->start_time);
         $finish = new DateTime($attendance->finish_time);
@@ -158,7 +160,10 @@ public function index(Request $request)
         $trainerAssignment = TrainerAssigning::where('trainee_name', $attendance->trainee_name)->first();
         
         if ($trainerAssignment) {
-            \Log::info('Trainer Assignment found:', ['trainee_name' => $attendance->trainee_name, 'total_time' => $trainerAssignment->total_time]);
+            \Log::info('Trainer Assignment found:', [
+                'trainee_name' => $attendance->trainee_name,
+                'total_time' => $trainerAssignment->total_time
+            ]);
             $attendance->start_date = $trainerAssignment->start_date;
             $attendance->end_date = $trainerAssignment->end_date;
             $attendance->category_id = $trainerAssignment->category_id;
@@ -180,7 +185,7 @@ public function index(Request $request)
         return $attendance;
     });
 
-    return view('Attendance.index', compact('attendances'));
+    return view('Attendance.index', compact('attendances', 'totalTime'));
 }
 
 

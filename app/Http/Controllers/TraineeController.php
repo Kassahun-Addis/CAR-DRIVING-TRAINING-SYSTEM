@@ -16,9 +16,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Mpdf\Mpdf;
 
 
-
-
-
 class TraineeController extends Controller
 {
 

@@ -10,11 +10,44 @@ use App\Models\TrainingCar;
 use App\Models\Trainer;
 use App\Models\Trainee;
 use Illuminate\Support\Facades\DB;
+use App\Exports\TrainersAssigningExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Mpdf\Mpdf;  
 
 
 
 class TrainerAssigningController extends Controller
 {
+
+    
+    public function exportExcel()
+    {
+        return Excel::download(new TrainersAssigningExport, 'trainers_assigning_list.xlsx');
+    }
+
+   public function exportPdf()
+    {
+        $trainers_assigning = TrainerAssigning::all();
+        $html = view('trainer_assigning.pdf', compact('trainers_assigning'))->render();
+    
+        // Initialize Mpdf and configure custom font settings
+        $mpdf = new Mpdf([
+            'format' => 'A4-L', // Landscape orientation
+            'default_font' => 'Nyala',
+            'fontDir' => [base_path('public/fonts')], // Specify custom font directory
+            'fontdata' => [
+                'nyala' => [
+                    'R' => 'nyala.ttf', // Regular Nyala font
+                ],
+            ],
+            'default_font_size' => 10, // Set the default font size
+        ]);
+    
+        $mpdf->WriteHTML($html);
+    
+        return $mpdf->Output('trainers_assigning_list.pdf', 'D');
+    }
+
 // Display a listing of the training cars
     public function index(Request $request)
 {

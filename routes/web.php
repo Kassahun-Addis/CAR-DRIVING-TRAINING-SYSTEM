@@ -105,10 +105,12 @@ Route::get('/welcome', [DashboardController::class, 'index']);
     Route::get('/training_cars', [TrainingCarController::class, 'index'])->name('training_cars.index');
     Route::get('/training_cars/create', [TrainingCarController::class, 'create'])->name('training_cars.create');
     Route::post('/training_cars/store', [TrainingCarController::class, 'store'])->name('training_cars.store');
-    Route::get('/training_cars/{trainingCar}', [TrainingCarController::class, 'show'])->name('training_cars.show');
+    //Route::get('/training_cars/{trainingCar}', [TrainingCarController::class, 'show'])->name('training_cars.show');
     Route::get('/training_cars/{trainingCar}/edit', [TrainingCarController::class, 'edit'])->name('training_cars.edit');
     Route::put('/training_cars/{trainingCar}/update', [TrainingCarController::class, 'update'])->name('training_cars.update');
     Route::delete('/training_cars/{trainingCar}/destroy', [TrainingCarController::class, 'destroy'])->name('training_cars.destroy');
+    Route::get('/training_cars/export-pdf', [TrainingCarController::class, 'exportPdf'])->name('training_cars.exportPdf');
+    Route::post('/training_cars/export-excel', [TrainingCarController::class, 'exportExcel'])->name('training_cars.exportExcel');
 });
 
 // Payment Routes
@@ -124,10 +126,18 @@ Route::get('/welcome', [DashboardController::class, 'index']);
     Route::get('payments/{payment}/pay_remaining', [PaymentController::class, 'payRemaining'])->name('payments.pay_remaining');
     Route::post('payments/{payment}/pay_remaining_process', [PaymentController::class, 'processRemainingPayment'])->name('payments.pay_remaining_process');
     Route::get('payments/{payment}/history', [PaymentController::class, 'showPaymentHistory'])->name('payments.history');
+    Route::get('/payments/export-pdf', [PaymentController::class, 'exportPdf'])->name('payments.exportPdf');
+    Route::post('/payments/export-excel', [PaymentController::class, 'exportExcel'])->name('payments.exportExcel');
 });
 
 // Bank Routes
-Route::resource('banks', BankController::class);
+//Route::resource('banks', BankController::class);
+
+Route::resource('banks', BankController::class)->except(['show']);
+Route::get('/banks/export-pdf', [BankController::class, 'exportPdf'])->name('banks.exportPdf');
+Route::post('/banks/export-excel', [BankController::class, 'exportExcel'])->name('banks.exportExcel');
+
+
 
 // Bank Routes
 // Route::get('/banks', [BankController::class, 'index'])->name('banks.index'); // List all banks
@@ -145,6 +155,9 @@ Route::post('/car_category', [CarCategoryController::class, 'store'])->name('car
 Route::get('/car_category/{CarCategory}/edit', [CarCategoryController::class, 'edit'])->name('car_category.edit'); // Show form to edit a specific CarCategory
 Route::put('/car_category/{CarCategory}', [CarCategoryController::class, 'update'])->name('car_category.update'); // Update a specific CarCategory
 Route::delete('/car_category/{CarCategory}', [CarCategoryController::class, 'destroy'])->name('car_category.destroy'); // Delete a specific bank
+Route::get('/car_category/export-pdf', [CarCategoryController::class, 'exportPdf'])->name('car_category.exportPdf');
+Route::post('/car_category/export-excel', [CarCategoryController::class, 'exportExcel'])->name('car_category.exportExcel');
+
 
 // theoretical_class Routes
 Route::get('/trainer_assigning', [TrainerAssigningController::class, 'index'])->name('trainer_assigning.index'); // List all trainer_assigning
@@ -156,6 +169,8 @@ Route::delete('/trainer_assigning/{trainer_assigning}', [TrainerAssigningControl
 // Route::get('/car-category/{categoryId}/plates', [TrainerAssigningController::class, 'getPlatesByCategory']); // New route for fetching plates
 //Route::get('/trainer_assigning/trainers-with-count', [TrainerAssigningController::class, 'getTrainersWithCount']);
 Route::get('/trainers/{trainerName}/details', [TrainerController::class, 'getDetails']);
+Route::get('/trainer_assigning/export-pdf', [TrainerAssigningController::class, 'exportPdf'])->name('trainer_assigning.exportPdf');
+Route::post('/trainer_assigning/export-excel', [TrainerAssigningController::class, 'exportExcel'])->name('trainer_assigning.exportExcel');
 
 
 Route::get('/theoretical_class', [TheoreticalClassController::class, 'index'])->name('theoretical_class.index'); // List all theoretical_class
@@ -166,9 +181,13 @@ Route::put('/theoretical_class/{theoreticalClass}', [TheoreticalClassController:
 Route::delete('/theoretical_class/{theoretical_class}', [TheoreticalClassController::class, 'destroy'])->name('theoretical_class.destroy');// Route::get('/car-category/{categoryId}/plates', [TheoreticalClassController::class, 'getPlatesByCategory']); // New route for fetching plates
 //Route::get('/theoretical_class/trainers-with-count', [TheoreticalClassController::class, 'getTrainersWithCount']);
 Route::get('/trainers/{trainerName}/details', [TrainerController::class, 'getDetails']);
+Route::get('/theoretical_class/export-pdf', [TheoreticalClassController::class, 'exportPdf'])->name('theoretical_class.exportPdf');
+Route::post('/theoretical_class/export-excel', [TheoreticalClassController::class, 'exportExcel'])->name('theoretical_class.exportExcel');
 
 
-Route::resource('classes', ClassesController::class);
+Route::resource('classes', ClassesController::class )->except('show');
+Route::get('/classes/export-pdf', [ClassesController::class, 'exportPdf'])->name('classes.exportPdf');
+Route::post('/classes/export-excel', [ClassesController::class, 'exportExcel'])->name('classes.exportExcel');
 
 
 // Auth routes (if you are using built-in authentication)

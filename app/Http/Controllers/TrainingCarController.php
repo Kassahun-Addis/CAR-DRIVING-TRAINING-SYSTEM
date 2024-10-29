@@ -5,22 +5,54 @@ namespace App\Http\Controllers;
 use App\Models\TrainingCar;
 use Illuminate\Http\Request;
 use App\Models\CarCategory;
-
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\TrainingCarsExport;
+use Mpdf\Mpdf;
 class TrainingCarController extends Controller
 {
+
+    public function exportPdf()
+    {
+        $trainingCars = TrainingCar::all();
+        $html = view('training_cars.pdf', compact('trainingCars'))->render();
+    
+        // Initialize Mpdf and configure custom font settings
+        $mpdf = new Mpdf([
+            'format' => 'A4-L', // Landscape orientation
+            'default_font' => 'Nyala',
+            'fontDir' => [base_path('public/fonts')], // Specify custom font directory
+            'fontdata' => [
+                'nyala' => [
+                    'R' => 'nyala.ttf', // Regular Nyala font
+                ],
+            ],
+            'default_font_size' => 10, // Set the default font size
+        ]);
+    
+        $mpdf->WriteHTML($html);
+    
+        return $mpdf->Output('vehicles_list.pdf', 'D');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new TrainingCarsExport, 'vehicles_list.xlsx');
+    }
     // Display a listing of the training cars
     public function index(Request $request)
-    {
-        $search = $request->input('search'); // Get the search term
-        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+{
+    $search = $request->input('search'); // Get the search term
+    $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
 
-        // Query the banks with search and pagination
-         $trainingCars = TrainingCar::when($search, function ($query) use ($search) {
+    // Query the training cars with search and pagination
+    $trainingCars = TrainingCar::when($search, function ($query) use ($search) {
             return $query->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('category', 'like', '%' . $search . '%');
-        })->paginate($perPage);
-        return view('training_cars.index', compact('trainingCars'));
-   }
+                         ->orwhere('car_category_name', 'like', '%' . $search . '%');
+                         })->paginate($perPage);
+
+    return view('training_cars.index', compact('trainingCars'));
+}
 
     // Show the form for creating a new training car
     public function create()

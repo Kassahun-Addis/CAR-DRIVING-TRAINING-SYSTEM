@@ -4,10 +4,43 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CarCategory;
+use App\Exports\CarCategoriesExport;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
+use Mpdf\Mpdf;
 
 
 class CarCategoryController extends Controller
 {
+
+        public function exportExcel()
+    {
+        return Excel::download(new CarCategoriesExport, 'car_categories_list.xlsx');
+   }
+
+   public function exportPdf()
+    {
+        $CarCategorys = CarCategory::all();
+        $html = view('car_category.pdf', compact('CarCategorys'))->render();
+    
+        // Initialize Mpdf and configure custom font settings
+        $mpdf = new Mpdf([
+            'format' => 'A4-L', // Landscape orientation
+            'default_font' => 'Nyala',
+            'fontDir' => [base_path('public/fonts')], // Specify custom font directory
+            'fontdata' => [
+                'nyala' => [
+                    'R' => 'nyala.ttf', // Regular Nyala font
+                ],
+            ],
+            'default_font_size' => 10, // Set the default font size
+        ]);
+    
+        $mpdf->WriteHTML($html);
+    
+        return $mpdf->Output('car_category_list.pdf', 'D');
+    }
+
 
     public function index(Request $request)
     {
