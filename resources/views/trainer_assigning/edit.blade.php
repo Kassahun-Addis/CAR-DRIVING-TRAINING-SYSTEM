@@ -40,18 +40,6 @@
                     </div>
 
                     <div class="form-group">
-    <label for="trainee_name">Trainee Name:</label>
-    <select class="form-control" id="trainee_name" name="trainee_name" required>
-        <option value="" style="width: 100%;">Select a Trainee</option>
-        @foreach($trainees as $trainee)
-            <option value="{{ $trainee->full_name }}" {{ trim(strtolower($trainee->full_name)) == trim(strtolower($trainer_assigning->trainee_name)) ? 'selected' : '' }}>
-                {{ $trainee->full_name }}
-            </option>
-        @endforeach
-    </select>
-</div>
-
-                    <div class="form-group">
                         <label for="trainer_name">Trainer Name:</label>
                         <select class="form-control" id="trainer_name" name="trainer_name" required>
                             <option value="">Select a Trainer</option>
@@ -61,6 +49,18 @@
                                         {{ $trainer->trainer_name }} ({{ $trainerCounts[$trainer->trainer_name] ?? 0 }} Trainees)
                                     </option>
                                 @endif
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trainee_name">Trainee Name:</label>
+                        <select class="form-control" id="trainee_name" name="trainee_name" required>
+                            <option value="" style="width: 100%;">Select a Trainee</option>
+                            @foreach($trainees as $trainee)
+                                <option value="{{ $trainee->full_name }}" {{ trim(strtolower($trainee->full_name)) == trim(strtolower($trainer_assigning->trainee_name)) ? 'selected' : '' }}>
+                                    {{ $trainee->full_name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -117,6 +117,8 @@
     }
 
     var trainerSelect = document.getElementById('trainer_name');
+    var traineeSelect = document.getElementById('trainee_name');
+
     trainerSelect.addEventListener('change', function() {
         var selectedTrainer = this.value;
 
@@ -128,10 +130,14 @@
                         document.getElementById('category_id').value = data.category;
                         document.getElementById('plate_no').value = data.plate_no;
                         document.getElementById('car_name').value = data.car_name;
+
+                        // Fetch trainees based on the category
+                        fetchTraineesByCategory(data.category);
                     } else {
                         document.getElementById('category_id').value = '';
                         document.getElementById('plate_no').value = '';
                         document.getElementById('car_name').value = '';
+                        traineeSelect.innerHTML = '<option value="">Select a Trainee</option>';
                     }
                 })
                 .catch(error => {
@@ -139,6 +145,20 @@
                 });
         }
     });
+
+    function fetchTraineesByCategory(category) {
+        fetch(`/trainees/by-category/${encodeURIComponent(category)}`)
+            .then(response => response.json())
+            .then(data => {
+                traineeSelect.innerHTML = '<option value="">Select a Trainee</option>';
+                data.forEach(function(trainee) {
+                    traineeSelect.innerHTML += `<option value="${trainee.full_name}">${trainee.full_name}</option>`;
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching trainees:', error);
+            });
+    }
 
     // Pre-fill the dropdown and other fields when the page loads
     var selectedTrainer = "{{ $trainer_assigning->trainer_name }}";
@@ -151,6 +171,9 @@
                     document.getElementById('category_id').value = data.category || "{{ $trainer_assigning->category }}";
                     document.getElementById('plate_no').value = data.plate_no || "{{ $trainer_assigning->plate_no }}";
                     document.getElementById('car_name').value = data.car_name || "{{ $trainer_assigning->car_name }}";
+
+                    // Fetch trainees based on the category
+                    fetchTraineesByCategory(data.category || "{{ $trainer_assigning->category }}");
                 } else {
                     document.getElementById('category_id').value = "{{ $trainer_assigning->category }}";
                     document.getElementById('plate_no').value = "{{ $trainer_assigning->plate_no }}";

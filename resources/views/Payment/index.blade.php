@@ -7,11 +7,13 @@
 
 <h2 style="text-align: center; padding:10px;">Payments List</h2>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3"></div>
     
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success" id="success-alert">
+            {{ session('success') }}
+        </div>
     @endif
 
    <div class="row mb-3" style="display: flex; justify-content: space-between; align-items: center;">
@@ -54,7 +56,7 @@
             </div>
         </div>
     </div>
-</div>
+
     
     <div class="table-responsive">
       <table class="table table-bordered">
@@ -159,4 +161,20 @@
     </div>
 </div>
 
+
+<script>
+   // Fetch car details when the trainer is selected
+   document.addEventListener('DOMContentLoaded', function() {
+    var successAlert = document.getElementById('success-alert');
+
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+</script>
 @endsection

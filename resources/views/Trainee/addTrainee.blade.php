@@ -5,47 +5,60 @@
 @section('content')
 <div class="container mt-5">
     <h2>Trainee, Add New</h2>
+
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success" id="success-alert">
+            {{ session('success') }}
+        </div>
     @endif
 
-    <div class="form-section">
-        <form action="{{ route('trainee.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="row">
-                <div class="col-12 col-md-6">
-            <div class="form-group row">
-            <div class="col-md-6">
-                <label for="yellow_card" class="required">Yellow Card No/የቢጫ ካርድ ቁጥር </label>
-                <input type="number" class="form-control" id="yellow_card" name="yellow_card" required>
-                
-                @if ($errors->has('yellow_card'))
-                    <span class="text-danger">{{ $errors->first('yellow_card') }}</span>
-                @endif
-            </div>
-            <div class="col-md-6">
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+            </ul>
+        </div>
+    @endif
+
+            <div class="form-section">
+                <form action="{{ route('trainee.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                    <div class="form-group row">
+                    <div class="col-md-6">
+                        <label for="yellow_card" class="required">Yellow Card No/የቢጫ ካርድ ቁጥር </label>
+                        <input type="number" class="form-control" id="yellow_card" name="yellow_card" required>
+                        
+                        @if ($errors->has('yellow_card'))
+                            <span class="text-danger">{{ $errors->first('yellow_card') }}</span>
+                        @endif
+                    </div>
+                    <div class="col-md-6">
                         <label for="photo" class="required">Upload Photo/ፎቶ አስገባ </label>
                         <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
+                    </div>
                 </div>
-        </div>
 
-            <div class="form-group row">
-    <div class="col-md-6">
-        <label for="full_name" class="required">Full Name</label>
-        <input type="text" class="form-control" id="full_name" name="full_name" value="{{ old('full_name') }}" required>
-        @error('full_name')
-            <div class="text-danger">{{ $message }}</div>
-        @enderror
-    </div>
-    
-    <div class="col-md-6">
-        <label for="full_name_2" class="required">ሙሉ ስም </label>
-        <input type="text" class="form-control" id="full_name_2" name="full_name_2" value="{{ old('full_name_2') }}" required>
-        @error('full_name_2')
-            <div class="text-danger">{{ $message }}</div>
-        @enderror
-    </div>
-</div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label for="full_name" class="required">Full Name</label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" value="{{ old('full_name') }}" required>
+                        @error('full_name')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="full_name_2" class="required">ሙሉ ስም </label>
+                        <input type="text" class="form-control" id="full_name_2" name="full_name_2" value="{{ old('full_name_2') }}" required>
+                        @error('full_name_2')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
                     
                 <div class="form-group row">
                 <div class="col-md-6">
@@ -76,7 +89,7 @@
                         <label for="nationality_1" class="required">ዜግነት</label>
                         <input type="text" class="form-control" id="nationality_1" name="nationality_1" required>
                     </div>
-</div>
+                 </div>
                     <div class="form-group row">
                     <div class="col-md-6">
                         <label for="city" class="required">City</label>
@@ -86,7 +99,7 @@
                         <label for="city_1" class="required">ከተማ</label>
                         <input type="text" class="form-control" id="city_1" name="city_1" required>
                     </div>
-</div>
+                </div>
                     <div class="form-group row">
                     <div class="col-md-6">
                         <label for="sub_city" class="required">Sub City</label>
@@ -96,7 +109,7 @@
                         <label for="sub_city_1" class="required">ክፍለ ከተማ </label>
                         <input type="text" class="form-control" id="sub_city_1" name="sub_city_1" required>
                     </div>
-</div>
+                 </div>
                     <div class="form-group row">
                     <div class="col-md-6">
                         <label for="woreda" class="required">Woreda</label>
@@ -106,23 +119,9 @@
                         <label for="woreda_1" class="required">ወረዳ</label>
                         <input type="text" class="form-control" id="woreda_1" name="woreda_1" required>
                     </div>
-</div>
-                    <div class="form-group">
-                        <label for="house_no" class="required">House No</label>
-                        <input type="number" class="form-control" id="house_no" name="house_no" required>
-                    </div> 
-                    <div class="form-group">
-                        <label for="phone_no" class="required">Phone No</label>
-                        <input type="number" class="form-control" id="phone_no" name="phone_no" required>
-                    </div>
-                                        
                 </div>
-                <div class="col-12 col-md-6">
-                    <div class="form-group">
-                        <label for="po_box" class="required">P.O.Box</label>
-                        <input type="number" class="form-control" id="po_box" name="po_box" required>
-                    </div> 
-                    <div class="form-group row">
+
+                <div class="form-group row">
                     <div class="col-md-6">
                         <label for="birth_place" class="required">Birth Place</label>
                         <input type="text" class="form-control" id="birth_place" name="birth_place" required>
@@ -131,25 +130,44 @@
                         <label for="birth_place_1" class="required">የትውልድ ቦታ </label>
                         <input type="text" class="form-control" id="birth_place_1" name="birth_place_1" required>
                     </div>
-</div>
-                    <div class="form-group">
+                </div>
+                        
+                <div class="form-group">
                         <label for="dob" class="required">DOB/የትውልድ ቀን </label>
                         <input type="date" class="form-control" id="dob" name="dob" required>
+                </div>
+                     
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label for="po_box" class="required">P.O.Box</label>
+                        <input type="number" class="form-control" id="po_box" name="po_box" required>
+                    </div> 
+               
+                    <div class="form-group">
+                        <label for="house_no" class="required">House No</label>
+                        <input type="number" class="form-control" id="house_no" name="house_no" required>
+                    </div> 
+                    <div class="form-group">
+                        <label for="phone_no" class="required">Phone No</label>
+                        <input type="number" class="form-control" id="phone_no" name="phone_no" required>
                     </div>
+
+
                     <div class="form-group">
                         <label for="driving_license_no" class="required">Existing Driving License No</label>
                         <input type="text" class="form-control" id="driving_license_no" name="driving_license_no">
                     </div>
 
                     <div class="form-group car-fields">
-            <label for="license_type" class="required">License Type</label>
-            <select class="form-control" id="license_type" name="license_type"required>
-                <option value="">Select a category</option>
-                @foreach($carCategories as $category)
-                    <option value="{{ $category->car_category_name }}">{{ $category->car_category_name }}</option>
-                @endforeach
-            </select>
-        </div>
+                        <label for="category" class="required">License Type</label>
+                        <select class="form-control" id="category" name="category"required>
+                            <option value="">Select a category</option>
+                            @foreach($carCategories as $category)
+                                <option value="{{ $category->car_category_name }}">{{ $category->car_category_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="form-group">
                         <label for="education_level">Education Level/የትምህርት ደረጃ</label>
@@ -192,4 +210,20 @@
         </form>
     </div>
 </div>
+
+<script>
+   // Fetch car details when the trainer is selected
+   document.addEventListener('DOMContentLoaded', function() {
+    var successAlert = document.getElementById('success-alert');
+
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+</script>
 @endsection

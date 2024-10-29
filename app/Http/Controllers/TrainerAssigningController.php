@@ -19,7 +19,18 @@ use Mpdf\Mpdf;
 class TrainerAssigningController extends Controller
 {
 
-    
+        public function getTraineesByCategory($category)
+    {
+        \Log::info('Fetching trainees for category:', ['category' => $category]);
+
+        // Use the correct column name 'category' for filtering
+        $trainees = Trainee::where('category', $category)->get(['full_name']);
+
+        \Log::info('Fetched trainees:', $trainees->toArray());
+
+        return response()->json($trainees);
+    }
+
     public function exportExcel()
     {
         return Excel::download(new TrainersAssigningExport, 'trainers_assigning_list.xlsx');
@@ -90,8 +101,6 @@ public function create()
 
     return view('trainer_assigning.create', compact('sortedTrainers', 'trainerCounts', 'trainees'));
 }
-
-
 
     // Store a newly created trainer in the database
     public function store(Request $request)
@@ -191,42 +200,5 @@ public function edit($id)
         return redirect()->route('trainer_assigning.index')->with('success', 'Trainer deleted successfully!');
     }
 
-
-//     public function getTrainersWithCount()
-// {
-//     \Log::info('Fetching trainer with count group by trainees: ');
-
-//     try {
-//         // Fetch the count of trainees for each trainer
-//         $trainerCounts = TrainerAssigning::select('trainer_name', \DB::raw('COUNT(*) as count'))
-//             ->groupBy('trainer_name')
-//             ->get();
-
-//         // Prepare an array to hold the final results
-//         $finalTrainer = [];
-
-//         foreach ($trainerCounts as $trainer) {
-//             $finalTrainer[] = [
-//                 'trainer_name' => $trainer->trainer_name,
-//                 'count' => $trainer->count,
-//                 'display' => "{$trainer->trainer_name} ({$trainer->count} Trainee)"
-//             ];
-//         }
-
-//         \Log::info('Fetched trainers: ', $finalTrainer);
-
-//         if (empty($finalTrainer)) {
-//             \Log::info('No trainees found for trainer: ');
-//             return response()->json([]); // Return an empty array
-//         }
-
-//         $sortedTrainer = collect($finalTrainer)->sortBy('count');
-
-//         return response()->json($sortedTrainer->values()->all()); // Use values() to reset keys
-//     } catch (\Exception $e) {
-//         \Log::error('Error fetching trainers: ' . $e->getMessage());
-//         return response()->json(['error' => 'Unable to fetch trainers: ' . $e->getMessage()], 500);
-//     }
-// }
 
 }

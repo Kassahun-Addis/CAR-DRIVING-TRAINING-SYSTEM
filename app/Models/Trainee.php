@@ -37,7 +37,7 @@ class Trainee extends Authenticatable
         'የትዉልድ_ቦታ',
         'dob',
         'existing_driving_lic_no',
-        'license_type',
+        'category',
         'education_level',
         'blood_type',
         'receipt_no',

@@ -81,27 +81,19 @@ class TraineeController extends Controller
     
 
     public function store(Request $request)
-    {
-        // Log the incoming request data
-        \Log::info('Storing Trainee data:', $request->all());
-    
+    {    
         // Get the last trainee record to increment the custom ID
         $lastTrainee = Trainee::orderBy('id', 'desc')->first();
-        
+    
         // Generate the next custom ID
-        if ($lastTrainee) {
-            $lastCustomId = (int)$lastTrainee->customid;
-            $newCustomId = str_pad($lastCustomId + 1, 3, '0', STR_PAD_LEFT); // Increment and pad to 3 digits
-        } else {
-            $newCustomId = '001';  // First trainee ID
-        }
+        $newCustomId = $lastTrainee ? str_pad((int)$lastTrainee->customid + 1, 3, '0', STR_PAD_LEFT) : '001';
     
         // Validate the incoming request data
         $request->validate([
             'yellow_card' => 'required|unique:trainees,yellow_card',
             'full_name' => 'required|string|max:255',
             'full_name_2' => 'required|string|max:255',
-            'photo' => 'nullable|image|mimes:jpeg,png,jfif,jpg,gif|max:4096', // Validate image file
+            'photo' => 'nullable|image|mimes:jpeg,png,jfif,jpg,gif|max:4096',
             'gender' => 'required|string',
             'gender_1' => 'required|string',
             'nationality' => 'required|string',
@@ -119,76 +111,66 @@ class TraineeController extends Controller
             'birth_place_1' => 'required|string',
             'dob' => 'required|date',
             'driving_license_no' => 'nullable|string',
-            'license_type' => 'required|string',
+            'category' => 'required|string',
             'education_level' => 'nullable|string',
-            'disease' => 'nullable|string',
             'blood_type' => 'required|string',
             'receipt_no' => 'nullable|string',
         ], [
             'yellow_card.unique' => 'The yellow card number must be unique.',
             'yellow_card.required' => 'The yellow card field is required.',
         ]);
-
-              // Initialize the photo name variable
-    $photoName = null;
-
-    // Check if a photo was uploaded
-    if ($request->hasFile('photo')) {
-        $photo = $request->file('photo');
-
-        if ($photo->isValid()) { // Check if the file is valid
-            // Use the phone number as the photo name
+    
+        $photoName = null;
+    
+        // Check if a photo was uploaded
+        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+            $photo = $request->file('photo');
             $photoName = $request->input('phone_no') . '.' . $photo->getClientOriginalExtension(); 
-            
-            // Store the photo in the storage/app/public/trainee_photos directory
             $path = $photo->storeAs('trainee_photos', $photoName, 'public');
-
-            // Log the file path
             \Log::info('Photo uploaded to:', ['path' => $path]);
         } else {
-            \Log::error('Photo upload failed');
+            \Log::info('No photo uploaded, using null for photo field.');
         }
-    } else {
-        \Log::info('No photo uploaded, using null for photo field.');
-    }
-
     
+        try {
+            // Create a new Trainee entry
+            $trainee = Trainee::create([
+                'customid' => $newCustomId,
+                'yellow_card' => $request->input('yellow_card'),
+                'full_name' => $request->input('full_name'),
+                'ሙሉ_ስም' => $request->input('full_name_2'),
+                'photo' => $photoName,
+                'gender' => $request->input('gender'),
+                'ጾታ' => $request->input('gender_1'),
+                'nationality' => $request->input('nationality'),
+                'ዜግነት' => $request->input('nationality_1'),
+                'city' => $request->input('city'),
+                'ከተማ' => $request->input('city_1'),
+                'sub_city' => $request->input('sub_city'),
+                'ክፍለ_ከተማ' => $request->input('sub_city_1'),
+                'woreda' => $request->input('woreda'),
+                'ወረዳ' => $request->input('woreda_1'),
+                'house_no' => $request->input('house_no'),
+                'phone_no' => $request->input('phone_no'),
+                'po_box' => $request->input('po_box'),
+                'birth_place' => $request->input('birth_place'),
+                'የትዉልድ_ቦታ' => $request->input('birth_place_1'),
+                'dob' => $request->input('dob'),
+                'existing_driving_lic_no' => $request->input('driving_license_no'),
+                'category' => $request->input('category'),
+                'education_level' => $request->input('education_level'),
+                'blood_type' => $request->input('blood_type'),
+                'receipt_no' => $request->input('receipt_no'),
+            ]);
     
-        // Create a new Trainee entry, including the generated custom ID
-        $trainee = Trainee::create([
-            'customid' => $newCustomId,  // Save the generated custom ID
-            'yellow_card' => $request->input('yellow_card'),
-            'full_name' => $request->input('full_name'),
-            'ሙሉ_ስም' => $request->input('full_name_2'),
-            'photo' => $photoName,  // Save the photo file name or path
-            'gender' => $request->input('gender'),
-            'ጾታ' => $request->input('gender_1'),
-            'nationality' => $request->input('nationality'),
-            'ዜግነት' => $request->input('nationality_1'),
-            'city' => $request->input('city'),
-            'ከተማ' => $request->input('city_1'),
-            'sub_city' => $request->input('sub_city'),
-            'ክፍለ_ከተማ' => $request->input('sub_city_1'),
-            'woreda' => $request->input('woreda'),
-            'ወረዳ' => $request->input('woreda_1'),
-            'house_no' => $request->input('house_no'),
-            'phone_no' => $request->input('phone_no'),
-            'po_box' => $request->input('po_box'),
-            'birth_place' => $request->input('birth_place'),
-            'የትዉልድ_ቦታ' => $request->input('birth_place_1'),
-            'dob' => $request->input('dob'),
-            'existing_driving_lic_no' => $request->input('driving_license_no'),
-            'license_type' => $request->input('license_type'),
-            'education_level' => $request->input('education_level'),
-            'blood_type' => $request->input('blood_type'),
-            'receipt_no' => $request->input('receipt_no'),
-        ]);
+            \Log::info('New Trainee created:', $trainee->toArray());
     
-        // Log the newly created Trainee
-        \Log::info('New Trainee created:', $trainee->toArray());
+            return redirect()->route('trainee.index')->with('success', 'Trainee added successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error saving Trainee:', ['error' => $e->getMessage()]);
     
-        // Redirect or return response
-        return redirect()->route('trainee.index')->with('success', 'Trainee added successfully.');
+            return redirect()->back()->with('error', 'An error occurred while saving the trainee data. Please try again or contact support.');
+        }
     }
 
 
@@ -237,7 +219,7 @@ class TraineeController extends Controller
         'birth_place' => 'required|string',
         'dob' => 'required|date',
         'driving_license_no' => 'nullable|string',
-        'license_type' => 'required|string',
+        'category' => 'required|string',
         'education_level' => 'nullable|string',
         'disease' => 'nullable|string',
         'blood_type' => 'required|string',
@@ -285,7 +267,7 @@ class TraineeController extends Controller
     $trainee->የትዉልድ_ቦታ = $request->input('birth_place_1');
     $trainee->dob = $request->input('dob');
     $trainee->existing_driving_lic_no = $request->input('driving_license_no');
-    $trainee->license_type = $request->input('license_type');
+    $trainee->category = $request->input('category');
     $trainee->education_level = $request->input('education_level');
     $trainee->blood_type = $request->input('blood_type');
     $trainee->receipt_no = $request->input('receipt_no');

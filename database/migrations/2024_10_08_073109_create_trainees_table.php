@@ -36,7 +36,7 @@ return new class extends Migration
             $table->string('የትዉልድ_ቦታ');
             $table->date('dob')->nullable();
             $table->string('existing_driving_lic_no');
-            $table->string('license_type');
+            $table->string('category');
             $table->string('education_level')->nullable();
             $table->string('blood_type');
             $table->string('receipt_no')->nullable();

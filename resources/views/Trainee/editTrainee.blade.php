@@ -5,8 +5,11 @@
 @section('content')
 <div class="container mt-5">
     <h2>Trainee - Edit</h2>
+
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success" id="success-alert">
+            {{ session('success') }}
+        </div>
     @endif
 
     @if ($errors->any())
@@ -167,11 +170,11 @@
                     </div>
 
                     <div class="form-group car-fields">
-                        <label for="license_type" class="required">License Type</label>
-                        <select class="form-control" id="license_type" name="license_type" required>
+                        <label for="category" class="required">License Type</label>
+                        <select class="form-control" id="category" name="category" required>
                             <option value="">Select a category</option>
                             @foreach($carCategories as $category)
-                                <option value="{{ $category->car_category_name }}" {{ $trainee->license_type == $category->car_category_name ? 'selected' : '' }}>
+                                <option value="{{ $category->car_category_name }}" {{ $trainee->category == $category->car_category_name ? 'selected' : '' }}>
                                     {{ $category->car_category_name }}
                                 </option>
                             @endforeach
@@ -218,4 +221,20 @@
         </form>
     </div>
 </div>
+
+<script>
+   // Fetch car details when the trainer is selected
+   document.addEventListener('DOMContentLoaded', function() {
+    var successAlert = document.getElementById('success-alert');
+
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+</script>
 @endsection

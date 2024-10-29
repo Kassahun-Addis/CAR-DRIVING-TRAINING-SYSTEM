@@ -45,7 +45,7 @@
         የቤት ቁጥር <strong><u>{{ $trainee->house_no }}</u></strong> 
         ስልክ ቁጥር <strong><u>{{ $trainee->phone_no }}</u></strong> 
         ነዋሪ የሆንኩ ስሆን በሰሎሞን የአሽከርካሪዎች ማሠልጠኛ ተቋም ውስጥ 
-        በ <strong><u>{{ $trainee->license_type }}</u></strong> 
+        በ <strong><u>{{ $trainee->category }}</u></strong> 
         ካታጎሪ ስልጠና ለመውሰድ በመወሰኔ በማሠልጠኛ ውስጥ ስሰለጥን ከዚህ በታች የተደነገጉትን ህግጋትና ደንቦች አክብሬና ወድጄ 
         ልፈፅም በዚህ የመመዝገቢያ ፎርም አንብቤና ወስኜ የገባሁ መሆኑን በመጨረሻ ላይ በሚገኘው የመፈረሚያ ቦታ ላይ በፊርማዬ አረጋግጫለሁ፡፡
     </p>
@@ -150,7 +150,7 @@
     የቤት ቁጥር <strong><u>{{ $trainee->house_no }}</u></strong> 
     ስልክ ቁጥር <strong><u>{{ $trainee->phone_no }}</u></strong> 
     ነዋሪ የሆንኩ ስሆን ሰሎሞን የአሽከርካሪዎች ማሠልጠኛ ተቋም ውስጥ  
-    በ <strong><u>{{ $trainee->license_type }}</u></strong> 
+    በ <strong><u>{{ $trainee->category }}</u></strong> 
     ካታጎሪ ስልጠና ለመውሰድ በመወሰኔ በማሠልጠኛ ውስጥ ስሰለጥን ከዚህ በታች የተደነገጉትን ህግጋትና ደንቦች አክብሬና ወድጄ ልፈፅም 
     በዚህ የመመዝገቢያ ፎርም አንብቤና ወስኜ የገባሁ መሆኑን በመጨረሻ ላይ በሚገኘው የመፈረሚያ ቦታ ላይ በፊርማዬ አረጋግጫለሁ፡፡
 </p>

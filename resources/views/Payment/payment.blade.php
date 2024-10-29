@@ -6,11 +6,17 @@
 <div class="container mt-5">
     <h2>Add Payment</h2>
 
+    @if(session('success'))
+        <div class="alert alert-success" id="success-alert">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="form-section">
         <form action="{{ route('payments.store') }}" method="POST">
             @csrf
             <div class="row">
-                <div class="col-6">
+            <div class="col-12 col-md-6">
                     <div class="form-group">
                         <label for="full_name">Full Name</label>
                         <input type="text" class="form-control" id="full_name" name="full_name" required>
@@ -50,8 +56,8 @@
                     </div>
                 </div>
 
-                <div class="col-6">
-                    <div class="form-group">
+                <div class="col-12 col-md-6">
+                <div class="form-group">
                         <label for="sub_total">Sub Total</label>
                         <input type="number" class="form-control" id="sub_total" name="sub_total" step="0.01" min="0" required oninput="calculateTotals()">
                     </div>
@@ -124,5 +130,21 @@
         document.getElementById('total').value = total.toFixed(2);
         document.getElementById('remaining_balance').value = remainingBalance.toFixed(2);
     }
+</script>
+
+<script>
+   // Fetch car details when the trainer is selected
+   document.addEventListener('DOMContentLoaded', function() {
+    var successAlert = document.getElementById('success-alert');
+
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
 </script>
 @endsection

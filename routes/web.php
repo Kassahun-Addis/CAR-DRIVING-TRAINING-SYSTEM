@@ -26,7 +26,8 @@ Route::get('/', function () {
 });
 
 // Login and Logout Routes
-Route::post('/login', [LoginController::class, 'login'])->name('login'); // Add login route
+// Route::post('/login', [LoginController::class, 'login'])->name('login'); // Add login route
+Route::get('/login', [LoginController::class, 'login'])->name('login'); // Add login route
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Home and Welcome Routes
@@ -171,7 +172,7 @@ Route::delete('/trainer_assigning/{trainer_assigning}', [TrainerAssigningControl
 Route::get('/trainers/{trainerName}/details', [TrainerController::class, 'getDetails']);
 Route::get('/trainer_assigning/export-pdf', [TrainerAssigningController::class, 'exportPdf'])->name('trainer_assigning.exportPdf');
 Route::post('/trainer_assigning/export-excel', [TrainerAssigningController::class, 'exportExcel'])->name('trainer_assigning.exportExcel');
-
+Route::get('/trainees/by-category/{category}', [TrainerAssigningController::class, 'getTraineesByCategory']);
 
 Route::get('/theoretical_class', [TheoreticalClassController::class, 'index'])->name('theoretical_class.index'); // List all theoretical_class
 Route::get('/theoretical_class/create', [TheoreticalClassController::class, 'create'])->name('theoretical_class.create'); // Show form to create a new CarCategory

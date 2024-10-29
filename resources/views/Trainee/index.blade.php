@@ -10,7 +10,9 @@
     </div>
     
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success" id="success-alert">
+            {{ session('success') }}
+        </div>
     @endif
 
     <div class="row mb-3" style="display: flex; justify-content: space-between; align-items: center;">
@@ -168,7 +170,21 @@
 </div>
 
 
+<script>
+   // Fetch car details when the trainer is selected
+   document.addEventListener('DOMContentLoaded', function() {
+    var successAlert = document.getElementById('success-alert');
 
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+</script>
 <!-- JavaScript function to print driving license application form -->
 <script>
 function printDrivingLicenseApplication(trainee) {

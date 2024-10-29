@@ -37,16 +37,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="trainee_name">Trainee Name:</label>
-                        <select class="form-control" id="trainee_name" name="trainee_name" required>
-                            <option value=""style="width: 100%;">Select a Trainee</option>
-                            @foreach($trainees as $trainee)
-                                <option value="{{ $trainee->full_name }}">{{ $trainee->full_name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="form-group">
                         <label for="trainer_name">Trainer Name:</label>
                         <select class="form-control" id="trainer_name" name="trainer_name" required>
                             <option value="">Select a Trainer</option>
@@ -56,6 +46,16 @@
                                         {{ $trainer->trainer_name }} ({{ $trainerCounts[$trainer->trainer_name] ?? 0 }} Trainees)
                                     </option>
                                 @endif
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trainee_name">Trainee Name:</label>
+                        <select class="form-control" id="trainee_name" name="trainee_name" required>
+                            <option value=""style="width: 100%;">Select a Trainee</option>
+                            @foreach($trainees as $trainee)
+                                <option value="{{ $trainee->full_name }}">{{ $trainee->full_name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -117,6 +117,7 @@
             $('#category_id').val('');
             $('#plate_no').val('');
             $('#car_name').val('');
+            $('#trainee_name').empty().trigger('change'); // Clear trainee dropdown
 
             if (trainerName) {
                 // Make an AJAX request to fetch the trainer details using the trainer name
@@ -128,6 +129,9 @@
                         $('#category_id').val(data.category);
                         $('#plate_no').val(data.plate_no);
                         $('#car_name').val(data.car_name);
+
+                        // Fetch trainees based on the category
+                        fetchTraineesByCategory(data.category);
                     },
                     error: function(error) {
                         console.error('Error fetching trainer details:', error);
@@ -135,6 +139,25 @@
                 });
             }
         });
+
+        // Function to fetch trainees based on category
+        function fetchTraineesByCategory(category) {
+            $.ajax({
+                url: '/trainees/by-category/' + encodeURIComponent(category),
+                type: 'GET',
+                success: function(data) {
+                    // Populate the trainee dropdown
+                    $('#trainee_name').empty().append('<option value="">Select a Trainee</option>');
+                    data.forEach(function(trainee) {
+                        $('#trainee_name').append('<option value="' + trainee.full_name + '">' + trainee.full_name + '</option>');
+                    });
+                    $('#trainee_name').trigger('change');
+                },
+                error: function(error) {
+                    console.error('Error fetching trainees:', error);
+                }
+            });
+        }
 
         // Hide the success message after 3 seconds using plain JavaScript
         var successAlert = document.getElementById('success-alert');
