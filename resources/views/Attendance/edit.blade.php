@@ -75,6 +75,22 @@
 </div>
 
 <script>
+   // Fetch car details when the trainer is selected
+   document.addEventListener('DOMContentLoaded', function() {
+    var successAlert = document.getElementById('success-alert');
+
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
+</script>
+
+<script>
 function calculateDifference() {
     const startTime = document.getElementById('start_time').value;
     const finishTime = document.getElementById('finish_time').value;

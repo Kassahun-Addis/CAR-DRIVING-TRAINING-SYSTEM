@@ -186,28 +186,24 @@
 <body>
 <!-- Header Section -->
 <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
-<img src="{{ asset('storage/trainee_photos/12.jfif') }}" alt="Logo" class="logo-small">    
-<h4 class="text-2xl font-bold d-none d-sm-block" style="margin-left: 15px;">CAR Driver Training System</h4>
-    <!-- ... existing code ... -->
+    <img src="{{ asset('storage/trainee_photos/12.jfif') }}" alt="Logo" class="logo-small">    
+    <h4 class="text-2xl font-bold d-none d-sm-block" style="margin-left: 15px;">CAR Driver Training System</h4>
+    <!-- Only show user icon if the user is an admin -->
+    @if (Auth::check() && Auth::user()->role === 'admin')
     <div class="flex items-center ml-auto relative"> <!-- Use ml-auto to push this div to the right -->
         <a href="#" class="text-white flex items-center mr-4" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-user mr-1"></i>
-            @if (Auth::check())
-                <span>{{ Auth::user()->name }}</span> <!-- Display logged-in user's name -->
-            @else
-                <span>Guest</span> <!-- Fallback if no user is logged in -->
-            @endif
+            <span>{{ Auth::user()->name }}</span> <!-- Display logged-in user's name -->
         </a>
         <div class="dropdown-menu absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg hidden" aria-labelledby="userDropdown">
-            @if (Auth::check())
-                <a class="dropdown-item" href="{{ route('account.manage') }}">Manage Account</a>
-                <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-            @endif
+            <a class="dropdown-item" href="{{ route('account.manage') }}">Manage Account</a>
+            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
         </div>
     </div>
+    @endif
     <div>
         <button id="menu-toggle" class="text-white focus:outline-none hidden">
             <i class="fas fa-bars text-2xl"></i>
@@ -229,6 +225,7 @@
             <li><a href="{{ route('classes.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-tags mr-2"></i>Class Lists</a></li>
             <li><a href="{{ route('trainer_assigning.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Practical Training </a></li>
             <li><a href="{{ route('theoretical_class.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Theoretical Training </a></li>
+            <li><a href="{{ route('notifications.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-bell mr-2"></i>Notification</a></li>
             <!-- <li>
             <a href="#" class="flex items-center justify-between p-2 hover:bg-gray-700 rounded" id="order-toggle">
                 <span><i class="fas fa-folder-open mr-2"></i>Trainer Assigning</span>

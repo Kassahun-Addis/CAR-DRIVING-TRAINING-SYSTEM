@@ -16,9 +16,7 @@ use App\Http\Controllers\TheoreticalClassController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\TrainerAssigningController;
 use App\Http\Controllers\AccountController; // Make sure to import your controller
-
-
-
+use App\Http\Controllers\NotificationController;
 
 // Redirect root to login page
 Route::get('/', function () {
@@ -199,3 +197,22 @@ Route::get('/account/manage', [AccountController::class, 'manage'])->name('accou
 
 // Route to handle the account update
 Route::put('/account/update', [AccountController::class, 'update'])->name('account.update');
+
+
+// Route::middleware('auth:admin')->group(function () {
+    Route::middleware('auth:web, trainee')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/create', [NotificationController::class, 'create'])->name('notifications.create');
+    Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
+    Route::get('/notifications/{notification}/edit', [NotificationController::class, 'edit'])->name('notifications.edit');
+    Route::put('/notifications/{notification}', [NotificationController::class, 'update'])->name('notifications.update');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+
+});
+
+Route::middleware('auth:trainee')->group(function () {
+    
+    Route::get('/student/notifications', [NotificationController::class, 'index'])->name('student.notifications');
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+});

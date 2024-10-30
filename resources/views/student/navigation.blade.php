@@ -153,19 +153,69 @@
     @if (Auth::guard('trainee')->check())
         <ul class="mt-0 space-y-1 pl-0 list-none">
             <!-- Always show Dashboard -->
-            <li><a href="/home" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+            <li>
+                <a href="/home" class="flex items-center p-2 hover:bg-gray-700 rounded">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </a>
+            </li>
             
             <!-- Check if the current route is for filling attendance -->
             @if (!request()->routeIs('attendance.create'))
-                <li><a href="{{ route('attendance.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>Fill Attendance</a></li>
+                <li>
+                    <a href="{{ route('attendance.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
+                        <i class="fas fa-briefcase mr-2"></i>Fill Attendance
+                    </a>
+                </li>
             @endif
 
             <!-- Show View Agreement link only if not in the attendance create route -->
             @auth
                 @if (!request()->routeIs('attendance.create'))
-                    <li><a href="{{ route('trainee.agreement', ['id' => auth()->user()->id]) }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-briefcase mr-2"></i>View Agreement</a></li>
+                    <li>
+                        <a href="{{ route('trainee.agreement', ['id' => auth()->user()->id]) }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
+                            <i class="fas fa-briefcase mr-2"></i>View Agreement
+                        </a>
+                    </li>
                 @endif
             @endauth
+
+           <!-- Notification Link with Unread Count -->
+@if (Auth::guard('trainee')->check())
+    @php
+        \Log::info('Entering the Blade template');
+
+        $user = Auth::guard('trainee')->user();
+        if ($user) {
+            \Log::info('User is authenticated: Trainee ID ' . $user->id);
+
+            // Directly use the same logic as the successful query
+            $readNotificationIds = \DB::table('notification_user')
+                ->where('trainee_id', $user->id)
+                ->pluck('notification_id');
+
+            $unreadNotifications = \DB::table('notifications')
+                ->where('is_active', true)
+                ->whereNotIn('id', $readNotificationIds)
+                ->get();
+
+            $unreadCount = $unreadNotifications->count();
+
+            // Debugging: Log the unread count
+            \Log::info('Unread Notification Count for Trainee ID ' . $user->id . ': ' . $unreadCount);
+        } else {
+            \Log::info('User is not authenticated');
+        }
+    @endphp
+
+    <li>
+        <a href="{{ route('student.notifications') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
+            <i class="fas fa-bell mr-2"></i>Notification
+            @if($unreadCount > 0)
+                <span id="unread-count" class="badge badge-danger">{{ $unreadCount }}</span>
+            @endif
+        </a>
+    </li>
+@endif
 
             <!-- User Info & Logout (Visible only on small devices) -->
             <li class="sidebar-user-info block md:hidden">
@@ -191,7 +241,11 @@
         </ul>
     @else
         <ul class="mt-0 space-y-1 pl-0 list-none">
-            <li><a href="/welcome" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+            <li>
+                <a href="/welcome" class="flex items-center p-2 hover:bg-gray-700 rounded">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </a>
+            </li>
         </ul>
     @endif
 </div>
@@ -221,5 +275,46 @@
             orderSubmenu.classList.add('hidden'); // Ensure submenu is hidden
 
         });
+
+        function markAsRead(notificationId) {
+    // Move the notification to the bottom of the list
+    const notificationItem = document.getElementById(`notification-${notificationId}`);
+    const notificationList = document.getElementById('notification-list');
+    
+    // Clone the node and append it to the end of the list
+    const clone = notificationItem.cloneNode(true);
+    clone.classList.add('read'); // Add 'read' class to distinguish it
+    notificationList.appendChild(clone);
+    
+    // Remove the original node
+    notificationItem.remove();
+
+    // Decrement the unread count
+    const unreadCountBadge = document.getElementById('unread-count');
+    if (unreadCountBadge) {
+        let unreadCount = parseInt(unreadCountBadge.textContent);
+        if (unreadCount > 0) {
+            unreadCount -= 1;
+            unreadCountBadge.textContent = unreadCount;
+            if (unreadCount === 0) {
+                unreadCountBadge.style.display = 'none'; // Hide badge if count is zero
+            }
+        }
+    }
+
+    // Send AJAX request to mark the notification as read in the backend
+    fetch(`/notifications/${notificationId}/read`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+        }
+    }).then(response => response.json())
+      .then(data => {
+          if (!data.success) {
+              console.error('Failed to mark notification as read');
+          }
+            }).catch(error => console.error('Error:', error));
+        }
     });
 </script>

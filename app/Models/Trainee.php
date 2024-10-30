@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use App\Models\Notification;
 class Trainee extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -52,4 +52,9 @@ class Trainee extends Authenticatable
     //    {
     //        return $this->belongsTo(User::class, 'id');
     //    }
+
+    public function notifications()
+    {
+        return $this->belongsToMany(Notification::class, 'notification_user', 'trainee_id', 'notification_id')->withTimestamps();
+    }
 }
