@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use App\Exports\TrainersAssigningExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Mpdf\Mpdf;  
-
+use Illuminate\Support\Facades\Http;
 
 
 class TrainerAssigningController extends Controller
@@ -102,11 +102,39 @@ public function create()
     return view('trainer_assigning.create', compact('sortedTrainers', 'trainerCounts', 'trainees'));
 }
 
+    // public function getExamResult($traineeId)
+    // {
+    // // Example API endpoint and key (replace with actual values)
+    // $apiUrl = 'https://external-exam-site.com/api/exam-results';
+    // $apiKey = 'your-api-key-here';
+
+    // // Make a GET request to the external API
+    // $response = Http::withHeaders([
+    //     'Authorization' => "Bearer $apiKey",
+    // ])->get("$apiUrl/$traineeId");
+
+    // // Check if the request was successful
+    // if ($response->successful()) {
+    //     // Assuming the API returns a JSON response with an 'exam_result' field
+    //     return $response->json('exam_result');
+    // }
+
+    // // Handle errors or unsuccessful requests
+    // \Log::error('Failed to fetch exam result', ['traineeId' => $traineeId, 'response' => $response->body()]);
+    //     return null;
+    // }
+
+    public function getExamResult($traineeId)
+    {
+        // Mock response directly without calling external API
+        $mockExamResult = 80; // Set your simulated score here
+
+        return $mockExamResult; // Use this result directly in your app
+    }
+
     // Store a newly created trainer in the database
     public function store(Request $request)
 {
-    \Log::info('Incoming request data:', $request->all());
-
     // Validate the request
     $request->validate([
         'trainee_name' => 'required|string|max:255',
@@ -118,6 +146,19 @@ public function create()
         'car_name' => 'required|string|max:255',
         'total_time' => 'required|numeric', // Add validation for total time
     ]);
+
+    // Fetch the trainee's exam result
+    $trainee = Trainee::where('full_name', $request->trainee_name)->first();
+    if (!$trainee) {
+        return redirect()->back()->with('error', 'Trainee not found.');
+    }
+
+    $examResult = $this->getExamResult($trainee->id);
+
+    // Check if the exam result is greater than 74
+    if ($examResult === null || $examResult <= 74) {
+        return redirect()->back()->with('error', 'Trainee cannot be assigned as their exam result is less than 75.');
+    }
 
     // Create the TrainerAssigning record
     $trainer_assigning = TrainerAssigning::create([

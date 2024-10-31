@@ -84,11 +84,7 @@
 
                     <div class="form-group">
                         <label for="payment_status">Payment Status</label>
-                        <select name="payment_status" id="payment_status" class="form-control" required>
-                            <option value="Paid">Paid</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Overdue">Overdue</option>
-                        </select>
+                        <input type="text" id="payment_status" name="payment_status" class="form-control" value=" " readonly>
                     </div>
                 </div>
             </div>
@@ -129,6 +125,21 @@
         document.getElementById('vat').value = vat.toFixed(2);
         document.getElementById('total').value = total.toFixed(2);
         document.getElementById('remaining_balance').value = remainingBalance.toFixed(2);
+
+        // Update Payment Status based on the amount paid
+        updatePaymentStatus(amountPaid, total);
+    }
+
+    function updatePaymentStatus(amountPaid, total) {
+        const paymentStatusSelect = document.getElementById('payment_status');
+        
+        if (amountPaid >= total) {
+            paymentStatusSelect.value = 'Paid';
+        } else if (amountPaid > 0) {
+            paymentStatusSelect.value = 'Partially';
+        } else {
+            paymentStatusSelect.value = 'Unpaid';
+        }
     }
 </script>
 

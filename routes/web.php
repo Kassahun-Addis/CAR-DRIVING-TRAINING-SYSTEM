@@ -17,6 +17,8 @@ use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\TrainerAssigningController;
 use App\Http\Controllers\AccountController; // Make sure to import your controller
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ExamController;
+
 
 // Redirect root to login page
 Route::get('/', function () {
@@ -207,12 +209,22 @@ Route::put('/account/update', [AccountController::class, 'update'])->name('accou
     Route::get('/notifications/{notification}/edit', [NotificationController::class, 'edit'])->name('notifications.edit');
     Route::put('/notifications/{notification}', [NotificationController::class, 'update'])->name('notifications.update');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
-
-
 });
 
 Route::middleware('auth:trainee')->group(function () {
     
     Route::get('/student/notifications', [NotificationController::class, 'index'])->name('student.notifications');
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::get('/student/exam', [ExamController::class, 'redirectToExam'])->name('student.exam');
+
 });
+
+
+Route::get('/exams', [ExamController::class, 'index'])->name('exams.index');
+Route::get('/exams/fetch/{traineeId}', [ExamController::class, 'fetchAndStoreExamResults'])->name('exams.fetch');
+
+Route::middleware('auth:trainee')->group(function () {
+Route::get('/exams/take', [ExamController::class, 'takeExam'])->name('exams.take');
+Route::get('/exams/results', [ExamController::class, 'showResults'])->name('exams.results');
+});
+

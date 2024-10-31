@@ -57,4 +57,9 @@ class Trainee extends Authenticatable
     {
         return $this->belongsToMany(Notification::class, 'notification_user', 'trainee_id', 'notification_id')->withTimestamps();
     }
+
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
+    }
 }
