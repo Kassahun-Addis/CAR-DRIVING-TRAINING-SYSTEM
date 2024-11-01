@@ -21,6 +21,11 @@
             <label for="car_category">Car Category Name</label>
             <input type="text" name="car_category_name" class="form-control" required>
         </div>
+
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input type="text" name="price" class="form-control" required>
+        </div>
         <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary btn-custom">Save</button>
                 <button type="reset" class="btn btn-secondary btn-custom">Reset</button>

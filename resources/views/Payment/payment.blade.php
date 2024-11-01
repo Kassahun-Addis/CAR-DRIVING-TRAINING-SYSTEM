@@ -12,20 +12,35 @@
         </div>
     @endif
 
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="form-section">
         <form action="{{ route('payments.store') }}" method="POST">
             @csrf
             <div class="row">
             <div class="col-12 col-md-6">
-                    <div class="form-group">
-                        <label for="full_name">Full Name</label>
-                        <input type="text" class="form-control" id="full_name" name="full_name" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="tin_no">Tax Identification Number (TIN)</label>
-                        <input type="text" class="form-control" id="tin_no" name="tin_no" required>
-                    </div>
+            <div class="form-group">
+                <label for="custom_id">Custom ID</label>
+                <input type="text" class="form-control" id="custom_id" name="custom_id" required oninput="fetchTraineeInfo()">
+            </div>
+
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" required readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="tin_no">Tax Identification Number (TIN)</label>
+                <input type="text" class="form-control" id="tin_no" name="tin_no" readonly>
+            </div>
 
                     <div class="form-group">
                         <label for="payment_date">Payment Date</label>
@@ -74,7 +89,12 @@
 
                     <div class="form-group">
                         <label for="amount_paid">Amount Paid</label>
-                        <input type="number" class="form-control" id="amount_paid" name="amount_paid" step="0.01" min="0" required oninput="calculateTotals()">
+                        <input type="number" class="form-control" id="amount_paid" name="amount_paid" step="0.01" min="0" oninput="calculateTotals()">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discount">Discount(if any)</label>
+                        <input type="number" class="form-control" id="discount" name="discount" step="0.01" min="0" oninput="calculateTotals()">
                     </div>
 
                     <div class="form-group">
@@ -99,6 +119,7 @@
 </div>
 
 <script>
+
     function toggleBankField() {
     const paymentMethod = document.getElementById('payment_method').value;
     const bankField = document.getElementById('bankField');
@@ -116,12 +137,25 @@
 }
 
     function calculateTotals() {
-        const subtotal = parseFloat(document.getElementById('sub_total').value) || 0;
-        const vat = subtotal * 0.15;
-        const total = subtotal + vat;
+        const originalSubtotal = parseFloat(document.getElementById('sub_total').value) || 0;
+        const discount = parseFloat(document.getElementById('discount').value) || 0;
+        
+        // Calculate the subtotal after applying the discount
+        const subtotalAfterDiscount = originalSubtotal - discount;
+        
+        // Calculate VAT based on the discounted subtotal
+        const vat = subtotalAfterDiscount * 0.15;
+        
+        // Calculate the total amount
+        const total = subtotalAfterDiscount + vat;
+        
+        // Get the amount paid
         const amountPaid = parseFloat(document.getElementById('amount_paid').value) || 0;
+        
+        // Calculate the remaining balance
         const remainingBalance = total - amountPaid;
 
+        // Update the form fields with the calculated values
         document.getElementById('vat').value = vat.toFixed(2);
         document.getElementById('total').value = total.toFixed(2);
         document.getElementById('remaining_balance').value = remainingBalance.toFixed(2);
@@ -141,6 +175,37 @@
             paymentStatusSelect.value = 'Unpaid';
         }
     }
+
+    function fetchTraineeInfo() {
+    const custom_id = document.getElementById('custom_id').value;
+
+    if (custom_id) {
+        fetch(`/trainee-info?custom_id=${custom_id}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.trainee) {
+                    document.getElementById('full_name').value = data.trainee.full_name || '';
+                    document.getElementById('tin_no').value = data.trainee.tin_no || '';
+                } else {
+                    document.getElementById('full_name').value = '';
+                    document.getElementById('tin_no').value = '';
+                }
+
+                if (data.carCategory) {
+                    document.getElementById('sub_total').value = data.carCategory.price || 0;
+                } else {
+                    document.getElementById('sub_total').value = 0;
+                }
+
+                calculateTotals(); // Recalculate totals with the new subtotal
+            })
+            .catch(error => console.error('Error fetching trainee info:', error));
+    } else {
+        document.getElementById('full_name').value = '';
+        document.getElementById('tin_no').value = '';
+        document.getElementById('sub_total').value = '';
+    }
+}
 </script>
 
 <script>

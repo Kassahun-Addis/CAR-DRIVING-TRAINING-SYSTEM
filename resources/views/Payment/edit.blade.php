@@ -18,13 +18,18 @@
         <div class="row">
             <div class="col-12 col-md-6">
                 <div class="form-group">
+                    <label for="custom_id">Custom ID</label>
+                    <input type="text" class="form-control" id="custom_id" name="custom_id" value="{{ old('custom_id', $payment->custom_id) }}" required>
+                </div>
+
+                <div class="form-group">
                     <label for="full_name">Full Name</label>
-                    <input type="text" class="form-control" id="full_name" name="full_name" value="{{ old('full_name', $payment->full_name) }}" required>
+                    <input type="text" class="form-control" id="full_name" name="full_name" value="{{ old('full_name', $payment->full_name) }}" required readonly>
                 </div>
                 
                 <div class="form-group">
                     <label for="tin_no">Tax Identification Number (TIN)</label>
-                    <input type="text" class="form-control" id="tin_no" name="tin_no" value="{{ old('tin_no', $payment->tin_no) }}" required>
+                    <input type="text" class="form-control" id="tin_no" name="tin_no" value="{{ old('tin_no', $payment->tin_no) }}" readonly >
                 </div>
 
                 <div class="form-group">
@@ -60,7 +65,7 @@
             <div class="col-12 col-md-6">
                 <div class="form-group">
                     <label for="sub_total">Sub Total</label>
-                    <input type="number" class="form-control" id="sub_total" name="sub_total" step="0.01" min="0" value="{{ old('sub_total', $payment->sub_total) }}" required oninput="calculateTotals()">
+                    <input type="number" class="form-control" id="sub_total" name="sub_total" step="0.01" min="0" value="{{ old('sub_total', $payment->sub_total) }}" required oninput="calculateTotals()" readonly>
                 </div>
 
                 <div class="form-group">
@@ -79,17 +84,18 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="discount">Discount(if any)</label>
+                    <input type="number" class="form-control" id="discount" name="discount" step="0.01" min="0" value="{{ old('discount', $payment->discount) }}" oninput="calculateTotals()">
+                </div>
+
+                <div class="form-group">
                     <label for="remaining_balance">Remaining Balance</label>
                     <input type="number" class="form-control" id="remaining_balance" name="remaining_balance" step="0.01" min="0" value="{{ old('remaining_balance', $payment->remaining_balance) }}" required readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="payment_status">Payment Status</label>
-                    <select name="payment_status" id="payment_status" class="form-control" required>
-                        <option value="Paid" {{ old('payment_status', $payment->payment_status) == 'Paid' ? 'selected' : '' }}>Paid</option>
-                        <option value="Pending" {{ old('payment_status', $payment->payment_status) == 'Pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="Overdue" {{ old('payment_status', $payment->payment_status) == 'Overdue' ? 'selected' : '' }}>Overdue</option>
-                    </select>
+                    <input type="text" id="payment_status" name="payment_status" class="form-control" value=" " readonly>
                 </div>
             </div>
         </div>
@@ -119,16 +125,29 @@
     }
 
     function calculateTotals() {
-        const subtotal = parseFloat(document.getElementById('sub_total').value) || 0;
-        const vat = subtotal * 0.15;
-        const total = subtotal + vat;
-        const amountPaid = parseFloat(document.getElementById('amount_paid').value) || 0;
-        const remainingBalance = total - amountPaid;
+    const originalSubtotal = parseFloat(document.getElementById('sub_total').value) || 0;
+    const discount = parseFloat(document.getElementById('discount').value) || 0;
 
-        document.getElementById('vat').value = vat.toFixed(2);
-        document.getElementById('total').value = total.toFixed(2);
-        document.getElementById('remaining_balance').value = remainingBalance.toFixed(2);
-    }
+    // Calculate the subtotal after applying the discount
+    const subtotalAfterDiscount = originalSubtotal - discount;
+
+    // Calculate VAT based on the discounted subtotal
+    const vat = subtotalAfterDiscount * 0.15;
+
+    // Calculate the total amount
+    const total = subtotalAfterDiscount + vat;
+
+    // Get the amount paid
+    const amountPaid = parseFloat(document.getElementById('amount_paid').value) || 0;
+
+    // Calculate the remaining balance
+    const remainingBalance = total - amountPaid;
+
+    // Update the form fields with the calculated values
+    document.getElementById('vat').value = vat.toFixed(2);
+    document.getElementById('total').value = total.toFixed(2);
+    document.getElementById('remaining_balance').value = remainingBalance.toFixed(2);
+}
 
     document.addEventListener('DOMContentLoaded', function() {
         toggleBankField();

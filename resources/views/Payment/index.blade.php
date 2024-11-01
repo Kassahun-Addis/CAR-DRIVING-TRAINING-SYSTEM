@@ -72,6 +72,7 @@
                 <th>Sub Total</th>
                 <th>VAT</th>
                 <th>Total</th>
+                <th>Discount</th>
                 <th>Paid Amount</th>
                 <th>Remaining Balance</th>
                 <th>Payment Status</th>
@@ -91,6 +92,7 @@
                     <td>{{ $payment->sub_total }}</td>
                     <td>{{ $payment->vat }}</td>
                     <td>{{ $payment->total }}</td>
+                    <td>{{ $payment->discount }}</td>
                     <td>{{ $payment->amount_paid }}</td>
                     <td>{{ $payment->remaining_balance }}</td>
                     <td>{{ $payment->payment_status }}</td>

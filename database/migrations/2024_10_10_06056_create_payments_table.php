@@ -11,7 +11,7 @@ class CreatePaymentsTable extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id('payment_id'); // Primary key with underscore
             $table->string('full_name'); // Updated to underscore
-            $table->string('tin_no'); // Updated to underscore
+            $table->string('tin_no')->nullable(); // Updated to underscore
             $table->string('custom_id', 5)->nullable(); // Updated to underscore
             $table->date('payment_date')->nullable(false); // Updated to underscore
             $table->enum('payment_method', ['Cash', 'Bank', 'Telebirr'])->nullable(false); // Updated to underscore
@@ -24,7 +24,8 @@ class CreatePaymentsTable extends Migration
             $table->decimal('total', 10, 2)->nullable(false); // Updated to underscore
             $table->decimal('amount_paid', 10, 2)->default(0); // New field for amount paid
             $table->decimal('remaining_balance', 10, 2)->default(0); // New field for remaining balance
-            $table->enum('payment_status', ['Paid', 'Pending', 'Overdue'])->default('Pending'); // Updated to underscore
+            $table->enum('payment_status', ['Paid', 'Partially', 'Unpaid'])->default('Unpaid');
+            $table->decimal('discount', 10, 2)->default(0); // New field for discount
             $table->timestamps(); // Created at and updated at timestamps
         });
     }

@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('trainees', function (Blueprint $table) {
             $table->id();
-            $table->string('customid', 5)->nullable();  // New column for custom ID
+            $table->string('custom_id', 5)->nullable();  // New column for custom ID
             $table->string('yellow_card');  // Define yellow_card column
             $table->unique('yellow_card');  // Apply unique constraint on yellow_card
             $table->string('full_name');
             $table->string('ሙሉ_ስም');
+            $table->integer('tin_no')->nullable();
             $table->string('photo')->nullable();  // To store the photo path
             $table->string('gender')->nullable(); 
             $table->string('ጾታ')->nullable(); 

@@ -11,11 +11,37 @@ use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PaymentsExport;
+use Illuminate\Support\Facades\Log;
+
 
 
 
 class PaymentController extends Controller
 {
+
+    public function fetchTrainee(Request $request)
+{
+    $custom_id = $request->query('custom_id');
+
+    // Fetch the trainee information including the category
+    $trainee = DB::table('trainees')
+        ->where('custom_id', $custom_id)
+        ->select('full_name', 'tin_no', 'category')
+        ->first();
+
+    // Initialize carCategory as null
+    $carCategory = null;
+
+    // If trainee is found, fetch the car category price
+    if ($trainee && $trainee->category) {
+        $carCategory = DB::table('car_categories')
+            ->where('car_category_name', $trainee->category)
+            ->select('price') // Assuming you have a 'price' column in your car_categories table
+            ->first();
+    }
+
+    return response()->json(['trainee' => $trainee, 'carCategory' => $carCategory]);
+}
 
     public function exportPdf()
 {
@@ -58,48 +84,55 @@ public function exportExcel()
 
     public function store(Request $request)
 {
-    // Validate the incoming request
-    $request->validate([
-        'full_name' => 'required|string|max:255',
-        'tin_no' => 'required|string|max:20',
-        'payment_date' => 'required|date',
-        'payment_method' => 'required|in:Cash,Bank,Telebirr',
-        'bank_id' => 'required_if:payment_method,Bank|exists:banks,id', // Validate bank_id only if payment method is Bank
-        'transaction_no' => 'nullable|string|max:255',
-        'sub_total' => 'required|numeric|min:0',
-        'vat' => 'required|numeric|min:0',
-        'total' => 'required|numeric|min:0',
-        'amount_paid' => 'required|numeric|min:0',
-        'remaining_balance' => 'required|numeric|min:0',
-        'payment_status' => 'required|in:Paid,Pending,Overdue',
-    ]);
+        // Validate the incoming request
+        $request->validate([
+            'full_name' => 'required|string|max:255',
+            'custom_id' => 'required|string|max:5',
+            'tin_no' => 'nullable|string|max:20',
+            'payment_date' => 'required|date',
+            'payment_method' => 'required|in:Cash,Bank,Telebirr',
+            'bank_id' => 'required_if:payment_method,Bank|exists:banks,id',
+            'transaction_no' => 'nullable|string|max:255',
+            'sub_total' => 'required|numeric|min:0',
+            'vat' => 'required|numeric|min:0',
+            'total' => 'required|numeric|min:0',
+            'amount_paid' => 'required|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
+        ]);
 
-    // Calculate remaining balance
-    $remainingBalance = $request->total - $request->amount_paid;
+        // Calculate remaining balance
+        $remainingBalance = $request->total - $request->amount_paid;
 
-    // Create payment record
-    $paymentData = $request->all();
-    $paymentData['remaining_balance'] = $remainingBalance;
-    
-    // If the payment method is not Bank, unset the bank_id
-    if ($request->payment_method !== 'Bank') {
-        $paymentData['bank_id'] = null; // Ensure bank_id is null for non-Bank methods
-    }
+        // Determine payment status
+        $paymentStatus = $remainingBalance > 0 ? 'Partial' : 'Paid';
 
-    $payment = Payment::create($paymentData);
+        // Prepare payment data
+        $paymentData = $request->all();
+        $paymentData['remaining_balance'] = $remainingBalance;
+        $paymentData['payment_status'] = $paymentStatus;
 
-    // Record payment history
-    PaymentHistory::create([
-        'payment_id' => $payment->payment_id,
-        'amount_paid' => $request->amount_paid,
-        'payment_date' => $request->payment_date,
-        'transaction_no' => $request->transaction_no,
-        'payment_method' => $request->payment_method,
-        'bank_name' => $request->payment_method === 'Bank' ? $request->bank_id : null, // Store bank name conditionally
-        'payment_status' => $remainingBalance > 0 ? 'Partial' : 'Paid',
-    ]);
+        // Set bank_id to null if payment method is not Bank
+        if ($request->payment_method !== 'Bank') {
+            $paymentData['bank_id'] = null;
+        }
+        // Create payment record
+        $payment = Payment::create($paymentData);
+        // Record payment history
+        PaymentHistory::create([
+            'payment_id' => $payment->payment_id,
+            'amount_paid' => $request->amount_paid,
+            'payment_date' => $request->payment_date,
+            'transaction_no' => $request->transaction_no,
+            'payment_method' => $request->payment_method,
+            'bank_name' => $request->payment_method === 'Bank' ? $request->bank_id : null,
+            'payment_status' => $paymentStatus,
+        ]);
 
-    return redirect()->route('payments.index')->with('success', 'Payment recorded successfully.');
+   
+
+        return redirect()->route('payments.index')->with('success', 'Payment recorded successfully.');
+
+   
 }
 
 
@@ -123,7 +156,8 @@ public function update(Request $request, Payment $payment)
     try {
         $request->validate([
             'full_name' => 'required|string|max:255',
-            'tin_no' => 'required|string|max:20',
+            'custom_id' => 'required|string|max:5',
+            'tin_no' => 'nullable|string|max:20',
             'payment_date' => 'required|date',
             'payment_method' => 'required|in:Cash,Bank,Telebirr',
             'bank_id' => 'required_if:payment_method,Bank|exists:banks,id', // Validate bank_id only if payment method is Bank
@@ -132,7 +166,8 @@ public function update(Request $request, Payment $payment)
             'vat' => 'required|numeric|min:0',
             'total' => 'required|numeric|min:0',
             'amount_paid' => 'required|numeric|min:0',
-            'payment_status' => 'required|in:Paid,Pending,Overdue',
+            'payment_status' => 'required|in:Paid,Partial,Unpaid', // Corrected to match 'Partial' status
+            'discount' => 'nullable|numeric|min:0',
         ]);
     } catch (\Illuminate\Validation\ValidationException $e) {
         \Log::error('Validation failed', [
@@ -180,8 +215,8 @@ public function update(Request $request, Payment $payment)
 
     public function print(Payment $payment)
     {
-        // Fetch the trainee based on the customid in the payment
-        $trainee = \App\Models\Trainee::where('customid', $payment->customid)->first();
+        // Fetch the trainee based on the custom_id in the payment
+        $trainee = \App\Models\Trainee::where('custom_id', $payment->custom_id)->first();
     
         // Pass the trainee along with the payment to the view
         return view('Payment.print', compact('payment', 'trainee'));

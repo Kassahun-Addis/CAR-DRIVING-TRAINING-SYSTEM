@@ -116,7 +116,7 @@
 <img src="{{ asset('storage/trainee_photos/12.jfif') }}" alt="Logo" class="logo-small">    
 <h4 class="text-2xl font-bold d-none d-sm-block" style="margin-left: 15px;">CAR Driver Training System</h4>
     <div class="header-user-info flex items-center ml-auto hidden md:flex">
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        <form id="logout-form" action="{{ route('trainee.logout') }}" method="POST" style="display: none;">
             @csrf
         </form>
         <a href="#" class="text-white flex items-center mr-4" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

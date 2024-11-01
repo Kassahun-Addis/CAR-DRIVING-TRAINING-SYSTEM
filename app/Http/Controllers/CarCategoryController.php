@@ -63,6 +63,7 @@ class CarCategoryController extends Controller
     {
         $request->validate([
             'car_category_name' => 'required|string|max:255',
+            'price' => 'required|numeric',
 
         ]);
 
@@ -79,6 +80,8 @@ class CarCategoryController extends Controller
     {
         $request->validate([
             'car_category_name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+
         ]);
 
         $CarCategory->update($request->all());

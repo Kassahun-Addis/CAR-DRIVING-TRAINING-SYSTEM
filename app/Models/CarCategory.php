@@ -11,6 +11,7 @@ class CarCategory extends Model
 
     protected $fillable = [
         'car_category_name',
+        'price',
       
     ];
 

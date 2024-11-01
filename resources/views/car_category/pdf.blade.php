@@ -34,6 +34,7 @@
             <tr>
                 <th>No</th>
                 <th>Car Category Name</th>
+                <th>Price</th>
             </tr>
         </thead>
         <tbody>
@@ -41,6 +42,7 @@
                 <tr>
                     <td>{{ $key + 1 }}</td>
                     <td>{{ $CarCategory->car_category_name }}</td>
+                    <td>{{ number_format($CarCategory->price, 2) }}</td>
                 </tr>
             @endforeach
         </tbody>

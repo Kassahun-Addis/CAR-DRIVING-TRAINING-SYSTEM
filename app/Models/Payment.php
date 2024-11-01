@@ -12,19 +12,20 @@ class Payment extends Model
     protected $primaryKey = 'payment_id'; // Primary key, unchanged
 
     protected $fillable = [
-        'full_name',         // Full name of the payer
-        'tin_no',           // Tax Identification Number
-        'customid',         // Assuming this is a reference ID
-        'payment_date',     // Date of payment
-        'payment_method',    // Payment method (Cash, Bank, Telebirr)
-        'bank_id',          // Foreign key for Bank, updated to underscore
-        'transaction_no',   // Transaction number
-        'sub_total',        // Subtotal amount
-        'vat',              // VAT amount
-        'total',            // Total amount
-        'amount_paid',      // Amount paid by the user
-        'remaining_balance', // Remaining balance after payment
-        'payment_status',    // Status of payment (Paid, Pending, Overdue)
+        'full_name',
+        'tin_no',
+        'custom_id',
+        'payment_date',
+        'payment_method',
+        'bank_id',
+        'transaction_no',
+        'sub_total',
+        'vat',
+        'total',
+        'amount_paid',
+        'remaining_balance',
+        'payment_status',
+        'discount'
     ];
 
     // Define the relationship with the Student model

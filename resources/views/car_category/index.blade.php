@@ -61,6 +61,7 @@
             <tr>
                 <th>No</th>
                 <th>Car Category Name</th>
+                <th>Price</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -69,6 +70,7 @@
                 <tr>
                     <td>{{ $CarCategory->id }}</td>
                     <td>{{ $CarCategory->car_category_name }}</td>
+                    <td>{{ number_format($CarCategory->price, 2) }}</td>
                     <td class="text-nowrap">
                         <a href="{{ route('car_category.edit', $CarCategory) }}" class="btn btn-warning">Edit</a>
 

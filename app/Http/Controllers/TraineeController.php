@@ -290,26 +290,26 @@ class TraineeController extends Controller
     }
 
     public function showDashboard()
-{
-    $user = Auth::user();
+    {
+        $user = Auth::user();
 
-    if ($user) {
-        $trainee = Trainee::find($user->id); // Assuming the ID matches
-        return view('home', compact('trainee')); // Ensure 'home' is the correct view name
+        if ($user) {
+            $trainee = Trainee::find($user->id); // Assuming the ID matches
+            return view('home', compact('trainee')); // Ensure 'home' is the correct view name
+        }
+
+        return redirect()->route('trainee.login')->withErrors('You are not logged in.');
     }
 
-    return redirect()->route('login')->withErrors('You are not logged in.');
-}
+    public function showAgreement($id)
+    {
+        //dd($id); // Check if this outputs the correct ID
+        $trainee = Trainee::findOrFail($id);
+        return view('Trainee.agreement', compact('trainee'));
+    }
 
-public function showAgreement($id)
-{
-    //dd($id); // Check if this outputs the correct ID
-    $trainee = Trainee::findOrFail($id);
-    return view('Trainee.agreement', compact('trainee'));
-}
-
-public function downloadAgreement($id)
-{
+    public function downloadAgreement($id)
+    {
     $trainee = Trainee::findOrFail($id); // Fetch the trainee object
 
     // Render the view with the trainee data

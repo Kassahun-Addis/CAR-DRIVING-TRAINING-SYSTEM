@@ -126,7 +126,7 @@ public function index(Request $request)
         $traineeId = Auth::guard('trainee')->user()->id;
         $traineeName = Auth::guard('trainee')->user()->full_name;
     } else {
-        return redirect()->route('login')->with('error', 'Please log in to view attendance.');
+        return redirect()->route('admin.login')->with('error', 'Please log in to view attendance.');
     }
 
     // Fetch attendances based on the authenticated user's role
@@ -206,7 +206,8 @@ public function edit($id)
             // Get the logged-in trainee
             $trainee = Auth::guard('trainee')->user();
         } else {
-            return redirect()->route('login')->with('error', 'Please log in to edit attendance.');
+            // return redirect()->route('login')->with('error', 'Please log in to edit attendance.');
+            return redirect()->route('trainee.login')->with('error', 'Please log in to edit attendance.');
         }
 
         // Log the successful retrieval of the attendance record
@@ -254,7 +255,7 @@ public function update(Request $request, $id)
             ->where('trainee_id', Auth::guard('trainee')->user()->id)
             ->firstOrFail();
     } else {
-        return redirect()->route('login')->with('error', 'Please log in to edit attendance.');
+        return redirect()->route('admin.login')->with('error', 'Please log in to edit attendance.');
     }
 
     // Update the attendance record

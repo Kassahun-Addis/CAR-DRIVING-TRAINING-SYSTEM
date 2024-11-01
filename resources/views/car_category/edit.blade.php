@@ -23,6 +23,11 @@
             <input type="text" name="car_category_name" class="form-control" value="{{ $CarCategory->car_category_name }}" required>
         </div>
 
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input type="number" name="price" class="form-control" value="{{ $CarCategory->price }}" required>
+        </div>
+
         <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary btn-custom">Update</button>
                 <a href="{{ route('car_category.index') }}" class="btn btn-secondary btn-custom">Back to list</a>

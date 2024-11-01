@@ -5,12 +5,10 @@ use App\Http\Controllers\TraineeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\TrainingCarController;
-use App\Http\Controllers\StudentDashboardController;
-use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\BankController;
-use App\Http\Controllers\Auth\LoginController;
+//use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CarCategoryController;
 use App\Http\Controllers\TheoreticalClassController;
 use App\Http\Controllers\ClassesController;
@@ -18,29 +16,29 @@ use App\Http\Controllers\TrainerAssigningController;
 use App\Http\Controllers\AccountController; // Make sure to import your controller
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\Auth\TraineeLoginController;
 
 
-// Redirect root to login page
-Route::get('/', function () {
-    return redirect()->route('login'); // Redirect to the login page
-});
+// Admin Login Routes
+Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/admin/login', [AdminLoginController::class, 'login']);
 
-// Login and Logout Routes
-// Route::post('/login', [LoginController::class, 'login'])->name('login'); // Add login route
-Route::get('/login', [LoginController::class, 'login'])->name('login'); // Add login route
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+// Admin Dashboard
+Route::get('/welcome', [DashboardController::class, 'index'])->middleware('auth:web')->name('welcome');
 
-// Home and Welcome Routes
-Route::get('/home', [StudentDashboardController::class, 'index'])
-    ->middleware('auth:trainee') // Protect the home route
-    ->name('home');
+// Trainee Login Routes
+Route::get('/trainee/login', [TraineeLoginController::class, 'showLoginForm'])->name('trainee.login');
+Route::post('/trainee/login', [TraineeLoginController::class, 'login']);
 
-Route::get('/welcome', [AdminDashboardController::class, 'index'])
-    ->middleware('auth') // Protect the welcome route (admin)
-    ->name('welcome');
+// Trainee Dashboard
+Route::get('/home', function () {
+    return view('home');
+})->middleware('auth:trainee')->name('home');
 
+Route::post('/logout-trainee', [TraineeLoginController::class, 'logout'])->name('trainee.logout');
+Route::post('/logout-admin', [AdminLoginController::class, 'logout'])->name('admin.logout');
 
-Route::get('/welcome', [DashboardController::class, 'index']);
 
 // Trainee Routes
 //Route::middleware('auth')->group(function () {
@@ -61,7 +59,7 @@ Route::get('/welcome', [DashboardController::class, 'index']);
 
 // Attendance Routes
 // Route::middleware('auth:trainee')->group(function () {
-    Route::get('/trainee/dashboard', [StudentDashboardController::class, 'showDashboard'])->name('trainee.dashboard'); // Trainee dashboard
+    //Route::get('/trainee/dashboard', [StudentDashboardController::class, 'showDashboard'])->name('trainee.dashboard'); // Trainee dashboard
     Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
@@ -129,7 +127,7 @@ Route::get('/welcome', [DashboardController::class, 'index']);
     Route::get('payments/{payment}/history', [PaymentController::class, 'showPaymentHistory'])->name('payments.history');
     Route::get('/payments/export-pdf', [PaymentController::class, 'exportPdf'])->name('payments.exportPdf');
     Route::post('/payments/export-excel', [PaymentController::class, 'exportExcel'])->name('payments.exportExcel');
-});
+    Route::get('/trainee-info', [PaymentController::class, 'fetchTrainee']);});
 
 // Bank Routes
 //Route::resource('banks', BankController::class);
@@ -202,7 +200,7 @@ Route::put('/account/update', [AccountController::class, 'update'])->name('accou
 
 
 // Route::middleware('auth:admin')->group(function () {
-    Route::middleware('auth:web, trainee')->group(function () {
+    Route::middleware('auth:web')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/create', [NotificationController::class, 'create'])->name('notifications.create');
     Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
