@@ -12,6 +12,16 @@
         </div>
     @endif
 
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="{{ route('payments.update', $payment) }}" method="POST">
         @csrf
         @method('PUT')
@@ -29,7 +39,7 @@
                 
                 <div class="form-group">
                     <label for="tin_no">Tax Identification Number (TIN)</label>
-                    <input type="text" class="form-control" id="tin_no" name="tin_no" value="{{ old('tin_no', $payment->tin_no) }}" readonly >
+                    <input type="text" class="form-control" id="tin_no" name="tin_no" value="{{ old('tin_no', $payment->tin_no) }}" readonly>
                 </div>
 
                 <div class="form-group">
@@ -95,12 +105,11 @@
 
                 <div class="form-group">
                     <label for="payment_status">Payment Status</label>
-                    <input type="text" id="payment_status" name="payment_status" class="form-control" value=" " readonly>
+                    <input type="text" id="payment_status" name="payment_status" class="form-control" value="{{ old('payment_status', $payment->payment_status) }}" readonly>
                 </div>
             </div>
         </div>
 
-    
         <div class="d-flex justify-content-center">
             <button type="submit" class="btn btn-primary btn-custom">Update</button>
             <button type="reset" class="btn btn-secondary btn-custom">Reset</button>
@@ -125,48 +134,48 @@
     }
 
     function calculateTotals() {
-    const originalSubtotal = parseFloat(document.getElementById('sub_total').value) || 0;
-    const discount = parseFloat(document.getElementById('discount').value) || 0;
+        const originalSubtotal = parseFloat(document.getElementById('sub_total').value) || 0;
+        const discount = parseFloat(document.getElementById('discount').value) || 0;
 
-    // Calculate the subtotal after applying the discount
-    const subtotalAfterDiscount = originalSubtotal - discount;
+        // Calculate the subtotal after applying the discount
+        const subtotalAfterDiscount = originalSubtotal - discount;
 
-    // Calculate VAT based on the discounted subtotal
-    const vat = subtotalAfterDiscount * 0.15;
+        // Calculate VAT based on the discounted subtotal
+        const vat = subtotalAfterDiscount * 0.15;
 
-    // Calculate the total amount
-    const total = subtotalAfterDiscount + vat;
+        // Calculate the total amount
+        const total = subtotalAfterDiscount + vat;
 
-    // Get the amount paid
-    const amountPaid = parseFloat(document.getElementById('amount_paid').value) || 0;
+        // Get the amount paid
+        const amountPaid = parseFloat(document.getElementById('amount_paid').value) || 0;
 
-    // Calculate the remaining balance
-    const remainingBalance = total - amountPaid;
+        // Calculate the remaining balance
+        const remainingBalance = total - amountPaid;
 
-    // Update the form fields with the calculated values
-    document.getElementById('vat').value = vat.toFixed(2);
-    document.getElementById('total').value = total.toFixed(2);
-    document.getElementById('remaining_balance').value = remainingBalance.toFixed(2);
-}
+        // Update the form fields with the calculated values
+        document.getElementById('vat').value = vat.toFixed(2);
+        document.getElementById('total').value = total.toFixed(2);
+        document.getElementById('remaining_balance').value = remainingBalance.toFixed(2);
+
+        // Update Payment Status based on the amount paid
+        updatePaymentStatus(amountPaid, total);
+    }
+
+    function updatePaymentStatus(amountPaid, total) {
+        const paymentStatusSelect = document.getElementById('payment_status');
+        
+        if (amountPaid >= total) {
+            paymentStatusSelect.value = 'Paid';
+        } else if (amountPaid > 0) {
+            paymentStatusSelect.value = 'Partial'; // Corrected to 'Partial'
+        } else {
+            paymentStatusSelect.value = 'Unpaid';
+        }
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
         toggleBankField();
+        calculateTotals(); // Ensure totals and status are calculated on page load
     });
-</script>
-
-<script>
-   // Fetch car details when the trainer is selected
-   document.addEventListener('DOMContentLoaded', function() {
-    var successAlert = document.getElementById('success-alert');
-
-    if (successAlert) {
-        setTimeout(function() {
-            successAlert.style.opacity = '0';
-            setTimeout(function() {
-                successAlert.style.display = 'none';
-            }, 500);
-        }, 3000);
-    }
-});
 </script>
 @endsection

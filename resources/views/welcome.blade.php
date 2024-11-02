@@ -265,6 +265,8 @@
             <li><a href="{{ route('trainer_assigning.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Practical Training </a></li>
             <li><a href="{{ route('theoretical_class.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Theoretical Training </a></li>
             <li><a href="{{ route('notifications.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-bell mr-2"></i>Notification</a></li>
+            <li><a href="{{ route('companies.index') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-building mr-2"></i>Company Info</a></li>
+            <li><a href="{{ route('reports.index') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-file-alt mr-2"></i>Reports</a></li>
         </ul>
     @else
         <ul class="mt-0 space-y-1 pl-0 list-none">
@@ -276,7 +278,7 @@
 
 <div class="main-content">
     <div class="container">
-        <h2 class="text-center my-4">Dashboard Overview</h2>
+    <h3 class="text-left my-4">{{ $company->name ?? 'Dashboard Overview' }}</h3>
         <div class="row text-center">
             <!-- Card 1 -->
             <div class="col-md-3">

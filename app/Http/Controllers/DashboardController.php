@@ -6,11 +6,15 @@ use App\Models\Trainer;
 use App\Models\Payment;
 use App\Models\TrainerAssigning;
 use Illuminate\Support\Facades\DB;
+use App\Models\Company;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        // Assuming there’s only one company record
+        $company = Company::first();
+
         // Fetch data from the database
         $totalTrainees = Trainee::count();
         $totalTrainers = Trainer::count();
@@ -45,6 +49,6 @@ class DashboardController extends Controller
     ->toArray();
 
         // Pass data to the view
-        return view('welcome', compact('assignmentsByCategory', 'totalTrainees', 'totalTrainers', 'totalAmountPaid', 'totalRemainingBalance', 'monthlyTrainees'));
+        return view('welcome', compact('assignmentsByCategory', 'company', 'totalTrainees', 'totalTrainers', 'totalAmountPaid', 'totalRemainingBalance', 'monthlyTrainees'));
     }
 }

@@ -40,7 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-
+        'admin' => [
+                'driver' => 'session',
+                'provider' => 'admins',
+            ],
         'trainee' => [ // New guard for trainees
             'driver' => 'session',
             'provider' => 'trainees',

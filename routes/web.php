@@ -18,6 +18,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\TraineeLoginController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ReportController;
 
 
 // Admin Login Routes
@@ -40,6 +42,20 @@ Route::post('/logout-trainee', [TraineeLoginController::class, 'logout'])->name(
 Route::post('/logout-admin', [AdminLoginController::class, 'logout'])->name('admin.logout');
 
 
+Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
+Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store');
+Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+Route::get('/companies/{id}/edit', [CompanyController::class, 'edit'])->name('companies.edit');
+Route::put('/companies/{id}', [CompanyController::class, 'update'])->name('companies.update');
+Route::delete('/companies/{id}', [CompanyController::class, 'destroy'])->name('companies.destroy');
+
+Route::get('/reports', function () {
+    return view('reports.index');
+})->name('reports.index');
+
+Route::get('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
+
+
 // Trainee Routes
 //Route::middleware('auth')->group(function () {
     Route::get('/trainee/create', [TraineeController::class, 'create'])->name('trainee.create');
@@ -50,7 +66,6 @@ Route::post('/logout-admin', [AdminLoginController::class, 'logout'])->name('adm
     Route::delete('/trainee/destroy/{id}', [TraineeController::class, 'destroy'])->name('trainee.destroy');
     Route::post('trainee/export', [TraineeController::class, 'exportToExcel'])->name('trainee.export');
     Route::get('trainee/export-pdf', [TraineeController::class, 'exportPdf'])->name('trainee.exportPdf');    
-    Route::get('/trainee/{id}/agreement', [TraineeController::class, 'showAgreement'])->name('trainee.agreement');
     Route::get('/trainee/{id}/agreement', [TraineeController::class, 'showAgreement'])->name('trainee.agreement');
     Route::get('/trainee/{id}/download-agreement', [TraineeController::class, 'downloadAgreement'])->name('download.agreement');
     Route::patch('/trainees/{trainee}/toggle-status', [TraineeController::class, 'toggleStatus']);        
