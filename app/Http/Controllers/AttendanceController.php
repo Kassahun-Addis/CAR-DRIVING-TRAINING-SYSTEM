@@ -138,7 +138,10 @@ public function index(Request $request)
         })
         ->when($search, function ($query) use ($search) {
             return $query->where('date', 'like', '%' . $search . '%')
-                         ->orWhere('status', 'like', '%' . $search . '%');
+                         ->orWhere('status', 'like', '%' . $search . '%')
+                         ->orWhere('trainee_name', 'like', '%' . $search . '%')
+                         ->orWhere('trainer_name', 'like', '%' . $search . '%')
+                         ->orWhere('comment', 'like', '%' . $search . '%');
         })
         ->paginate($perPage);
 

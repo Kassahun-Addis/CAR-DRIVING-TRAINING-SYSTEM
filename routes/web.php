@@ -20,6 +20,8 @@ use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\TraineeLoginController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
+
 
 
 // Admin Login Routes
@@ -241,3 +243,11 @@ Route::get('/exams/take', [ExamController::class, 'takeExam'])->name('exams.take
 Route::get('/exams/results', [ExamController::class, 'showResults'])->name('exams.results');
 });
 
+
+Route::get('/', [UserController::class, 'index'])->name('users.index'); // Display a list of users
+Route::get('/create', [UserController::class, 'create'])->name('users.create'); // Show the form to create a new user
+Route::post('/', [UserController::class, 'store'])->name('users.store'); // Store a newly created user
+Route::get('/{user}', [UserController::class, 'show'])->name('users.show'); // Display a specific user
+Route::get('/{user}/edit', [UserController::class, 'edit'])->name('users.edit'); // Show the form to edit an existing user
+Route::put('/{user}', [UserController::class, 'update'])->name('users.update'); // Update a specific user
+Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy'); // Delete a specific user

@@ -37,7 +37,7 @@ class BankController extends Controller
         return $mpdf->Output('bank_list.pdf', 'D');
     }
 
-        public function exportExcel()
+    public function exportExcel()
     {
         return Excel::download(new BanksExport, 'banks_list.xlsx');
     }
@@ -48,11 +48,13 @@ class BankController extends Controller
         $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
 
         // Query the banks with search and pagination
-         $banks = Bank::when($search, function ($query) use ($search) {
-            return $query->where('bank_name', 'like', '%' . $search . '%');
+        $banks = Bank::when($search, function ($query) use ($search) {
+            return $query->where('bank_name', 'like', '%' . $search . '%')
+                        ->orWhere('id', 'like', '%' . $search . '%'); // Add more attributes as needed
         })->paginate($perPage);
+
         return view('banks.index', compact('banks'));
-   }
+    }
 
     public function create()
     {

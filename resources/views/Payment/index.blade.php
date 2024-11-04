@@ -59,7 +59,7 @@
 
     
     <div class="table-responsive">
-      <table class="table table-bordered">
+    <table class="table table-bordered">
         <thead>
             <tr>
                 <th>No</th>
@@ -79,8 +79,8 @@
                 <th>Actions</th>
             </tr>
         </thead>
-           <tbody>
-              @foreach($payments as $key => $payment)
+        <tbody>
+            @foreach($payments as $key => $payment)
                 <tr>
                     <td>{{ $key + 1 }}</td>
                     <td>{{ $payment->full_name }}</td>
@@ -97,12 +97,14 @@
                     <td>{{ $payment->remaining_balance }}</td>
                     <td>{{ $payment->payment_status }}</td>
                     <td class="text-nowrap">
-                        <a href="{{ route('payments.edit', $payment) }}" class="btn btn-warning" style="margin-right: 5px;">Edit</a>
-                        <form action="{{ route('payments.destroy', $payment) }}" method="POST" style="display:inline; margin-right: 5px;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
+                        @if(Auth::check() && Auth::user()->role === 'admin')
+                            <a href="{{ route('payments.edit', $payment) }}" class="btn btn-warning" style="margin-right: 5px;">Edit</a>
+                            <form action="{{ route('payments.destroy', $payment) }}" method="POST" style="display:inline; margin-right: 5px;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        @endif
                         <a href="{{ route('payments.print', $payment) }}" class="btn btn-secondary" style="margin-right: 5px;">Print</a>
                         
                         <!-- Pay Remaining Dropdown -->
@@ -120,12 +122,11 @@
                             </div>
                         </div>
                     </td>
-
-    </tr>
-    @endforeach
-    </tbody>
+                </tr>
+            @endforeach
+        </tbody>
     </table>
-    </div>
+</div>
 
 
 <!-- Showing entries information -->

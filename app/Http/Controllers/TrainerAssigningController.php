@@ -59,25 +59,26 @@ class TrainerAssigningController extends Controller
         return $mpdf->Output('trainers_assigning_list.pdf', 'D');
     }
 
-// Display a listing of the training cars
     public function index(Request $request)
-{
-    \Log::info('Request data:', $request->all());
-
-    $search = $request->input('search');
-    $perPage = $request->input('perPage', 10);
-
-    // Eager load the category relationship
-    $trainers_assigning = TrainerAssigning::with('category')
-        ->when($search, function ($query) use ($search) {
-            return $query->where('trainee_name', 'like', '%' . $search . '%')
-                         ->orWhere('trainer_name', 'like', '%' . $search . '%');
-        })->paginate($perPage);
-
-    // \Log::info('Trainers Assigning:', $trainers_assigning->toArray());
-
-    return view('trainer_assigning.index', compact('trainers_assigning'));
-}
+    {    
+        $search = $request->input('search');
+        $perPage = $request->input('perPage', 10);
+    
+        // Eager load the category relationship
+        $trainers_assigning = TrainerAssigning::with('category')
+            ->when($search, function ($query) use ($search) {
+                return $query->where('trainee_name', 'like', '%' . $search . '%')
+                             ->orWhere('trainer_name', 'like', '%' . $search . '%')
+                             ->orWhere('start_date', 'like', '%' . $search . '%')
+                             ->orWhere('end_date', 'like', '%' . $search . '%')
+                             ->orWhere('category_id', 'like', '%' . $search . '%')
+                             ->orWhere('plate_no', 'like', '%' . $search . '%')
+                             ->orWhere('car_name', 'like', '%' . $search . '%')
+                             ->orWhere('total_time', 'like', '%' . $search . '%');
+            })->paginate($perPage);
+    
+        return view('trainer_assigning.index', compact('trainers_assigning'));
+    }
 
 public function create()
 {

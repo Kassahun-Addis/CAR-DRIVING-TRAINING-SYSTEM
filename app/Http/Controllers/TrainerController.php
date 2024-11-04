@@ -88,19 +88,25 @@ public function toggleStatus(Request $request, Trainer $trainer)
         ]);
     }
 
-    // Display a listing of the training cars
     public function index(Request $request)
-    {
-        $search = $request->input('search'); // Get the search term
-        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+{
+    $search = $request->input('search'); // Get the search term
+    $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
 
-        // Query the banks with search and pagination
-         $trainers = Trainer::when($search, function ($query) use ($search) {
-            return $query->where('trainer_name', 'like', '%' . $search . '%')
-                        ->orWhere('phone_number', 'like', '%' . $search . '%');
-        })->paginate($perPage);
-        return view('trainer.index', compact('trainers'));
-   }
+    // Query the trainers with search and pagination
+    $trainers = Trainer::when($search, function ($query) use ($search) {
+        return $query->where('trainer_name', 'like', '%' . $search . '%')
+                     ->orWhere('phone_number', 'like', '%' . $search . '%')
+                     ->orWhere('email', 'like', '%' . $search . '%')
+                     ->orWhere('experience', 'like', '%' . $search . '%')
+                     ->orWhere('training_type', 'like', '%' . $search . '%')
+                     ->orWhere('plate_no', 'like', '%' . $search . '%')
+                     ->orWhere('category', 'like', '%' . $search . '%')
+                     ->orWhere('car_name', 'like', '%' . $search . '%');
+    })->paginate($perPage);
+
+    return view('trainer.index', compact('trainers'));
+}
 
     // Show the form for creating a new trainer
     public function create()

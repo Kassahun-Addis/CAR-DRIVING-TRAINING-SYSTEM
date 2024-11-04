@@ -175,17 +175,31 @@ class TraineeController extends Controller
 
 
     public function index(Request $request)
-    {
-        $search = $request->input('search'); // Get the search term
-        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+{
+    $search = $request->input('search'); // Get the search term
+    $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
 
-        // Query the banks with search and pagination
-         $trainees = Trainee::when($search, function ($query) use ($search) {
-            return $query->where('full_name', 'like', '%' . $search . '%')
-                        ->orWhere('gender', 'like', '%' . $search . '%');
-        })->paginate($perPage);
-        return view('Trainee.index', compact('trainees'));
-   }
+    // Query the trainees with search and pagination
+    $trainees = Trainee::when($search, function ($query) use ($search) {
+        return $query->where('full_name', 'like', '%' . $search . '%')
+                     ->orWhere('yellow_card', 'like', '%' . $search . '%')
+                     ->orWhere('gender', 'like', '%' . $search . '%')
+                     ->orWhere('nationality', 'like', '%' . $search . '%')
+                     ->orWhere('city', 'like', '%' . $search . '%')
+                     ->orWhere('sub_city', 'like', '%' . $search . '%')
+                     ->orWhere('woreda', 'like', '%' . $search . '%')
+                     ->orWhere('phone_no', 'like', '%' . $search . '%')
+                     ->orWhere('po_box', 'like', '%' . $search . '%')
+                     ->orWhere('birth_place', 'like', '%' . $search . '%')
+                     ->orWhere('dob', 'like', '%' . $search . '%')
+                     ->orWhere('category', 'like', '%' . $search . '%')
+                     ->orWhere('education_level', 'like', '%' . $search . '%')
+                     ->orWhere('blood_type', 'like', '%' . $search . '%')
+                     ->orWhere('receipt_no', 'like', '%' . $search . '%');
+    })->paginate($perPage);
+
+    return view('Trainee.index', compact('trainees'));
+}
     
 
     public function edit($id)

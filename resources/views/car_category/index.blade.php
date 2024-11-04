@@ -62,7 +62,9 @@
                 <th>No</th>
                 <th>Car Category Name</th>
                 <th>Price</th>
+                @if(Auth::check() && Auth::user()->user_type === 'admin')
                 <th>Actions</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -71,6 +73,8 @@
                     <td>{{ $CarCategory->id }}</td>
                     <td>{{ $CarCategory->car_category_name }}</td>
                     <td>{{ number_format($CarCategory->price, 2) }}</td>
+                    @if(Auth::check() && Auth::user()->user_type === 'admin')
+
                     <td class="text-nowrap">
                         <a href="{{ route('car_category.edit', $CarCategory) }}" class="btn btn-warning">Edit</a>
 
@@ -80,6 +84,7 @@
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this car category?')">Delete</button>
                         </form>
                     </td>
+                    @endif
                 </tr>
             @endforeach
         </tbody>

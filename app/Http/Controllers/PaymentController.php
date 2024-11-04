@@ -14,8 +14,6 @@ use App\Exports\PaymentsExport;
 use Illuminate\Support\Facades\Log;
 
 
-
-
 class PaymentController extends Controller
 {
 
@@ -57,21 +55,33 @@ public function exportExcel()
     return Excel::download(new PaymentsExport, 'payments_list.xlsx');
 }
     
-    public function index(Request $request)
-    {
-        $perPage = $request->get('perPage', 10);
-        $search = $request->get('search');
+public function index(Request $request)
+{
+    $perPage = $request->get('perPage', 10);
+    $search = $request->get('search');
 
-        // Eager load the bank relationship
-        $payments = Payment::with('bank')
-            ->when($search, function ($query, $search) {
-                return $query->where('full_name', 'like', "%{$search}%")
-                             ->orWhere('tin_no', 'like', "%{$search}%");
-            })
-            ->paginate($perPage);
+    // Remove any commas and decimal points from the search term to handle formatted numbers
+    $searchUnformatted = str_replace([',', '.00'], '', $search);
 
-        return view('Payment.index', compact('payments'));
-    }
+    // Eager load the bank relationship
+    $payments = Payment::with('bank')
+        ->when($search, function ($query) use ($search, $searchUnformatted) {
+            return $query->where('full_name', 'like', "%{$search}%")
+                         ->orWhere('tin_no', 'like', "%{$search}%")
+                         ->orWhere('custom_id', 'like', "%{$search}%")
+                         ->orWhere('transaction_no', 'like', "%{$search}%")
+                         ->orWhere('payment_method', 'like', "%{$search}%")
+                         ->orWhere('payment_status', 'like', "%{$search}%")
+                         ->orWhere('sub_total', 'like', "%{$searchUnformatted}%")
+                         ->orWhere('vat', 'like', "%{$searchUnformatted}%")
+                         ->orWhere('total', 'like', "%{$searchUnformatted}%")
+                         ->orWhere('amount_paid', 'like', "%{$searchUnformatted}%")
+                         ->orWhere('discount', 'like', "%{$searchUnformatted}%");
+        })
+        ->paginate($perPage);
+
+    return view('Payment.index', compact('payments'));
+}
 
     public function create()
     {

@@ -40,11 +40,17 @@ class ClassesController extends Controller
         return Excel::download(new ClassesExport, 'classes_list.xlsx');
     }
 
-        public function index()
+    public function index(Request $request)
     {
-        // Retrieve paginated classes, e.g., 10 per page
-        $classes = Classes::paginate(10);
-
+        $search = $request->input('search'); // Get the search term
+        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+    
+        // Query the classes with search and pagination
+        $classes = Classes::when($search, function ($query) use ($search) {
+            return $query->where('class_name', 'like', '%' . $search . '%')
+                         ->orWhere('class_id', 'like', '%' . $search . '%'); // Add more attributes as needed
+        })->paginate($perPage);
+    
         return view('classes.index', compact('classes'));
     }
 

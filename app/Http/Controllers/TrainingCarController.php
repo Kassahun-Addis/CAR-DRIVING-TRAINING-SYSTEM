@@ -47,12 +47,15 @@ class TrainingCarController extends Controller
 
     // Query the training cars with search and pagination
     $trainingCars = TrainingCar::when($search, function ($query) use ($search) {
-            return $query->where('name', 'like', '%' . $search . '%')
-                         ->orwhere('car_category_name', 'like', '%' . $search . '%');
-                         })->paginate($perPage);
+        return $query->where('name', 'like', '%' . $search . '%')
+                     ->orWhere('category', 'like', '%' . $search . '%')
+                     ->orWhere('model', 'like', '%' . $search . '%')
+                     ->orWhere('year', 'like', '%' . $search . '%')
+                     ->orWhere('plate_no', 'like', '%' . $search . '%');
+    })->paginate($perPage);
 
-    return view('training_cars.index', compact('trainingCars'));
-}
+        return view('training_cars.index', compact('trainingCars'));
+    }
 
     // Show the form for creating a new training car
     public function create()

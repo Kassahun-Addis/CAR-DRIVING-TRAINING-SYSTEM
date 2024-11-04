@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable(); // Email verification timestamp
             $table->string('password'); // User password
             $table->string('role')->default('admin'); // User role, defaulting to 'admin'
-            $table->string('user_type')->default('admin'); // Adding 'user_type' column with default 'admin'
+            //$table->string('user_type')->default('admin'); // Adding 'user_type' column with default 'admin'
             $table->rememberToken(); // Remember token for "Remember Me" functionality
             $table->timestamps(); // Timestamps for creation and updates
         });

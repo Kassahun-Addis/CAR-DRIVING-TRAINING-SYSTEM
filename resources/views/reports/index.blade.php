@@ -194,17 +194,7 @@
                     <select name="payment_status_option" id="payment_status_option" class="form-control">
                         <option value="">Please select</option>
                         <option value="Paid">Paid</option>
-                        <option value="Partially">Partially</option>
-                        <option value="Unpaid">Unpaid</option>
-                    </select>
-                </div>
-
-                <div id="payment_status_options" class="sub-filter filter-group">
-                    <label for="payment_status_option"><i class="icon fas fa-money-bill-wave"></i>Payment Status Options:</label>
-                    <select name="payment_status_option" id="payment_status_option" class="form-control">
-                        <option value="">Please select</option>
-                        <option value="Paid">Paid</option>
-                        <option value="Partial">Partial</option>
+                        <option value="Partial">Partial</option> <!-- Updated from Partially to Partial -->
                         <option value="Unpaid">Unpaid</option>
                     </select>
                 </div>

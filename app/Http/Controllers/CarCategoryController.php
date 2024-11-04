@@ -43,16 +43,21 @@ class CarCategoryController extends Controller
 
 
     public function index(Request $request)
-    {
-        $search = $request->input('search'); // Get the search term
-        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+{
+    $search = $request->input('search'); // Get the search term
+    $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
 
-        // Query the CarCategory with search and pagination
-         $CarCategorys = CarCategory::when($search, function ($query) use ($search) {
-            return $query->where('car_category_name', 'like', '%' . $search . '%');
-        })->paginate($perPage);
-        return view('car_category.index', compact('CarCategorys'));
-   }
+    // Remove any commas and decimal points from the search term to handle formatted numbers
+    $searchUnformatted = str_replace([',', '.00'], '', $search);
+
+    // Query the CarCategory with search and pagination
+    $CarCategorys = CarCategory::when($search, function ($query) use ($search, $searchUnformatted) {
+        return $query->where('car_category_name', 'like', '%' . $search . '%')
+                     ->orWhere('price', 'like', '%' . $searchUnformatted . '%'); // Use unformatted search term for price
+    })->paginate($perPage);
+
+    return view('car_category.index', compact('CarCategorys'));
+}
 
     public function create()
     {

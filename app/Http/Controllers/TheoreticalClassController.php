@@ -46,14 +46,22 @@ class TheoreticalClassController extends Controller
         return Excel::download(new TheoreticalClassesExport, 'theoretical_classes_list.xlsx');
     } 
 
-    public function index()
-    {
-        // Fetch all classes
-        //$theoretical_classes = TheoreticalClass::all();
-        $theoretical_classes = TheoreticalClass::paginate(10); // Adjust the number as needed
+    public function index(Request $request)
+{
+    $search = $request->input('search'); // Get the search term
+    $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
 
-        return view('theoretical_classes.index', compact('theoretical_classes'));
-    }
+    // Query the theoretical classes with search and pagination
+    $theoretical_classes = TheoreticalClass::when($search, function ($query) use ($search) {
+        return $query->where('trainee_name', 'like', '%' . $search . '%')
+                     ->orWhere('trainer_name', 'like', '%' . $search . '%')
+                     ->orWhere('class_name', 'like', '%' . $search . '%')
+                     ->orWhere('start_date', 'like', '%' . $search . '%')
+                     ->orWhere('end_date', 'like', '%' . $search . '%');
+    })->paginate($perPage);
+
+    return view('theoretical_classes.index', compact('theoretical_classes'));
+}
 
     public function create()
 {
