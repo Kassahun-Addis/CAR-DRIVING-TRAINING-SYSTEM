@@ -329,10 +329,11 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title display-4" style="font-size: 1.5rem;">{{ number_format($totalAmountPaid, 2) }} Birr</h5>
-                        <a href="{{ route('payments.index') }}" class="btn btn-outline-light btn-block mt-3">View List</a>
+                        <a href="{{ route('payments.index', ['filter' => 'amount_paid']) }}" class="btn btn-outline-light btn-block mt-3">View List</a>
                     </div>
                 </div>
             </div>
+
             <!-- Card 4 -->
             <div class="col-md-3">
                 <div class="card text-white bg-danger shadow mb-4">
@@ -341,11 +342,12 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title display-4" style="font-size: 1.5rem;">{{ number_format($totalRemainingBalance, 2) }} Birr</h5>
-                        <a href="{{ route('payments.index') }}" class="btn btn-outline-light btn-block mt-3">View List</a>
+                        <a href="{{ route('payments.index', ['filter' => 'remaining_balance']) }}" class="btn btn-outline-light btn-block mt-3">View List</a>
                     </div>
                 </div>
             </div>
         </div>
+        
 
         <div class="row mt-5">
     <div class="col-md-6">
@@ -369,6 +371,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Overlay for mobile menu -->
 <div id="overlay" class="overlay"></div>

@@ -119,8 +119,25 @@
 </div>
 
 <script>
+document.querySelector('form').addEventListener('submit', function(event) {
+    const amountPaidInput = document.getElementById('amount_paid');
+    const discountInput = document.getElementById('discount');
 
-    function toggleBankField() {
+    // Set amount paid to 0 if not filled
+    if (!amountPaidInput.value) {
+        amountPaidInput.value = 0;
+    }
+
+    // Set discount to 0 if not filled
+    if (!discountInput.value) {
+        discountInput.value = 0;
+    }
+
+    // Call calculateTotals to ensure totals are updated before submission
+    calculateTotals();
+});
+
+function toggleBankField() {
     const paymentMethod = document.getElementById('payment_method').value;
     const bankField = document.getElementById('bankField');
 
@@ -130,53 +147,77 @@
     } else {
         bankField.style.display = 'none';
         document.getElementById('bank_id').removeAttribute('required');
-        
-        // Unset bank_id value if not using Bank
         document.getElementById('bank_id').value = ''; // Clear the value
     }
 }
 
-    function calculateTotals() {
-        const originalSubtotal = parseFloat(document.getElementById('sub_total').value) || 0;
-        const discount = parseFloat(document.getElementById('discount').value) || 0;
-        
-        // Calculate the subtotal after applying the discount
-        const subtotalAfterDiscount = originalSubtotal - discount;
-        
-        // Calculate VAT based on the discounted subtotal
-        const vat = subtotalAfterDiscount * 0.15;
-        
-        // Calculate the total amount
-        const total = subtotalAfterDiscount + vat;
-        
-        // Get the amount paid
-        const amountPaid = parseFloat(document.getElementById('amount_paid').value) || 0;
-        
-        // Calculate the remaining balance
-        const remainingBalance = total - amountPaid;
+function calculateTotals() {
+    // Ensure discount and amount paid are not empty
+    const discountInput = document.getElementById('discount');
+    const amountPaidInput = document.getElementById('amount_paid');
 
-        // Update the form fields with the calculated values
-        document.getElementById('vat').value = vat.toFixed(2);
-        document.getElementById('total').value = total.toFixed(2);
-        document.getElementById('remaining_balance').value = remainingBalance.toFixed(2);
-
-        // Update Payment Status based on the amount paid
-        updatePaymentStatus(amountPaid, total);
+    if (!discountInput.value) {
+        discountInput.value = 0;
     }
 
-    function updatePaymentStatus(amountPaid, total) {
-        const paymentStatusSelect = document.getElementById('payment_status');
-        
-        if (amountPaid >= total) {
-            paymentStatusSelect.value = 'Paid';
-        } else if (amountPaid > 0) {
-            paymentStatusSelect.value = 'Partially';
-        } else {
-            paymentStatusSelect.value = 'Unpaid';
-        }
+    if (!amountPaidInput.value) {
+        amountPaidInput.value = 0;
     }
 
-    function fetchTraineeInfo() {
+    const originalSubtotal = parseFloat(document.getElementById('sub_total').value) || 0;
+    let discount = parseFloat(discountInput.value) || 0;
+
+    // Ensure discount is not greater than the subtotal
+    if (discount > originalSubtotal) {
+        alert('Discount cannot be greater than the Sub Total.');
+        discount = originalSubtotal;  // Set discount to match the subtotal if it's too high
+        discountInput.value = discount.toFixed(2);  // Update the discount field
+    }
+
+    // Calculate the subtotal after applying the discount
+    const subtotalAfterDiscount = originalSubtotal - discount;
+    
+    // Calculate VAT based on the discounted subtotal
+    const vat = subtotalAfterDiscount * 0.15;
+    
+    // Calculate the total amount
+    const total = subtotalAfterDiscount + vat;
+    
+    // Get the amount paid
+    const amountPaid = parseFloat(amountPaidInput.value) || 0;
+    
+    // Calculate the remaining balance
+    let remainingBalance = total - amountPaid;
+
+    // Ensure remaining balance is not less than zero
+    if (remainingBalance < 0) {
+        alert('Remaining balance cannot be less than zero.');
+        amountPaidInput.value = total.toFixed(2);  // Set amount paid to match total
+        remainingBalance = 0;  // Set remaining balance to 0
+    }
+
+    // Update the form fields with the calculated values
+    document.getElementById('vat').value = vat.toFixed(2);
+    document.getElementById('total').value = total.toFixed(2);
+    document.getElementById('remaining_balance').value = remainingBalance.toFixed(2);
+
+    // Update Payment Status based on the amount paid
+    updatePaymentStatus(amountPaid, total);
+}
+
+function updatePaymentStatus(amountPaid, total) {
+    const paymentStatusSelect = document.getElementById('payment_status');
+    
+    if (amountPaid >= total) {
+        paymentStatusSelect.value = 'Paid';
+    } else if (amountPaid > 0) {
+        paymentStatusSelect.value = 'Partially';
+    } else {
+        paymentStatusSelect.value = 'Unpaid';
+    }
+}
+
+function fetchTraineeInfo() {
     const custom_id = document.getElementById('custom_id').value;
 
     if (custom_id) {
@@ -206,11 +247,9 @@
         document.getElementById('sub_total').value = '';
     }
 }
-</script>
 
-<script>
-   // Fetch car details when the trainer is selected
-   document.addEventListener('DOMContentLoaded', function() {
+// Success alert timeout
+document.addEventListener('DOMContentLoaded', function() {
     var successAlert = document.getElementById('success-alert');
 
     if (successAlert) {
@@ -223,4 +262,5 @@
     }
 });
 </script>
+
 @endsection

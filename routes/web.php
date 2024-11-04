@@ -84,7 +84,7 @@ Route::get('/reports/generate', [ReportController::class, 'generate'])->name('re
     Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update'); // Update attendance
     Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy'); // Delete attendance
     //Route::get('/attendance/{trainee_id}', [AttendanceController::class, 'showAttendance'])->name('attendance.show');
-    Route::get('/attendance/{traineeId?}', [AttendanceController::class, 'index'])->name('attendance.index');
+    //Route::get('/attendance/{traineeId?}', [AttendanceController::class, 'index'])->name('attendance.index');
     // Route::post('/attendance/store', [AttendanceController::class, 'storeAttendanceData'])->name('attendance.store');
     // });
 
@@ -145,7 +145,10 @@ Route::get('/reports/generate', [ReportController::class, 'generate'])->name('re
     Route::get('/payments/export-pdf', [PaymentController::class, 'exportPdf'])->name('payments.exportPdf');
     Route::post('/payments/export-excel', [PaymentController::class, 'exportExcel'])->name('payments.exportExcel');
     Route::get('/trainee-info', [PaymentController::class, 'fetchTrainee']);});
-
+    Route::get('/test', function (Request $request) {
+        \Log::info('Test route filter parameter:', ['filter' => $request->query('filter')]);
+        return 'Check logs for filter parameter';
+    });
 // Bank Routes
 //Route::resource('banks', BankController::class);
 

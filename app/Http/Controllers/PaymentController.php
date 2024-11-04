@@ -57,29 +57,43 @@ public function exportExcel()
     
 public function index(Request $request)
 {
-    $perPage = $request->get('perPage', 10);
+    $filter = $request->query('filter');
+
+    $perPage = $request->get('perPage', 10);  // Optional pagination control
     $search = $request->get('search');
+    
+    // Prepare payments query with eager loading for relationships
+    $payments = Payment::with('bank');
+    
+    // Apply search filter
+    if ($search) {
+        $searchUnformatted = str_replace([',', '.00'], '', $search);
+        $payments->where(function ($query) use ($search, $searchUnformatted) {
+            $query->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('tin_no', 'like', "%{$search}%")
+                  ->orWhere('custom_id', 'like', "%{$search}%")
+                  ->orWhere('transaction_no', 'like', "%{$search}%")
+                  ->orWhere('payment_method', 'like', "%{$search}%")
+                  ->orWhere('payment_status', 'like', "%{$search}%")
+                  ->orWhere('sub_total', 'like', "%{$searchUnformatted}%")
+                  ->orWhere('vat', 'like', "%{$searchUnformatted}%")
+                  ->orWhere('total', 'like', "%{$searchUnformatted}%")
+                  ->orWhere('amount_paid', 'like', "%{$searchUnformatted}%")
+                  ->orWhere('discount', 'like', "%{$searchUnformatted}%");
+        });
+    }
+    
+    // Apply filter based on the `filter` query parameter
+    if ($filter === 'amount_paid') {
+        $payments->where('amount_paid', '>', 0);
+    } elseif ($filter === 'remaining_balance') {
+        $payments->where('remaining_balance', '>', 0);
+    }
 
-    // Remove any commas and decimal points from the search term to handle formatted numbers
-    $searchUnformatted = str_replace([',', '.00'], '', $search);
-
-    // Eager load the bank relationship
-    $payments = Payment::with('bank')
-        ->when($search, function ($query) use ($search, $searchUnformatted) {
-            return $query->where('full_name', 'like', "%{$search}%")
-                         ->orWhere('tin_no', 'like', "%{$search}%")
-                         ->orWhere('custom_id', 'like', "%{$search}%")
-                         ->orWhere('transaction_no', 'like', "%{$search}%")
-                         ->orWhere('payment_method', 'like', "%{$search}%")
-                         ->orWhere('payment_status', 'like', "%{$search}%")
-                         ->orWhere('sub_total', 'like', "%{$searchUnformatted}%")
-                         ->orWhere('vat', 'like', "%{$searchUnformatted}%")
-                         ->orWhere('total', 'like', "%{$searchUnformatted}%")
-                         ->orWhere('amount_paid', 'like', "%{$searchUnformatted}%")
-                         ->orWhere('discount', 'like', "%{$searchUnformatted}%");
-        })
-        ->paginate($perPage);
-
+    // Paginate results
+    $payments = $payments->paginate($perPage);
+    
+    // Return view with payments data
     return view('Payment.index', compact('payments'));
 }
 
@@ -92,57 +106,61 @@ public function index(Request $request)
         return view('Payment.payment', compact('banks'));
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
 {
-        // Validate the incoming request
-        $request->validate([
-            'full_name' => 'required|string|max:255',
-            'custom_id' => 'required|string|max:5',
-            'tin_no' => 'nullable|string|max:20',
-            'payment_date' => 'required|date',
-            'payment_method' => 'required|in:Cash,Bank,Telebirr',
-            'bank_id' => 'required_if:payment_method,Bank|exists:banks,id',
-            'transaction_no' => 'nullable|string|max:255',
-            'sub_total' => 'required|numeric|min:0',
-            'vat' => 'required|numeric|min:0',
-            'total' => 'required|numeric|min:0',
-            'amount_paid' => 'required|numeric|min:0',
-            'discount' => 'nullable|numeric|min:0',
-        ]);
+    // Validate the incoming request
+    $request->validate([
+        'full_name' => 'required|string|max:255',
+        'custom_id' => 'required|string|max:5',
+        'tin_no' => 'nullable|string|max:20',
+        'payment_date' => 'required|date',
+        'payment_method' => 'required|in:Cash,Bank,Telebirr',
+        'bank_id' => 'required_if:payment_method,Bank|exists:banks,id',
+        'transaction_no' => 'nullable|string|max:255',
+        'sub_total' => 'required|numeric|min:0',
+        'vat' => 'required|numeric|min:0',
+        'total' => 'required|numeric|min:0',
+        'amount_paid' => 'nullable|numeric|min:0',
+        'discount' => 'nullable|numeric|min:0',
+    ]);
 
-        // Calculate remaining balance
-        $remainingBalance = $request->total - $request->amount_paid;
+    // Set amount_paid to 0 if it's null
+    $amountPaid = $request->amount_paid ?? 0;
 
-        // Determine payment status
-        $paymentStatus = $remainingBalance > 0 ? 'Partial' : 'Paid';
+    // Calculate remaining balance
+    $remainingBalance = $request->total - $amountPaid;
 
-        // Prepare payment data
-        $paymentData = $request->all();
-        $paymentData['remaining_balance'] = $remainingBalance;
-        $paymentData['payment_status'] = $paymentStatus;
+    // Determine payment status
+    $paymentStatus = $remainingBalance > 0 ? 'Partial' : 'Paid';
 
-        // Set bank_id to null if payment method is not Bank
-        if ($request->payment_method !== 'Bank') {
-            $paymentData['bank_id'] = null;
-        }
-        // Create payment record
-        $payment = Payment::create($paymentData);
-        // Record payment history
-        PaymentHistory::create([
-            'payment_id' => $payment->payment_id,
-            'amount_paid' => $request->amount_paid,
-            'payment_date' => $request->payment_date,
-            'transaction_no' => $request->transaction_no,
-            'payment_method' => $request->payment_method,
-            'bank_name' => $request->payment_method === 'Bank' ? $request->bank_id : null,
-            'payment_status' => $paymentStatus,
-        ]);
+    // Prepare payment data
+    $paymentData = $request->all();
+    $paymentData['remaining_balance'] = $remainingBalance;
+    $paymentData['payment_status'] = $paymentStatus;
 
-   
+    // Retrieve bank name if payment method is Bank
+    if ($request->payment_method === 'Bank') {
+        $bank = Bank::find($request->bank_id);
+        $paymentData['bank_name'] = $bank ? $bank->bank_name : null;
+    } else {
+        $paymentData['bank_name'] = null;
+    }
 
-        return redirect()->route('payments.index')->with('success', 'Payment recorded successfully.');
+    // Create payment record
+    $payment = Payment::create($paymentData);
 
-   
+    // Record payment history
+    PaymentHistory::create([
+        'payment_id' => $payment->payment_id,
+        'amount_paid' => $amountPaid,
+        'payment_date' => $request->payment_date,
+        'transaction_no' => $request->transaction_no,
+        'payment_method' => $request->payment_method,
+        'bank_name' => $paymentData['bank_name'],
+        'payment_status' => $paymentStatus,
+    ]);
+
+    return redirect()->route('payments.index')->with('success', 'Payment recorded successfully.');
 }
 
 
@@ -170,15 +188,16 @@ public function update(Request $request, Payment $payment)
             'tin_no' => 'nullable|string|max:20',
             'payment_date' => 'required|date',
             'payment_method' => 'required|in:Cash,Bank,Telebirr',
-            'bank_id' => 'required_if:payment_method,Bank|exists:banks,id', // Validate bank_id only if payment method is Bank
+            'bank_id' => 'required_if:payment_method,Bank|exists:banks,id',
             'transaction_no' => 'nullable|string|max:255',
             'sub_total' => 'required|numeric|min:0',
             'vat' => 'required|numeric|min:0',
             'total' => 'required|numeric|min:0',
-            'amount_paid' => 'required|numeric|min:0',
-            'payment_status' => 'required|in:Paid,Partial,Unpaid', // Corrected to match 'Partial' status
+            'amount_paid' => 'nullable|numeric|min:0',
+            'payment_status' => 'required|in:Paid,Partial,Unpaid',
             'discount' => 'nullable|numeric|min:0',
         ]);
+
     } catch (\Illuminate\Validation\ValidationException $e) {
         \Log::error('Validation failed', [
             'errors' => $e->validator->errors()->toArray()
@@ -186,36 +205,39 @@ public function update(Request $request, Payment $payment)
         return back()->withErrors($e->validator)->withInput();
     }
 
+    $amountPaid = $request->amount_paid ?? 0;
+
     // Initialize payment data array
     $paymentData = $request->all();
 
-    // If the payment method is not Bank, unset the bank_id
-    if ($request->payment_method !== 'Bank') {
-        $paymentData['bank_id'] = null; // Ensure bank_id is null for non-Bank methods
+    // Retrieve bank name if payment method is Bank
+    if ($request->payment_method === 'Bank') {
+        $bank = Bank::find($request->bank_id);
+        $paymentData['bank_name'] = $bank ? $bank->bank_name : null;
+    } else {
+        $paymentData['bank_name'] = null;
     }
 
     // Calculate remaining balance before updating
-    $remainingBalance = $request->total - $request->amount_paid;
+    $remainingBalance = $request->total - $amountPaid;
 
     // Update payment
     $payment->update(array_merge($paymentData, ['remaining_balance' => $remainingBalance]));
 
     // Record payment history
     PaymentHistory::create([
-        'payment_id' => $payment->payment_id, // Ensure this matches your Payment model primary key
-        'amount_paid' => $request->amount_paid,
+        'payment_id' => $payment->payment_id,
+        'amount_paid' => $amountPaid,
         'payment_date' => $request->payment_date,
         'transaction_no' => $request->transaction_no,
         'payment_method' => $request->payment_method,
-        'bank_id' => $request->payment_method === 'Bank' ? $request->bank_id : null, // Store the bank ID conditionally
+        'bank_name' => $paymentData['bank_name'],
         'payment_status' => $remainingBalance > 0 ? 'Partial' : 'Paid',
     ]);
 
     return redirect()->route('payments.index')->with('success', 'Payment updated successfully.');
+
 }
-
-
-
 
     public function destroy(Payment $payment)
     {

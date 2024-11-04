@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    
+    @if ($payments->count() > 0)
     <div class="table-responsive">
     <table class="table table-bordered">
         <thead>
@@ -102,7 +102,7 @@
                             <form action="{{ route('payments.destroy', $payment) }}" method="POST" style="display:inline; margin-right: 5px;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this car category?')">Delete</button>
                             </form>
                         @endif
                         <a href="{{ route('payments.print', $payment) }}" class="btn btn-secondary" style="margin-right: 5px;">Print</a>
@@ -162,6 +162,10 @@
     <div>
         {{ $payments->links() }}
     </div>
+    @else
+        <p>No payments found.</p>
+    @endif
+
 </div>
 
 

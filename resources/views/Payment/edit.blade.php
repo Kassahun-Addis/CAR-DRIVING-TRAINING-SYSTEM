@@ -29,7 +29,7 @@
             <div class="col-12 col-md-6">
                 <div class="form-group">
                     <label for="custom_id">Custom ID</label>
-                    <input type="text" class="form-control" id="custom_id" name="custom_id" value="{{ old('custom_id', $payment->custom_id) }}" required>
+                    <input type="text" class="form-control" id="custom_id" name="custom_id" value="{{ old('custom_id', $payment->custom_id) }}" required oninput="fetchTraineeInfo()" readonly>
                 </div>
 
                 <div class="form-group">
@@ -90,7 +90,7 @@
 
                 <div class="form-group">
                     <label for="amount_paid">Amount Paid</label>
-                    <input type="number" class="form-control" id="amount_paid" name="amount_paid" step="0.01" min="0" value="{{ old('amount_paid', $payment->amount_paid) }}" required oninput="calculateTotals()">
+                    <input type="number" class="form-control" id="amount_paid" name="amount_paid" step="0.01" min="0" value="{{ old('amount_paid', $payment->amount_paid) }}" oninput="calculateTotals()">
                 </div>
 
                 <div class="form-group">
@@ -119,6 +119,19 @@
 </div>
 
 <script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+        const amountPaidInput = document.getElementById('amount_paid');
+        const discountInput = document.getElementById('discount');
+
+        if (!amountPaidInput.value) {
+            amountPaidInput.value = 0;
+        }
+
+        if (!discountInput.value) {
+            discountInput.value = 0;
+        }
+    });
+
     function toggleBankField() {
         const paymentMethod = document.getElementById('payment_method').value;
         const bankField = document.getElementById('bankField');
@@ -134,23 +147,47 @@
     }
 
     function calculateTotals() {
+        // Ensure discount and amount paid are not empty
+    const discountInput = document.getElementById('discount');
+    const amountPaidInput = document.getElementById('amount_paid');
+
+    if (!discountInput.value) {
+        discountInput.value = 0;
+    }
+
+    if (!amountPaidInput.value) {
+        amountPaidInput.value = 0;
+    }
         const originalSubtotal = parseFloat(document.getElementById('sub_total').value) || 0;
-        const discount = parseFloat(document.getElementById('discount').value) || 0;
+        let discount = parseFloat(document.getElementById('discount').value) || 0;
+
+        // Ensure discount is not greater than the subtotal
+        if (discount > originalSubtotal) {
+            alert('Discount cannot be greater than the Sub Total.');
+            discount = originalSubtotal;  // Set discount to match the subtotal if it's too high
+            document.getElementById('discount').value = discount.toFixed(2);  // Update the discount field
+        }
 
         // Calculate the subtotal after applying the discount
         const subtotalAfterDiscount = originalSubtotal - discount;
-
+        
         // Calculate VAT based on the discounted subtotal
         const vat = subtotalAfterDiscount * 0.15;
-
+        
         // Calculate the total amount
         const total = subtotalAfterDiscount + vat;
-
+        
         // Get the amount paid
         const amountPaid = parseFloat(document.getElementById('amount_paid').value) || 0;
-
+        
         // Calculate the remaining balance
-        const remainingBalance = total - amountPaid;
+        let remainingBalance = total - amountPaid;
+
+        // Ensure remaining balance is not less than zero
+        if (remainingBalance < 0) {
+            document.getElementById('amount_paid').value = total.toFixed(2);  // Set amount paid to match total
+            remainingBalance = 0;  // Set remaining balance to 0
+        }
 
         // Update the form fields with the calculated values
         document.getElementById('vat').value = vat.toFixed(2);
@@ -167,9 +204,40 @@
         if (amountPaid >= total) {
             paymentStatusSelect.value = 'Paid';
         } else if (amountPaid > 0) {
-            paymentStatusSelect.value = 'Partial'; // Corrected to 'Partial'
+            paymentStatusSelect.value = 'Partial';
         } else {
             paymentStatusSelect.value = 'Unpaid';
+        }
+    }
+
+    function fetchTraineeInfo() {
+        const custom_id = document.getElementById('custom_id').value;
+
+        if (custom_id) {
+            fetch(`/trainee-info?custom_id=${custom_id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.trainee) {
+                        document.getElementById('full_name').value = data.trainee.full_name || '';
+                        document.getElementById('tin_no').value = data.trainee.tin_no || '';
+                    } else {
+                        document.getElementById('full_name').value = '';
+                        document.getElementById('tin_no').value = '';
+                    }
+
+                    if (data.carCategory) {
+                        document.getElementById('sub_total').value = data.carCategory.price || 0;
+                    } else {
+                        document.getElementById('sub_total').value = 0;
+                    }
+
+                    calculateTotals(); // Recalculate totals with the new subtotal
+                })
+                .catch(error => console.error('Error fetching trainee info:', error));
+        } else {
+            document.getElementById('full_name').value = '';
+            document.getElementById('tin_no').value = '';
+            document.getElementById('sub_total').value = '';
         }
     }
 
