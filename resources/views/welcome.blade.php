@@ -288,7 +288,7 @@
         </ul>
     @else
         <ul class="mt-0 space-y-1 pl-0 list-none">
-            <li><a href="/home" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+            <li><a href="/admin/login" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
         </ul>
     @endif
 </div>

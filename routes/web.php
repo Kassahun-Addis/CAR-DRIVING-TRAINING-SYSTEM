@@ -112,9 +112,10 @@ Route::get('/reports/generate', [ReportController::class, 'generate'])->name('re
     Route::patch('/trainers/{trainer}/toggle-status', [TrainerController::class, 'toggleStatus']);
     Route::get('/trainers/export-pdf', [TrainerController::class, 'exportPdf'])->name('trainers.exportPdf');
     Route::post('/trainers/export-excel', [TrainerController::class, 'exportExcel'])->name('trainers.export');
+    Route::get('/trainers/cars-by-category/{categoryId}', [TrainerController::class, 'getCarsByCategory']);
+    Route::get('/trainers/plate-number-by-car/{carId}', [TrainerController::class, 'getPlateNumberByCarId']);
 
 });
-
 // Training Car Routes
 // Route::middleware('auth:trainee')->group(function () {
     Route::middleware('auth')->group(function () {
@@ -230,22 +231,21 @@ Route::put('/account/update', [AccountController::class, 'update'])->name('accou
 });
 
 Route::middleware('auth:trainee')->group(function () {
-    
     Route::get('/student/notifications', [NotificationController::class, 'index'])->name('student.notifications');
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
-    Route::get('/student/exam', [ExamController::class, 'redirectToExam'])->name('student.exam');
-
 });
-
 
 Route::get('/exams', [ExamController::class, 'index'])->name('exams.index');
-Route::get('/exams/fetch/{traineeId}', [ExamController::class, 'fetchAndStoreExamResults'])->name('exams.fetch');
+Route::post('/exam/callback', [ExamController::class, 'handleExamCallback'])->name('exam.callback');
+
 
 Route::middleware('auth:trainee')->group(function () {
-Route::get('/exams/take', [ExamController::class, 'takeExam'])->name('exams.take');
-Route::get('/exams/results', [ExamController::class, 'showResults'])->name('exams.results');
+    Route::get('/student/exam', [ExamController::class, 'redirectToExam'])->name('student.exam');
+    Route::get('/exams/take/{traineeId}', [ExamController::class, 'takeExam'])->name('exams.take');
+    Route::get('/exams/results', [ExamController::class, 'showResults'])->name('exams.results');
 });
 
+//Route::get('/exams/callback', [ExamController::class, 'handleExamCallback'])->name('exams.callback');
 
 Route::get('/', [UserController::class, 'index'])->name('users.index'); // Display a list of users
 Route::get('/create', [UserController::class, 'create'])->name('users.create'); // Show the form to create a new user

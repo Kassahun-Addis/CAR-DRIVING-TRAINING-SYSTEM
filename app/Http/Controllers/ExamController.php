@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Trainee;
 use Illuminate\Support\Facades\Http;
 use App\Models\Exam;
-
+use Illuminate\Support\Facades\Log;
 
 class ExamController extends Controller
 {
@@ -29,56 +29,85 @@ class ExamController extends Controller
         return redirect()->back()->with('error', 'Trainee not found.');
     }
     
-    // public function redirectToExam()
-    // {
-    //     // URL of the external exam site
-    //     $examUrl = 'https://ethioautosafety.com/educations/qsm_quiz/%e1%8a%a0%e1%8b%8d%e1%89%b6-%e1%88%b4%e1%8d%8d%e1%89%b2-%e1%8b%a8%e1%88%b2%e1%88%b5%e1%89%b0%e1%88%9d-%e1%8d%88%e1%89%b0%e1%8a%93/';
-
-    //     // Redirect the student to the external exam site
-    //     return redirect()->away($examUrl);
-    // }
-
-    // public function fetchAndStoreExamResults($traineeId)
-    //     {
-    //         // Fetch exam result from external API
-    //         $response = Http::get("https://external-exam-site.com/api/exam-results?trainee_id={$traineeId}&api_key=your-api-key");
- 
-    //         if ($response->successful()) {
-    //             $examResult = $response->json('exam_result');
- 
-    //             // Store the exam result in the local database
-    //             $trainee = Trainee::find($traineeId);
-    //             if ($trainee) {
-    //                 $trainee->exams()->create([
-    //                     'score' => $examResult,
-    //                 ]);
-    //             }
-    //         } else {
-    //             // Handle error
-    //             \Log::error('Failed to fetch exam result', ['traineeId' => $traineeId, 'response' => $response->body()]);
-    //     }
-    // }
-
     public function redirectToExam()
 {
-    // Simulate taking an exam locally
-    $traineeId = auth()->id(); // Assuming the trainee is authenticated
-    return $this->takeExam($traineeId);
+    Log::info('Redirecting to external exam site');
+    $traineeId = auth()->id(); // Get the authenticated trainee's ID
+
+    // The external exam URL with trainee ID as a query parameter
+    $examUrl = 'https://ethioautosafety.com/educations/qsm_quiz?trainee_id=' . $traineeId;
+
+    // Redirect the trainee to the external exam site
+    return redirect()->away($examUrl);
+}
+ // ExamController.php
+
+ public function handleExamCallback(Request $request)
+{
+
+    Log::info('Callback hit');
+
+    Log::info('Callback received:', ['data' => $request->all()]);
+
+    // Check both JSON and standard request input
+    $traineeId = $request->input('trainee_id') ?? $request->json('trainee_id');
+    $examResult = $request->input('exam_result') ?? $request->json('exam_result');
+
+    if (!$traineeId || !$examResult) {
+        Log::error('Missing trainee_id or exam_result in callback data', ['data' => $request->all()]);
+        return response()->json(['error' => 'Invalid data'], 400);
+    }
+
+    // Attempt to find the trainee
+    $trainee = Trainee::find($traineeId);
+    if (!$trainee) {
+        Log::error('Trainee not found', ['traineeId' => $traineeId]);
+        return response()->json(['error' => 'Trainee not found'], 404);
+    }
+
+    try {
+        // Save the result
+        Exam::create([
+            'trainee_id' => $trainee->id,
+            'score' => $examResult,
+        ]);
+        
+        Log::info('Exam result stored successfully', [
+            'traineeId' => $traineeId,
+            'score' => $examResult
+        ]);
+
+        return response()->json(['message' => 'Exam result stored successfully!'], 200);
+    } catch (\Exception $e) {
+        Log::error('Error saving exam result', [
+            'error' => $e->getMessage(),
+            'traineeId' => $traineeId,
+            'score' => $examResult
+        ]);
+        return response()->json(['error' => 'Failed to save exam result'], 500);
+    }
 }
 
-    public function fetchAndStoreExamResults($traineeId)
-    {
-        // Mock response for local testing
-        $mockExamResult = 85; // Example score to simulate
+//     public function redirectToExam()
+// {
+//     // Simulate taking an exam locally
+//     $traineeId = auth()->id(); // Assuming the trainee is authenticated
+//     return $this->takeExam($traineeId);
+// }
 
-        // Store the mock exam result in the local database
-        $trainee = Trainee::find($traineeId);
-        if ($trainee) {
-            $trainee->exams()->create([
-                'score' => $mockExamResult,
-            ]);
-        }
-    }
+    // public function fetchAndStoreExamResults($traineeId)
+    // {
+    //     // Mock response for local testing
+    //     $mockExamResult = 85; // Example score to simulate
+
+    //     // Store the mock exam result in the local database
+    //     $trainee = Trainee::find($traineeId);
+    //     if ($trainee) {
+    //         $trainee->exams()->create([
+    //             'score' => $mockExamResult,
+    //         ]);
+    //     }
+    // }
 
     public function index(Request $request)
 {

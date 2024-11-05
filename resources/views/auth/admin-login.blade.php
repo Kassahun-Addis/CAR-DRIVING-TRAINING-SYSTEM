@@ -15,10 +15,12 @@
             background-color: #f0f2f5;
             font-family: 'Roboto', sans-serif;
         }
-        .login-container {
+                .login-container {
             margin-top: 80px;
             max-width: 450px;
-            margin: auto; /* Centering the login container */
+            margin-left: auto;
+            margin-right: auto;
+            /* Remove margin: auto; to prevent overriding */
         }
         .card {
             border: none;
@@ -121,9 +123,9 @@
                         </div>
                     </div>
 
-                    <div class="mb-4">
+                    <!-- <div class="mb-4">
                         <a href="{{ route('password.request') }}" class="forgot-password-link">{{ __('Forgot Password?') }}</a>
-                    </div>
+                    </div> -->
 
                     <div class="form-group mb-0">
                         <button type="submit" class="btn btn-primary">

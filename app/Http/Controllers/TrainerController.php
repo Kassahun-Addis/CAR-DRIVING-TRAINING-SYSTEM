@@ -202,10 +202,40 @@ public function toggleStatus(Request $request, Trainer $trainer)
     return redirect()->route('trainers.index')->with('success', 'Trainer updated successfully!');
 }
 
-    public function getCarsByCategory($categoryId)
+public function getCarsByCategory($categoryId)
 {
-    $cars = TrainingCar::where('category', $categoryId)->get(['id', 'name']); // Fetch cars by category
-    return response()->json($cars); // Return JSON response
+    // Fetch the category name from the car_categories table
+    $category = CarCategory::find($categoryId);
+
+    if (!$category) {
+        return response()->json(['error' => 'Category not found'], 404);
+    }
+
+    \Log::info('Fetching cars for category:', ['categoryId' => $categoryId, 'categoryName' => $category->car_category_name]);
+
+    try {
+        // Fetch cars where the category matches the car_category_name
+        $cars = TrainingCar::where('category', $category->car_category_name)->get(['id', 'name']);
+        \Log::info('Cars fetched:', ['cars' => $cars->toArray()]);
+        return response()->json($cars);
+    } catch (\Exception $e) {
+        \Log::error('Error fetching cars: ' . $e->getMessage());
+        return response()->json(['error' => 'Internal Server Error'], 500);
+    }
+}
+
+public function getPlateNumberByCarId($carId)
+{
+    try {
+        $car = TrainingCar::find($carId);
+        if (!$car) {
+            return response()->json(['error' => 'Car not found'], 404);
+        }
+        return response()->json(['plate_no' => $car->plate_no]);
+    } catch (\Exception $e) {
+        \Log::error('Error fetching plate number: ' . $e->getMessage());
+        return response()->json(['error' => 'Internal Server Error'], 500);
+    }
 }
 
 public function destroy(Trainer $trainer)

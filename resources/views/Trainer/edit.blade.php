@@ -15,7 +15,7 @@
     @endif
 
     <div class="form-section">
-        <form action="{{ route('trainers.update', $trainer) }}" method="POST"> <!-- Use the model instance -->
+        <form action="{{ route('trainers.update', $trainer) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="row">
@@ -64,12 +64,15 @@
 
                     <div class="form-group car-fields">
                         <label for="car_name">Vehicle:</label>
-                        <input type="text" class="form-control" id="car_name" name="car_name" value="{{ $trainer->car_name }}">
+                        <select class="form-control" id="car_name" name="car_id">
+                            <option value="">Select a vehicle</option>
+                            <!-- Options will be populated dynamically -->
+                        </select>
                     </div>
 
                     <div class="form-group car-fields">
                         <label for="plate_no">Plate No:</label>
-                        <input type="text" class="form-control" id="plate_no" name="plate_no" value="{{ $trainer->plate_no }}">
+                        <input type="text" class="form-control" id="plate_no" name="plate_no" value="{{ $trainer->plate_no }}" readonly>
                     </div>
 
                 </div>
@@ -80,6 +83,8 @@
                 <button type="reset" class="btn btn-secondary btn-custom">Reset</button>
                 <a href="{{ route('trainers.index') }}" class="btn btn-secondary btn-custom">Back to list</a>
             </div>
+
+            <input type="hidden" id="car_name_hidden" name="car_name" value="{{ $trainer->car_name }}">
         </form>
     </div>
 </div>
@@ -88,6 +93,10 @@
     document.addEventListener('DOMContentLoaded', function () {
         const trainingType = document.getElementById('training_type');
         const carFields = document.querySelectorAll('.car-fields');
+        const categorySelect = document.getElementById('category');
+        const carNameSelect = document.getElementById('car_name');
+        const carNameHiddenInput = document.getElementById('car_name_hidden');
+        const plateNoInput = document.getElementById('plate_no');
 
         // Function to show or hide car fields
         function toggleCarFields() {
@@ -103,6 +112,61 @@
 
         // Add event listener for changes in training type
         trainingType.addEventListener('change', toggleCarFields);
+
+        // Fetch vehicles when category changes
+        categorySelect.addEventListener('change', function() {
+            const categoryId = this.value;
+            if (categoryId) {
+                fetch(`/trainers/cars-by-category/${categoryId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        carNameSelect.innerHTML = '<option value="">Select a vehicle</option>';
+                        data.forEach(car => {
+                            const option = document.createElement('option');
+                            option.value = car.id;
+                            option.textContent = car.name;
+                            carNameSelect.appendChild(option);
+                        });
+                        // Set the selected car if it exists
+                        carNameSelect.value = "{{ $trainer->car_id }}";
+                    })
+                    .catch(error => console.error('Error fetching cars:', error));
+            } else {
+                carNameSelect.innerHTML = '<option value="">Select a vehicle</option>';
+            }
+        });
+
+        // Fetch plate number and set car name when a vehicle is selected
+        carNameSelect.addEventListener('change', function() {
+            const carId = this.value;
+            const carName = this.options[this.selectedIndex].text;
+            carNameHiddenInput.value = carName; // Set the hidden input with the car name
+            console.log('Selected Car Name:', carName); // Debugging: Log the selected car name
+
+            if (carId) {
+                fetch(`/trainers/plate-number-by-car/${carId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        plateNoInput.value = data.plate_no || '';
+                    })
+                    .catch(error => console.error('Error fetching plate number:', error));
+            } else {
+                plateNoInput.value = '';
+            }
+        });
+
+        // Trigger change event to load initial car data
+        categorySelect.dispatchEvent(new Event('change'));
     });
 </script>
 @endsection

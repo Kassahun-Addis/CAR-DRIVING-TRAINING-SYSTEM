@@ -71,56 +71,6 @@
         }
     </style>
 
-    <script>
-        function updateFilters() {
-            const recordType = document.getElementById('record_type').value;
-            const filtersSection = document.getElementById('filters');
-            const filterTypeSelect = document.getElementById('filter_type');
-
-            // Reset filter type selection
-            filterTypeSelect.selectedIndex = 0;
-
-            // Show filters section based on record type
-            filtersSection.style.display = recordType ? 'block' : 'none';
-
-            // Hide all sub-filters initially
-            document.querySelectorAll('.sub-filter').forEach(subFilter => subFilter.style.display = 'none');
-
-            // Set filter options based on selected record type
-            if (recordType === 'trainees') {
-                filterTypeSelect.innerHTML = `
-                    <option value="">Select...</option>
-                    <option value="gender">Gender</option>
-                    <option value="category">Category</option>
-                    <option value="blood_type">Blood Type</option>
-                    <option value="education_level">Education Level</option>
-                    <option value="status">Status</option>
-                `;
-            } else if (recordType === 'payments') {
-                filterTypeSelect.innerHTML = `
-                    <option value="">Select...</option>
-                    <option value="payment_status">Payment Status</option>
-                `;
-            } else if (recordType === 'trainers') {
-                filterTypeSelect.innerHTML = `
-                    <option value="">Select...</option>
-                    <option value="status">Status</option>
-                    <option value="gender">Gender</option>
-                `;
-            } else {
-                filterTypeSelect.innerHTML = `<option value="">Select...</option>`;
-            }
-        }
-
-        function updateSubFilters() {
-            const selectedFilter = document.getElementById('filter_type').value;
-            document.querySelectorAll('.sub-filter').forEach(subFilter => subFilter.style.display = 'none');
-            if (selectedFilter) {
-                document.getElementById(selectedFilter + '_options').style.display = 'block';
-            }
-        }
-    </script>
-
     <div class="mt-3 mb-3">
         <h2><i class="icon fas fa-chart-bar"></i>Generate Reports</h2>
         <form action="{{ route('reports.generate') }}" method="GET">
@@ -198,6 +148,14 @@
                         <option value="Unpaid">Unpaid</option>
                     </select>
                 </div>
+                <div id="status_options" class="sub-filter filter-group">
+                    <label for="status_option"><i class="icon fas fa-check"></i>Status Options:</label>
+                    <select name="status_option" id="status_option" class="form-control">
+                        <option value="">Please select</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
             </div>
 
             <div class="row">
@@ -218,4 +176,71 @@
 
 <!-- FontAwesome for icons -->
 <script src="https://kit.fontawesome.com/a076d05399.js" defer></script>
+
+<script>
+    const form = document.querySelector('form');
+    if (!form) {
+        console.error('Form not found');
+    }
+
+    form.addEventListener('submit', function(event) {
+        const recordType = document.getElementById('record_type').value;
+        const filterType = document.getElementById('filter_type').value;
+
+        if (!recordType) {
+            alert('Please select a report type.');
+            event.preventDefault();
+        } else if (!filterType) {
+            alert('Please select a filter type.');
+            event.preventDefault();
+        }
+    });
+
+    function updateFilters() {
+        const recordType = document.getElementById('record_type').value;
+        const filtersSection = document.getElementById('filters');
+        const filterTypeSelect = document.getElementById('filter_type');
+
+        filterTypeSelect.selectedIndex = 0;
+        filtersSection.style.display = recordType ? 'block' : 'none';
+        document.querySelectorAll('.sub-filter').forEach(subFilter => subFilter.style.display = 'none');
+
+        if (recordType === 'trainees') {
+            filterTypeSelect.innerHTML = `
+                <option value="">Select...</option>
+                <option value="gender">Gender</option>
+                <option value="category">Category</option>
+                <option value="blood_type">Blood Type</option>
+                <option value="education_level">Education Level</option>
+                <option value="status">Status</option>
+            `;
+        } else if (recordType === 'payments') {
+            filterTypeSelect.innerHTML = `
+                <option value="">Select...</option>
+                <option value="payment_status">Payment Status</option>
+            `;
+        } else if (recordType === 'trainers') {
+            filterTypeSelect.innerHTML = `
+                <option value="">Select...</option>
+                <option value="status">Status</option>
+                <option value="gender">Gender</option>
+            `;
+        } else {
+            filterTypeSelect.innerHTML = `<option value="">Select...</option>`;
+        }
+    }
+
+    function updateSubFilters() {
+        const selectedFilter = document.getElementById('filter_type').value;
+        document.querySelectorAll('.sub-filter').forEach(subFilter => subFilter.style.display = 'none');
+        if (selectedFilter) {
+            const subFilterElement = document.getElementById(selectedFilter + '_options');
+            if (subFilterElement) {
+                subFilterElement.style.display = 'block';
+            }
+        }
+    }
+</script>
+
+
 @endsection
