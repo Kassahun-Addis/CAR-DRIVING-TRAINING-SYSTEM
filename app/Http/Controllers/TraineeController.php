@@ -93,6 +93,8 @@ class TraineeController extends Controller
             'yellow_card' => 'required|unique:trainees,yellow_card',
             'full_name' => 'required|string|max:255',
             'full_name_2' => 'required|string|max:255',
+            'email' => 'nullable|email|unique:trainees,email',
+            'tin_no' => 'nullable|numeric|unique:trainees,tin_no',
             'photo' => 'nullable|image|mimes:jpeg,png,jfif,jpg,gif|max:4096',
             'gender' => 'required|string',
             'gender_1' => 'required|string',
@@ -118,6 +120,8 @@ class TraineeController extends Controller
         ], [
             'yellow_card.unique' => 'The yellow card number must be unique.',
             'yellow_card.required' => 'The yellow card field is required.',
+            'email.unique' => 'The email must be unique.',
+            'tin_no.unique' => 'The TIN number must be unique.',
         ]);
     
         $photoName = null;
@@ -139,6 +143,8 @@ class TraineeController extends Controller
                 'yellow_card' => $request->input('yellow_card'),
                 'full_name' => $request->input('full_name'),
                 'ሙሉ_ስም' => $request->input('full_name_2'),
+                'email' => $request->input('email'),
+                'tin_no' => $request->input('tin_no'),
                 'photo' => $photoName,
                 'gender' => $request->input('gender'),
                 'ጾታ' => $request->input('gender_1'),
@@ -184,13 +190,20 @@ class TraineeController extends Controller
         return $query->where('full_name', 'like', '%' . $search . '%')
                      ->orWhere('yellow_card', 'like', '%' . $search . '%')
                      ->orWhere('gender', 'like', '%' . $search . '%')
+                     ->orWhere('email', 'like', '%' . $search . '%')
+                     ->orWhere('ሙሉ_ስም', 'like', '%' . $search . '%')
+                     ->orWhere('tin_no', 'like', '%' . $search . '%')
                      ->orWhere('nationality', 'like', '%' . $search . '%')
                      ->orWhere('city', 'like', '%' . $search . '%')
+                     ->orWhere('ከተማ', 'like', '%' . $search . '%')
                      ->orWhere('sub_city', 'like', '%' . $search . '%')
+                     ->orWhere('ክፍለ_ከተማ', 'like', '%' . $search . '%')
                      ->orWhere('woreda', 'like', '%' . $search . '%')
+                     ->orWhere('ወረዳ', 'like', '%' . $search . '%')
                      ->orWhere('phone_no', 'like', '%' . $search . '%')
                      ->orWhere('po_box', 'like', '%' . $search . '%')
                      ->orWhere('birth_place', 'like', '%' . $search . '%')
+                     ->orWhere('የትዉልድ_ቦታ', 'like', '%' . $search . '%')
                      ->orWhere('dob', 'like', '%' . $search . '%')
                      ->orWhere('category', 'like', '%' . $search . '%')
                      ->orWhere('education_level', 'like', '%' . $search . '%')
@@ -222,6 +235,8 @@ class TraineeController extends Controller
         'yellow_card' => 'required|unique:trainees,yellow_card,' . $id, // Ensure unique check ignores current record
         'full_name' => 'required|string|max:255',
         'full_name_2' => 'required|string|max:255',
+        'email' => 'nullable|email|unique:trainees,email,' . $id, // Ensure unique check ignores current record
+        'tin_no' => 'nullable|numeric|unique:trainees,tin_no,' . $id, // Ensure unique check ignores current record
         'gender' => 'required|string',
         'nationality' => 'required|string',
         'city' => 'required|string',
@@ -264,6 +279,8 @@ class TraineeController extends Controller
     $trainee->yellow_card = $request->input('yellow_card');
     $trainee->full_name = $request->input('full_name');
     $trainee->ሙሉ_ስም = $request->input('full_name_2');
+    $trainee->email = $request->input('email');
+    $trainee->tin_no = $request->input('tin_no');
     $trainee->gender = $request->input('gender');
     $trainee->ጾታ = $request->input('gender_1');
     $trainee->nationality = $request->input('nationality');

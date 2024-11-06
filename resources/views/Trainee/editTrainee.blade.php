@@ -68,6 +68,23 @@
 
                     <div class="form-group row">
                         <div class="col-md-6">
+                            <label for="email" >Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $trainee->email) }}" >
+                            @error('email')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tin_no" >TIN No</label>
+                            <input type="text" class="form-control" id="tin_no" name="tin_no" value="{{ old('tin_no', $trainee->tin_no) }}" >
+                            @error('tin_no')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
                             <label for="gender" class="required">Gender</label>
                             <select class="form-control" id="gender" name="gender" required>
                                 <option value="">Please select</option>
@@ -131,23 +148,6 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="house_no" class="required">House No</label>
-                        <input type="number" class="form-control" id="house_no" name="house_no" value="{{ old('house_no', $trainee->house_no) }}" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phone_no" class="required">Phone No</label>
-                        <input type="number" class="form-control" id="phone_no" name="phone_no" value="{{ old('phone_no', $trainee->phone_no) }}" required>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6">
-                    <div class="form-group">
-                        <label for="po_box" class="required">P.O.Box</label>
-                        <input type="number" class="form-control" id="po_box" name="po_box" value="{{ old('po_box', $trainee->po_box) }}" required>
-                    </div>
-
                     <div class="form-group row">
                         <div class="col-md-6">
                             <label for="birth_place" class="required">Birth Place</label>
@@ -157,6 +157,22 @@
                             <label for="birth_place_1" class="required">የትውልድ ቦታ</label>
                             <input type="text" class="form-control" id="birth_place_1" name="birth_place_1" value="{{ old('birth_place_1', $trainee->የትዉልድ_ቦታ) }}" required>
                         </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label for="house_no" class="required">House No</label>
+                        <input type="number" class="form-control" id="house_no" name="house_no" value="{{ old('house_no', $trainee->house_no) }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone_no" class="required">Phone No</label>
+                        <input type="number" class="form-control" id="phone_no" name="phone_no" value="{{ old('phone_no', $trainee->phone_no) }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="po_box" class="required">P.O.Box</label>
+                        <input type="number" class="form-control" id="po_box" name="po_box" value="{{ old('po_box', $trainee->po_box) }}" required>
                     </div>
 
                     <div class="form-group">

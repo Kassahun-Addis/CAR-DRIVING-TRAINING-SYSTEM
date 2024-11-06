@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="container mt-5">
+
     <style>
         body {
             background-color: #f8f9fa;
@@ -71,6 +72,18 @@
         }
     </style>
 
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="mt-3 mb-3">
         <h2><i class="icon fas fa-chart-bar"></i>Generate Reports</h2>
         <form action="{{ route('reports.generate') }}" method="GET">
@@ -81,6 +94,8 @@
                     <option value="trainees">Trainees</option>
                     <option value="payments">Payments</option>
                     <option value="trainers">Trainers</option>
+                    <option value="exams">Exams</option>
+                    <option value="classes">Classes</option>
                 </select>
             </div>
 
@@ -107,8 +122,17 @@
                     <select name="category_option" id="category_option" class="form-control">
                         <option value="">Please select</option>    
                         <option value="ደረቅ 1">ደረቅ 1</option>
+                        <option value="ደረቅ 2">ደረቅ 2</option>
+                        <option value="ደረቅ 3">ደረቅ 3</option>
+                        <option value="ፈሳሽ 1">ፈሳሽ 1</option>
                         <option value="ፈሳሽ 2">ፈሳሽ 2</option>
                         <option value="ህዝብ 1">ህዝብ 1</option>
+                        <option value="ህዝብ 2">ህዝብ 2</option>
+                        <option value="ህዝብ 3">ህዝብ 3</option>
+                        <option value="ባለ ሶስት እግር">ባለ ሶስት እግር</option>
+                        <option value="ሞተርሳይክል">ሞተርሳይክል</option>
+                        <option value="አውቶሞቢል">አውቶሞቢል</option>
+                        <option value="ማሽነሪ ኦፕሬተር">ማሽነሪ ኦፕሬተር</option>
                     </select>
                 </div>
 
@@ -116,9 +140,11 @@
                     <label for="education_level_option"><i class="icon fas fa-graduation-cap"></i>Education Level Options:</label>
                     <select name="education_level_option" id="education_level_option" class="form-control">
                         <option value="">Please select</option>
-                        <option value="high_school">High School</option>
-                        <option value="bachelor">Bachelor</option>
+                        <option value="10">10th</option>
+                        <option value="12">12th</option>
+                        <option value="Degree">Degree</option>
                         <option value="master">Master</option>
+                        <option value="PHD">PHD</option>
 
                     </select>
                 </div>
@@ -154,6 +180,25 @@
                         <option value="">Please select</option>
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div id="exams_options" class="sub-filter filter-group">
+                    <label for="exams_option"><i class="icon fas fa-check"></i>Exams Options:</label>
+                    <select name="exams_option" id="exams_option" class="form-control">
+                        <option value="">Please select</option>
+                        <option value="Passed">Passed</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                </div>
+                <div id="classes_options" class="sub-filter filter-group">
+                    <label for="classes_option"><i class="icon fas fa-check"></i>Classes Options:</label>
+                    <select name="classes_option" id="classes_option" class="form-control">
+                        <option value="">Please select</option>
+                        <option value="Class 1">Class 1</option>
+                        <option value="Class 2">Class 2</option>
+                        <option value="Class 3">Class 3</option>
+                        <option value="Class 4">Class 4</option>
+                        <option value="Class 5">Class 5</option>
                     </select>
                 </div>
             </div>
@@ -223,7 +268,16 @@
             filterTypeSelect.innerHTML = `
                 <option value="">Select...</option>
                 <option value="status">Status</option>
-                <option value="gender">Gender</option>
+            `;
+        } else if (recordType === 'exams') {
+            filterTypeSelect.innerHTML = `
+                <option value="">Select...</option>
+                <option value="exams">Score</option>
+            `;
+        } else if (recordType === 'classes') {
+            filterTypeSelect.innerHTML = `
+                <option value="">Select...</option>
+                <option value="classes">Class Lists</option>
             `;
         } else {
             filterTypeSelect.innerHTML = `<option value="">Select...</option>`;

@@ -59,7 +59,25 @@
                         @enderror
                     </div>
                 </div>
+
+                  <div class="form-group row">
+                    <div class="col-md-6">
+                        <label for="email" >Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" >
+                        @error('email')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                     
+                    <div class="col-md-6">
+                        <label for="tin_no" >TIN No </label>
+                        <input type="text" class="form-control" id="tin_no" name="tin_no" value="{{ old('tin_no') }}" >
+                        @error('tin_no')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
                 <div class="form-group row">
                 <div class="col-md-6">
                         <label for="gender" class="required">Gender</label>
@@ -131,14 +149,13 @@
                         <input type="text" class="form-control" id="birth_place_1" name="birth_place_1" required>
                     </div>
                 </div>
-                        
-                <div class="form-group">
-                        <label for="dob" class="required">DOB/የትውልድ ቀን </label>
-                        <input type="date" class="form-control" id="dob" name="dob" required>
-                </div>
                      
                 </div>
                 <div class="col-12 col-md-6">
+                    <div class="form-group">
+                            <label for="dob" class="required">DOB/የትውልድ ቀን </label>
+                            <input type="date" class="form-control" id="dob" name="dob" required>
+                    </div>
                     <div class="form-group">
                         <label for="po_box" class="required">P.O.Box</label>
                         <input type="number" class="form-control" id="po_box" name="po_box" required>

@@ -163,17 +163,12 @@ public function index(Request $request)
         $trainerAssignment = TrainerAssigning::where('trainee_name', $attendance->trainee_name)->first();
         
         if ($trainerAssignment) {
-            \Log::info('Trainer Assignment found:', [
-                'trainee_name' => $attendance->trainee_name,
-                'total_time' => $trainerAssignment->total_time
-            ]);
             $attendance->start_date = $trainerAssignment->start_date;
             $attendance->end_date = $trainerAssignment->end_date;
             $attendance->category_id = $trainerAssignment->category_id;
             $attendance->plate_no = $trainerAssignment->plate_no;
             $attendance->total_time = $trainerAssignment->total_time; // Ensure this is fetched correctly
         } else {
-            \Log::info('Trainer Assignment not found:', ['trainee_name' => $attendance->trainee_name]);
             $attendance->start_date = 'N/A';
             $attendance->end_date = 'N/A';
             $attendance->category_id = 'N/A';

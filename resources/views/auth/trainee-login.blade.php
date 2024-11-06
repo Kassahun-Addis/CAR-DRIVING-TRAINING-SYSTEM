@@ -65,6 +65,15 @@
                 <form method="POST" action="{{ route('trainee.login') }}">
                     @csrf
                     <div class="form-group row">
+                        <label for="email" class="col-form-label text-md-right">{{ __('Email') }}</label>
+                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" required autofocus>
+                        @error('email')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                    <div class="form-group row">
                         <label for="yellow_card" class="col-form-label text-md-right">{{ __('Yellow Card Number') }}</label>
                         <input id="yellow_card" type="password" class="form-control @error('yellow_card') is-invalid @enderror" name="yellow_card" required>
                         @error('yellow_card')

@@ -27,6 +27,9 @@
                         entries
                     </span>
                 </div>
+                <!-- Preserve trainee_id and trainee_name -->
+                <input type="hidden" name="trainee_id" value="{{ request('trainee_id') }}">
+                <input type="hidden" name="trainee_name" value="{{ request('trainee_name') }}">
             </form>
             @auth('trainee')
                 <a href="{{ route('attendance.create') }}" class="btn btn-primary ml-2">Add New</a>
@@ -37,11 +40,14 @@
             <form action="{{ route('attendance.index') }}" method="GET" class="form-inline" style="flex: 1;">
                 <div class="form-group w-100" style="display: flex; align-items: center;">
                     <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request('search') }}" style="flex-grow: 1; margin-right: 5px; min-width: 0;">
-                    <button type="submit" class="btn btn-primary mr-1">Search</button>
-                    <div class="d-none d-md-block ml-1">
-                        <button class="btn btn-info btn-sm ml-1" onclick="printAttendanceList()">Print</button>
+                    <button type="submit" class="btn btn-primary mr-1" style="height: 41px;">Search</button>
+                    <div class="ml-0">
+                        <button class="btn btn-info ml-1" onclick="printAttendanceList()" style="height: 41px;">Print</button>
                     </div>
                 </div>
+                <!-- Preserve trainee_id and trainee_name -->
+                <input type="hidden" name="trainee_id" value="{{ request('trainee_id') }}">
+                <input type="hidden" name="trainee_name" value="{{ request('trainee_name') }}">
             </form>
         </div>
 
@@ -60,55 +66,61 @@
 
     <!-- Responsive table wrapper -->
     <div class="table-responsive">
-        <table class="table table-bordered" id="attendanceTable">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Date</th>
-                    <th>Start Time</th>
-                    <th>Finish Time</th>
-                    <th>Difference</th>
-                    <th>Trainee Name</th>
-                    <th>Trainer Name</th>
-                    <th>Status</th>
-                    <th>Comments</th>
-                    <th class="no-print">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($attendances as $key => $attendance)
-                    <tr data-start-date="{{ $attendance->start_date }}"
-                        data-end-date="{{ $attendance->end_date }}"
-                        data-category-id="{{ $attendance->category_id }}"
-                        data-plate-no="{{ $attendance->plate_no }}"
-                        data-trainee-phone="{{ $attendance->trainee_phone }}"
-                        data-total-time="{{ $attendance->total_time ?? 0 }}"
-                        data-difference="{{ $attendance->difference ?? 0 }}"> 
-                        <td>{{ $key + 1 }}</td>
-                        <td>{{ $attendance->date }}</td>
-                        <td>{{ $attendance->start_time }}</td>
-                        <td>{{ $attendance->finish_time }}</td>
-                        <td>{{ $attendance->difference }}</td>
-                        <td>{{ $attendance->trainee_name }}</td>
-                        <td>{{ $attendance->trainer_name }}</td>
-                        <td>{{ $attendance->status }}</td>
-                        <td>{{ $attendance->comment }}</td>
-                        <td class="text-nowrap no-print">
-                            <a href="{{ route('attendance.edit', $attendance->attendance_id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="{{ route('attendance.destroy', $attendance->attendance_id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this attendance?')">Delete</button>
-                            </form>
-                        </td>
+        @if($attendances->isEmpty())
+            <div class="alert alert-warning">
+                No attendance records found.
+            </div>
+        @else
+            <table class="table table-bordered" id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>Finish Time</th>
+                        <th>Difference</th>
+                        <th>Trainee Name</th>
+                        <th>Trainer Name</th>
+                        <th>Status</th>
+                        <th>Comments</th>
+                        <th class="no-print">Actions</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach($attendances as $key => $attendance)
+                        <tr data-start-date="{{ $attendance->start_date }}"
+                            data-end-date="{{ $attendance->end_date }}"
+                            data-category-id="{{ $attendance->category_id }}"
+                            data-plate-no="{{ $attendance->plate_no }}"
+                            data-trainee-phone="{{ $attendance->trainee_phone }}"
+                            data-total-time="{{ $attendance->total_time ?? 0 }}"
+                            data-difference="{{ $attendance->difference ?? 0 }}"> 
+                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $attendance->date }}</td>
+                            <td>{{ $attendance->start_time }}</td>
+                            <td>{{ $attendance->finish_time }}</td>
+                            <td>{{ $attendance->difference }}</td>
+                            <td>{{ $attendance->trainee_name }}</td>
+                            <td>{{ $attendance->trainer_name }}</td>
+                            <td>{{ $attendance->status }}</td>
+                            <td>{{ $attendance->comment }}</td>
+                            <td class="text-nowrap no-print">
+                                <a href="{{ route('attendance.edit', $attendance->attendance_id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                <form action="{{ route('attendance.destroy', $attendance->attendance_id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this attendance?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
     </div>
 
     <div class="mt-3">
-        Showing {{ $attendances->firstItem() }} to {{ $attendances->lastItem() }} of {{ $attendances->total() }} entries
+        Showing {{ $attendances->firstItem() ?? 0 }} to {{ $attendances->lastItem() ?? 0 }} of {{ $attendances->total() }} entries
     </div>
 
     <div class="mt-3 d-flex justify-content-between align-items-center">
@@ -223,13 +235,13 @@ function printAttendanceList() {
     printWindow.document.write(`<h4>ከሰለሞን የአሽከርካሪዎች ማሠልጠኛ ተቋም ለእጩ አሽከርከሪዎች የሚሠጥ የሥልጠና መከታተያ ፎርም</h4>`);
     printWindow.document.write(`
         <p>
-            - ሥልጠና የተጀመረበት ቀን: ${trainingDetails.start_date} <br>
-            - ሥልጠና የሚጨርስበት ዙር: ${trainingDetails.end_date} <br>
-            - ሥልጠና የተሰጠበት የአገልግሎት ዓይነት: ${trainingDetails.category_id} <br>
-            - ሥልጠና የተሰጠበት የተሽከርካሪ ሠሌዳ ቁጥር: ${trainingDetails.plate_no} <br>
-            - የተግባር አሠልጣኝ ሥም: ${trainingDetails.trainer_name} <br>
-            - የሠልጣኝ ሥም: ${trainingDetails.trainee_name} <br>
-            - የተማሪ ስልክ : ${trainingDetails.trainee_phone} 
+            - ሥልጠና የተጀመረበት ቀን: <strong><u>${trainingDetails.start_date}</u></strong> <br>
+            - ሥልጠና የሚጨርስበት ዙር: <strong><u>${trainingDetails.end_date}</u></strong> <br>
+            - ሥልጠና የተሰጠበት የአገልግሎት ዓይነት: <strong><u>${trainingDetails.category_id}</u></strong> <br>
+            - ሥልጠና የተሰጠበት የተሽከርካሪ ሠሌዳ ቁጥር: <strong><u>${trainingDetails.plate_no}</u></strong> <br>
+            - የተግባር አሠልጣኝ ሥም: <strong><u>${trainingDetails.trainer_name}</u></strong> <br>
+            - የሠልጣኝ ሥም: <strong><u>${trainingDetails.trainee_name}</u></strong> <br>
+            - የተማሪ ስልክ : <strong><u>${trainingDetails.trainee_phone}</u></strong> 
         </p>
     `);
     // Add the attendance table without the "Actions" column
@@ -265,14 +277,6 @@ function printAttendanceList() {
           እኔ ሰልጣኝ አቶ/ ወ/ሮ/ት <strong><u>${trainingDetails.trainee_name}</u></strong> የተባልኩ በሰለሞን የአሽ/ ማ/ ተቋም ውስጥ ሙሉ የስልጠና ሰዓቴን በተገቢው መንገድ በማጠናቀቅ የሰለጠንኩና ለመፈተን ብቁ በመሆኔ አንዲሁም 
           በፈተና ሰዓት በሚፈጠር ማንኛውም የአሽከርካሪ ጉዳት እንዲሁም ሌሎች ተዛማጅ ችግሮች ቢደርስ ሙሉ ኃላፊነት የምወስድ መሆኔን በፊርማዬ አረጋግጣለሁ፡፡<br><br>
           ስምና ፊርማ_______________________<br><br><br>			
-        
-        - Training Start Date: <strong> ${trainingDetails.start_date}</strong> <br>
-            - Training End Date: ${trainingDetails.end_date} <br>
-            - Category: ${trainingDetails.category_id} <br>
-            - Car Plate No: ${trainingDetails.plate_no} <br>
-            - Trainer Name: ${trainingDetails.trainer_name} <br>
-            - Trainee Name: ${trainingDetails.trainee_name} <br>
-            - Trainee Phone Number: ${trainingDetails.trainee_phone} 
         </p>
     `);
 

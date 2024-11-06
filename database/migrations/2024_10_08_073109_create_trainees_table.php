@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unique('yellow_card');  // Apply unique constraint on yellow_card
             $table->string('full_name');
             $table->string('ሙሉ_ስም');
+            $table->string('email')->unique()->nullable();  // New email column
             $table->integer('tin_no')->nullable();
             $table->string('photo')->nullable();  // To store the photo path
             $table->string('gender')->nullable(); 

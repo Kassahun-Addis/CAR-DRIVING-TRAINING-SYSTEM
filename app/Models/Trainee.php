@@ -19,6 +19,8 @@ class Trainee extends Authenticatable
         'yellow_card',
         'full_name',
         'ሙሉ_ስም',
+        'email',
+        'tin_no',
         'photo',
         'gender',
         'ጾታ',

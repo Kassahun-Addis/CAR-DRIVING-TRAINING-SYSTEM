@@ -7,6 +7,7 @@ use Mpdf\Mpdf;
 use App\Models\Trainee;
 use App\Models\Payment;
 use App\Models\Trainer;
+use App\Models\TheoreticalClass;
 
 class ReportController extends Controller
 {
@@ -69,7 +70,18 @@ class ReportController extends Controller
 
                 $view = 'reports.trainer_report';
                 break;
-
+                case 'classes':
+                    $selectedClass = $request->input('classes_option');
+                    $data = TheoreticalClass::query()
+                        ->when($startDate, fn($query) => $query->where('created_at', '>=', $startDate))
+                        ->when($endDate, fn($query) => $query->where('created_at', '<=', $endDate))
+                        ->when($selectedClass, fn($query) => $query->where('class_name', $selectedClass)) // Assuming 'class_name' is the column name
+                        ->get();
+    
+                \Log::info('Class Data:', $data->toArray());
+    
+                $view = 'reports.class_report';
+                break;
             default:
                 return redirect()->route('reports.index')->with('error', 'Invalid record type selected.');
         }

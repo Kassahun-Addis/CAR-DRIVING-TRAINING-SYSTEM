@@ -18,10 +18,12 @@ class TraineeLoginController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
+            'email' => 'required|email',
             'yellow_card' => 'required',
         ]);
 
-        $trainee = Trainee::where('yellow_card', $credentials['yellow_card'])->first();
+        $trainee = Trainee::where('yellow_card', $credentials['yellow_card'])->
+                            where('email', $credentials['email'])->first();
 
         if ($trainee) {
             Auth::guard('trainee')->login($trainee);
