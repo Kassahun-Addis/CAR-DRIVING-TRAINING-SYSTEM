@@ -12,8 +12,15 @@ class Classes extends Model
     
     protected $fillable = [
         'class_name',
-
+        'company_id',
+        /* other fields */
     ];
+
+    // Define the relationship to the Company model
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
 
     // public function trainees()
     // {

@@ -43,17 +43,19 @@ Route::get('/home', function () {
 Route::post('/logout-trainee', [TraineeLoginController::class, 'logout'])->name('trainee.logout');
 Route::post('/logout-admin', [AdminLoginController::class, 'logout'])->name('admin.logout');
 
-
+Route::middleware('company.context')->group(function () {
 Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
 Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store');
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
 Route::get('/companies/{id}/edit', [CompanyController::class, 'edit'])->name('companies.edit');
 Route::put('/companies/{id}', [CompanyController::class, 'update'])->name('companies.update');
 Route::delete('/companies/{id}', [CompanyController::class, 'destroy'])->name('companies.destroy');
+});
 
 Route::get('/reports', function () {
     return view('reports.index');
 })->name('reports.index');
+
 
 Route::get('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
 
@@ -149,14 +151,14 @@ Route::get('/reports/generate', [ReportController::class, 'generate'])->name('re
     Route::get('/test', function (Request $request) {
         \Log::info('Test route filter parameter:', ['filter' => $request->query('filter')]);
         return 'Check logs for filter parameter';
-    });
+            });
 // Bank Routes
 //Route::resource('banks', BankController::class);
-
+Route::middleware('company.context')->group(function () {
 Route::resource('banks', BankController::class)->except(['show']);
 Route::get('/banks/export-pdf', [BankController::class, 'exportPdf'])->name('banks.exportPdf');
 Route::post('/banks/export-excel', [BankController::class, 'exportExcel'])->name('banks.exportExcel');
-
+});
 
 
 // Bank Routes
@@ -169,6 +171,7 @@ Route::post('/banks/export-excel', [BankController::class, 'exportExcel'])->name
 // Route::delete('/banks/{bank}', [BankController::class, 'destroy'])->name('banks.destroy'); // Delete a specific bank
 
 // Bank Routes
+Route::middleware('company.context')->group(function () {
 Route::get('/car_category', [CarCategoryController::class, 'index'])->name('car_category.index'); // List all car_category
 Route::get('/car_category/create', [CarCategoryController::class, 'create'])->name('car_category.create'); // Show form to create a new CarCategory
 Route::post('/car_category', [CarCategoryController::class, 'store'])->name('car_category.store'); // Store a new CarCategory
@@ -177,7 +180,7 @@ Route::put('/car_category/{CarCategory}', [CarCategoryController::class, 'update
 Route::delete('/car_category/{CarCategory}', [CarCategoryController::class, 'destroy'])->name('car_category.destroy'); // Delete a specific bank
 Route::get('/car_category/export-pdf', [CarCategoryController::class, 'exportPdf'])->name('car_category.exportPdf');
 Route::post('/car_category/export-excel', [CarCategoryController::class, 'exportExcel'])->name('car_category.exportExcel');
-
+});
 
 // theoretical_class Routes
 Route::get('/trainer_assigning', [TrainerAssigningController::class, 'index'])->name('trainer_assigning.index'); // List all trainer_assigning
@@ -204,10 +207,11 @@ Route::get('/trainers/{trainerName}/details', [TrainerController::class, 'getDet
 Route::get('/theoretical_class/export-pdf', [TheoreticalClassController::class, 'exportPdf'])->name('theoretical_class.exportPdf');
 Route::post('/theoretical_class/export-excel', [TheoreticalClassController::class, 'exportExcel'])->name('theoretical_class.exportExcel');
 
-
+Route::middleware('company.context')->group(function () {
 Route::resource('classes', ClassesController::class )->except('show');
 Route::get('/classes/export-pdf', [ClassesController::class, 'exportPdf'])->name('classes.exportPdf');
 Route::post('/classes/export-excel', [ClassesController::class, 'exportExcel'])->name('classes.exportExcel');
+});
 
 
 // Auth routes (if you are using built-in authentication)

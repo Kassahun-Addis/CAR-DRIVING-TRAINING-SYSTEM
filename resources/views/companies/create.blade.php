@@ -10,7 +10,7 @@
     </div>
     
     @if(session('success'))
-        <div class="alert alert-success" id="success-alert">
+        <div class="alert alert-success" id="success-message">
             {{ session('success') }}
         </div>
     @endif
@@ -26,9 +26,12 @@
     @endif
 
     <div class="form-section">
-    <form action="{{ route('companies.store') }}" method="POST">
+    <form action="{{ route('companies.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-
+        <div class="form-group">
+            <label for="company_id">Company ID</label>
+            <input type="text" id="company_id" name="company_id" class="form-control" required>
+        </div>
         <div class="form-group">
             <label for="name">Company Name</label>
             <input type="text" name="name" class="form-control" required>
@@ -46,12 +49,17 @@
 
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" name="email" class="form-control" required>
+            <input type="email" name="email" class="form-control">
         </div>
 
         <div class="form-group">
             <label for="address">Address</label>
-            <input type="text" name="address" class="form-control" required>
+            <input type="text" name="address" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label for="logo">Logo</label>
+            <input type="file" name="logo" class="form-control">
         </div>
 
         <div class="d-flex justify-content-center">
@@ -61,4 +69,9 @@
             </div>
         </form>
 </div>
+<script>
+    setTimeout(function() {
+        $('#success-message').fadeOut('slow');
+    }, 5000); // 5000 milliseconds = 5 seconds
+</script>
 @endsection

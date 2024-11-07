@@ -14,7 +14,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role'
+        'role',
+        'company_id',
     ];
 
     protected $hidden = [
@@ -55,7 +56,14 @@ class User extends Authenticatable
     // {
     //     return $this->trainee()->exists();
     // }
+
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id', 'company_id');
+    }
 }
+
 
 
 

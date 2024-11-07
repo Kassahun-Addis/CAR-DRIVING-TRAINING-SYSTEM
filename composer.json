@@ -11,9 +11,7 @@
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
         "maatwebsite/excel": "^3.1",
-        "mpdf/mpdf": "^8.2",
-        "fruitcake/laravel-cors": "dev-master"
-
+        "mpdf/mpdf": "^8.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

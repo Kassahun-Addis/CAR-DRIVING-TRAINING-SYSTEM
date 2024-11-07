@@ -12,6 +12,7 @@ class CarCategory extends Model
     protected $fillable = [
         'car_category_name',
         'price',
+        'company_id',
       
     ];
 
@@ -31,4 +32,8 @@ public function cars()
 // {
 //     return $this->hasMany(TrainingCar::class, 'category');
 // }
+public function company()
+{
+    return $this->belongsTo(Company::class, 'company_id');
+}
 }

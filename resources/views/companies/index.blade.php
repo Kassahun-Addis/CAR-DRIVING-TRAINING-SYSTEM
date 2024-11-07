@@ -19,25 +19,31 @@
     <table class="table table-bordered mt-3">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>NO</th>
+                <th>Company ID</th>
                 <th>Company Name</th>
                 <th>TIN</th>
                 <th>Phone</th>
                 <th>Email</th>
                 <th>Address</th>
+                <th>Logo</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($companies as $company)
+            @foreach($companies as $index => $company)
                 <tr>
-                    <td>{{ $company->id }}</td>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $company->company_id }}</td>
                     <td>{{ $company->name }}</td>
                     <td>{{ $company->tin }}</td>
                     <td>{{ $company->phone }}</td>
                     <td>{{ $company->email }}</td>
                     <td>{{ $company->address }}</td>
-                    <td>
+                    <td>{{ $company->logo }}</td>
+
+
+                    <td class="text-nowrap">
                         <a href="{{ route('companies.edit', $company->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <form action="{{ route('companies.destroy', $company->id) }}" method="POST" style="display:inline;">
                             @csrf

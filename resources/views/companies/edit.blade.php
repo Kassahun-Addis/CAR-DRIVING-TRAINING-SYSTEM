@@ -22,6 +22,11 @@
     <form action="{{ route('companies.update', $company->id) }}" method="POST">
         @csrf
         @method('PUT')
+        
+        <div class="form-group">
+            <label for="company_id">Company ID</label>
+            <input type="text" id="company_id" name="company_id" class="form-control" value="{{ old('company_id', $company->company_id) }}" required>
+        </div>
 
         <div class="form-group">
             <label for="name">Company Name</label>
@@ -48,6 +53,16 @@
             <input type="text" name="address" class="form-control" value="{{ old('address', $company->address) }}" required>
         </div>
 
+        <div class="form-group">
+            <label for="logo">Logo</label>
+            <input type="file" name="logo" id="logo" class="form-control" accept="image/*">
+            @if ($company->logo)
+                <img src="{{ asset('storage/company_logos/' . $company->logo) }}" alt="Company Logo" class="img-fluid mt-2">
+            @else
+                <p>No logo uploaded</p>
+            @endif
+        </div>
+        
         <button type="submit" class="btn btn-primary">Update</button>
         <a href="{{ route('companies.index') }}" class="btn btn-secondary">Back to list</a>
     </form>

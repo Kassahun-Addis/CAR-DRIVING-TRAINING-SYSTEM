@@ -10,7 +10,9 @@
     </div>
     
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success" id="success-message">
+            {{ session('success') }}
+        </div>
     @endif
 
    <div class="row mb-3" style="display: flex; justify-content: space-between; align-items: center;">
@@ -119,4 +121,9 @@
     </div>
 </div>
 </div>
+<script>
+    setTimeout(function() {
+        $('#success-message').fadeOut('slow');
+    }, 5000); // 5000 milliseconds = 5 seconds
+</script>
 @endsection

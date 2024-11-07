@@ -39,15 +39,17 @@ public function index(Request $request)
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|string',
+            'company_id' => 'required|exists:companies,company_id', // Validate company_id
         ]);
-
+    
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'company_id' => $request->company_id, // Set company_id
         ]);
-
+    
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
@@ -65,12 +67,13 @@ public function index(Request $request)
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|string',
+            'company_id' => 'required|exists:companies,company_id', // Validate company_id
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
         $user->role = $request->role;
-
+        $user->company_id = $request->company_id; // Set company_id
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }

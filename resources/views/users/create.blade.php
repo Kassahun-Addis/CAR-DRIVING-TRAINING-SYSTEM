@@ -26,6 +26,10 @@
         <form method="POST" action="{{ route('users.store') }}">
             @csrf
             <div class="form-group">
+                <label for="company_id">Company ID</label>
+                <input type="text" id="company_id" name="company_id" class="form-control" required>
+            </div>
+            <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" class="form-control" required>
             </div>

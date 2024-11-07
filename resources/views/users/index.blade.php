@@ -61,6 +61,7 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
+                    <th>Company ID</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -71,6 +72,7 @@
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->role }}</td>
+                        <td>{{ $user->company_id }}</td>
                         <td class="text-nowrap">
                             <a href="{{ route('users.edit', $user) }}" class="btn btn-warning btn-sm">Edit</a>
                             <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline-block;">

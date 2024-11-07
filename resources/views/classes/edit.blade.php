@@ -13,6 +13,11 @@
             </ul>
         </div>
     @endif
+    @if(@success)
+    <div class="alert alert-success" id="success-message">
+        {{ session('success') }}
+    </div>
+    @endif
     <div class="form-section">
     <form action="{{ route('classes.update', $class->class_id) }}" method="POST">
         @csrf
@@ -30,4 +35,9 @@
     </form>
 </div>
 </div>
+<script>
+    setTimeout(function() {
+        $('#success-message').fadeOut('slow');
+    }, 5000); // 5000 milliseconds = 5 seconds
+</script>
 @endsection

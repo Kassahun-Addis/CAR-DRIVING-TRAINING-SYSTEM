@@ -9,20 +9,28 @@ use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use Mpdf\Mpdf;
 
-
 class CarCategoryController extends Controller
 {
-
-        public function exportExcel()
+    public function exportExcel()
     {
-        return Excel::download(new CarCategoriesExport, 'car_categories_list.xlsx');
-   }
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
 
-   public function exportPdf()
+        // Fetch car categories specific to the current company
+        $carCategories = CarCategory::where('company_id', $companyId)->get();
+
+        return Excel::download(new CarCategoriesExport($carCategories), 'car_categories_list.xlsx');
+    }
+
+    public function exportPdf()
     {
-        $CarCategorys = CarCategory::all();
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
+
+        // Fetch car categories specific to the current company
+        $CarCategorys = CarCategory::where('company_id', $companyId)->get();
         $html = view('car_category.pdf', compact('CarCategorys'))->render();
-    
+
         // Initialize Mpdf and configure custom font settings
         $mpdf = new Mpdf([
             'format' => 'A4-L', // Landscape orientation
@@ -35,29 +43,33 @@ class CarCategoryController extends Controller
             ],
             'default_font_size' => 10, // Set the default font size
         ]);
-    
+
         $mpdf->WriteHTML($html);
-    
+
         return $mpdf->Output('car_category_list.pdf', 'D');
     }
 
-
     public function index(Request $request)
-{
-    $search = $request->input('search'); // Get the search term
-    $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+    {
+        $search = $request->input('search'); // Get the search term
+        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
 
-    // Remove any commas and decimal points from the search term to handle formatted numbers
-    $searchUnformatted = str_replace([',', '.00'], '', $search);
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
 
-    // Query the CarCategory with search and pagination
-    $CarCategorys = CarCategory::when($search, function ($query) use ($search, $searchUnformatted) {
-        return $query->where('car_category_name', 'like', '%' . $search . '%')
-                     ->orWhere('price', 'like', '%' . $searchUnformatted . '%'); // Use unformatted search term for price
-    })->paginate($perPage);
+        // Remove any commas and decimal points from the search term to handle formatted numbers
+        $searchUnformatted = str_replace([',', '.00'], '', $search);
 
-    return view('car_category.index', compact('CarCategorys'));
-}
+        // Query the CarCategory with search, pagination, and company filter
+        $CarCategorys = CarCategory::where('company_id', $companyId)
+            ->when($search, function ($query) use ($search, $searchUnformatted) {
+                return $query->where('car_category_name', 'like', '%' . $search . '%')
+                             ->orWhere('price', 'like', '%' . $searchUnformatted . '%'); // Use unformatted search term for price
+            })
+            ->paginate($perPage);
+
+        return view('car_category.index', compact('CarCategorys'));
+    }
 
     public function create()
     {
@@ -69,15 +81,21 @@ class CarCategoryController extends Controller
         $request->validate([
             'car_category_name' => 'required|string|max:255',
             'price' => 'required|numeric',
-
         ]);
 
-        CarCategory::create($request->all());
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
+
+        CarCategory::create(array_merge($request->all(), ['company_id' => $companyId]));
+
         return redirect()->route('car_category.index')->with('success', 'Car Category created successfully.');
     }
 
     public function edit(CarCategory $CarCategory)
     {
+        // Ensure the car category belongs to the current company
+        $this->authorizeCompany($CarCategory);
+
         return view('car_category.edit', compact('CarCategory'));
     }
 
@@ -86,16 +104,30 @@ class CarCategoryController extends Controller
         $request->validate([
             'car_category_name' => 'required|string|max:255',
             'price' => 'required|numeric',
-
         ]);
 
+        // Ensure the car category belongs to the current company
+        $this->authorizeCompany($CarCategory);
+
         $CarCategory->update($request->all());
+
         return redirect()->route('car_category.index')->with('success', 'CarCategory updated successfully.');
     }
 
     public function destroy(CarCategory $CarCategory)
     {
+        // Ensure the car category belongs to the current company
+        $this->authorizeCompany($CarCategory);
+
         $CarCategory->delete();
         return redirect()->route('car_category.index')->with('success', 'CarCategory deleted successfully.');
+    }
+
+    private function authorizeCompany(CarCategory $CarCategory)
+    {
+        $companyId = app('currentCompanyId');
+        if ($CarCategory->company_id !== $companyId) {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }

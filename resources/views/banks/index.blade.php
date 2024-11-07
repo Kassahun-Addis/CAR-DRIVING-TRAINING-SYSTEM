@@ -65,9 +65,9 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($banks as $bank)
+            @foreach ($banks as $index => $bank)
                 <tr>
-                    <td>{{ $bank->id }}</td>
+                    <td>{{ $index + 1 }}</td>
                     <td>{{ $bank->bank_name }}</td>
                     <td class="text-nowrap">
                         <a href="{{ route('banks.edit', $bank) }}" class="btn btn-warning">Edit</a>

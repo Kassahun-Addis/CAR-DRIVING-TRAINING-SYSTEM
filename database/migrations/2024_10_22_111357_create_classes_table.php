@@ -15,7 +15,9 @@ class CreateClassesTable extends Migration
     {
         Schema::create('classes', function (Blueprint $table) {
             $table->id('class_id');  // Primary key
+            $table->string('company_id')->nullable();
             $table->string('class_name');  // Name of the teacher
+            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('cascade');
             $table->timestamps();  // created_at and updated_at timestamps
         });
     }

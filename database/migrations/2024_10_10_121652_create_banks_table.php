@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('banks', function (Blueprint $table) {
             $table->id(); // Automatically creates an `id` column
+            $table->string('company_id'); // Add company_id column
             $table->string('bank_name');
             $table->timestamps();
+
+            // Optionally, add a foreign key constraint
+            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('cascade');
         });
     }
 
