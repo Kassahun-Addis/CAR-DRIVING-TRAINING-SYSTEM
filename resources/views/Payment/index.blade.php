@@ -57,7 +57,6 @@
         </div>
     </div>
 
-    @if ($payments->count() > 0)
     <div class="table-responsive">
     <table class="table table-bordered">
         <thead>
@@ -162,9 +161,6 @@
     <div>
         {{ $payments->links() }}
     </div>
-    @else
-        <p>No payments found.</p>
-    @endif
 
 </div>
 

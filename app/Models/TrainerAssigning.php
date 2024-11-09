@@ -23,6 +23,7 @@ class TrainerAssigning extends Model
         'plate_no',
         'car_name',
         'total_time',
+        'company_id'
     ];
 
     // Relationship to the Category model
@@ -39,5 +40,10 @@ class TrainerAssigning extends Model
 public function trainee()
     {
         return $this->belongsTo(Trainee::class, 'trainee_name', 'full_name');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }

@@ -18,6 +18,7 @@ class Trainer extends Model
         'category', 
         'car_name',
         'plate_no',
+        'company_id'
     ];
 
     // Define the relationship with TrainerAssigning
@@ -25,4 +26,9 @@ class Trainer extends Model
 // {
 //     return $this->hasMany(TrainerAssigning::class, 'trainer_id'); // Use trainer_id as the foreign key
 // }
+
+public function company()
+{
+    return $this->belongsTo(Company::class, 'company_id');
+}
 }

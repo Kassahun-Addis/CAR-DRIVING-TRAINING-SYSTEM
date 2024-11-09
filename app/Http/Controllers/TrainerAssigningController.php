@@ -12,14 +12,12 @@ use App\Models\Trainee;
 use Illuminate\Support\Facades\DB;
 use App\Exports\TrainersAssigningExport;
 use Maatwebsite\Excel\Facades\Excel;
-use Mpdf\Mpdf;  
+use Mpdf\Mpdf;
 use Illuminate\Support\Facades\Http;
-
 
 class TrainerAssigningController extends Controller
 {
-
-        public function getTraineesByCategory($category)
+    public function getTraineesByCategory($category)
     {
         \Log::info('Fetching trainees for category:', ['category' => $category]);
 
@@ -33,14 +31,24 @@ class TrainerAssigningController extends Controller
 
     public function exportExcel()
     {
-        return Excel::download(new TrainersAssigningExport, 'trainers_assigning_list.xlsx');
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
+
+        // Fetch trainer assignments specific to the current company
+        $trainers_assigning = TrainerAssigning::where('company_id', $companyId)->get();
+
+        return Excel::download(new TrainersAssigningExport($trainers_assigning), 'trainers_assigning_list.xlsx');
     }
 
-   public function exportPdf()
+    public function exportPdf()
     {
-        $trainers_assigning = TrainerAssigning::all();
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
+
+        // Fetch trainer assignments specific to the current company
+        $trainers_assigning = TrainerAssigning::where('company_id', $companyId)->get();
         $html = view('trainer_assigning.pdf', compact('trainers_assigning'))->render();
-    
+
         // Initialize Mpdf and configure custom font settings
         $mpdf = new Mpdf([
             'format' => 'A4-L', // Landscape orientation
@@ -53,19 +61,23 @@ class TrainerAssigningController extends Controller
             ],
             'default_font_size' => 10, // Set the default font size
         ]);
-    
+
         $mpdf->WriteHTML($html);
-    
+
         return $mpdf->Output('trainers_assigning_list.pdf', 'D');
     }
 
     public function index(Request $request)
-    {    
+    {
         $search = $request->input('search');
         $perPage = $request->input('perPage', 10);
-    
-        // Eager load the category relationship
+
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
+
+        // Eager load the category relationship and filter by company
         $trainers_assigning = TrainerAssigning::with('category')
+            ->where('company_id', $companyId)
             ->when($search, function ($query) use ($search) {
                 return $query->where('trainee_name', 'like', '%' . $search . '%')
                              ->orWhere('trainer_name', 'like', '%' . $search . '%')
@@ -76,54 +88,36 @@ class TrainerAssigningController extends Controller
                              ->orWhere('car_name', 'like', '%' . $search . '%')
                              ->orWhere('total_time', 'like', '%' . $search . '%');
             })->paginate($perPage);
-    
+
         return view('trainer_assigning.index', compact('trainers_assigning'));
     }
 
-public function create()
-{
-    // Fetch only active trainers
-    $activeTrainers = Trainer::where('status', 'active')->get();
+    public function create()
+    {
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
 
-    // Fetch all trainees
-    $trainees = Trainee::all(); // Assuming you have a Trainee model
+        // Fetch only active trainers specific to the current company
+        $activeTrainers = Trainer::where('status', 'active')->where('company_id', $companyId)->get();
 
-    // Calculate trainerCounts excluding assignments with passed end dates
-    $trainerCounts = TrainerAssigning::where('end_date', '>=', now()) // Only include current or future assignments
-        ->select('trainer_name', DB::raw('count(*) as count'))
-        ->groupBy('trainer_name')
-        ->pluck('count', 'trainer_name')
-        ->toArray();
+        // Fetch all trainees specific to the current company
+        $trainees = Trainee::where('company_id', $companyId)->get();
 
-    // Sort active trainers by the count of trainees in ascending order
-    $sortedTrainers = $activeTrainers->sortBy(function($trainer) use ($trainerCounts) {
-        return $trainerCounts[$trainer->trainer_name] ?? 0;
-    });
+        // Calculate trainerCounts excluding assignments with passed end dates
+        $trainerCounts = TrainerAssigning::where('end_date', '>=', now())
+            ->where('company_id', $companyId)
+            ->select('trainer_name', DB::raw('count(*) as count'))
+            ->groupBy('trainer_name')
+            ->pluck('count', 'trainer_name')
+            ->toArray();
 
-    return view('trainer_assigning.create', compact('sortedTrainers', 'trainerCounts', 'trainees'));
-}
+        // Sort active trainers by the count of trainees in ascending order
+        $sortedTrainers = $activeTrainers->sortBy(function($trainer) use ($trainerCounts) {
+            return $trainerCounts[$trainer->trainer_name] ?? 0;
+        });
 
-    // public function getExamResult($traineeId)
-    // {
-    // // Example API endpoint and key (replace with actual values)
-    // $apiUrl = 'https://external-exam-site.com/api/exam-results';
-    // $apiKey = 'your-api-key-here';
-
-    // // Make a GET request to the external API
-    // $response = Http::withHeaders([
-    //     'Authorization' => "Bearer $apiKey",
-    // ])->get("$apiUrl/$traineeId");
-
-    // // Check if the request was successful
-    // if ($response->successful()) {
-    //     // Assuming the API returns a JSON response with an 'exam_result' field
-    //     return $response->json('exam_result');
-    // }
-
-    // // Handle errors or unsuccessful requests
-    // \Log::error('Failed to fetch exam result', ['traineeId' => $traineeId, 'response' => $response->body()]);
-    //     return null;
-    // }
+        return view('trainer_assigning.create', compact('sortedTrainers', 'trainerCounts', 'trainees'));
+    }
 
     public function getExamResult($traineeId)
     {
@@ -133,114 +127,124 @@ public function create()
         return $mockExamResult; // Use this result directly in your app
     }
 
-    // Store a newly created trainer in the database
     public function store(Request $request)
-{
-    // Validate the request
-    $request->validate([
-        'trainee_name' => 'required|string|max:255',
-        'trainer_name' => 'required|string|max:255',
-        'start_date' => 'required|date',
-        'end_date' => 'required|date|after_or_equal:start_date',
-        'category_id' => 'required|string|exists:trainers,category', // Validate against car_category_name
-        'plate_no' => 'required|numeric', 
-        'car_name' => 'required|string|max:255',
-        'total_time' => 'required|numeric', // Add validation for total time
-    ]);
+    {
+        // Validate the request
+        $request->validate([
+            'trainee_name' => 'required|string|max:255',
+            'trainer_name' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'category_id' => 'required|string|exists:trainers,category',
+            'plate_no' => 'required|numeric',
+            'car_name' => 'required|string|max:255',
+            'total_time' => 'required|numeric',
+        ]);
 
-    // Fetch the trainee's exam result
-    $trainee = Trainee::where('full_name', $request->trainee_name)->first();
-    if (!$trainee) {
-        return redirect()->back()->with('error', 'Trainee not found.');
+        // Get company_id from the logged-in user's profile
+        $company_id = auth()->user()->company_id;
+
+        // Fetch the trainee's exam result
+        $trainee = Trainee::where('full_name', $request->trainee_name)->first();
+        if (!$trainee) {
+            return redirect()->back()->with('error', 'Trainee not found.');
+        }
+
+        $examResult = $this->getExamResult($trainee->id);
+
+        // Check if the exam result is greater than 74
+        if ($examResult === null || $examResult <= 74) {
+            return redirect()->back()->with('error', 'Trainee cannot be assigned as their exam result is less than 75.');
+        }
+
+        // Create the TrainerAssigning record
+        $trainer_assigning = TrainerAssigning::create([
+            'trainee_name' => $request->trainee_name,
+            'trainer_name' => $request->trainer_name,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'category_id' => $request->category_id,
+            'plate_no' => $request->plate_no,
+            'car_name' => $request->car_name,
+            'total_time' => $request->input('total_time'),
+            'company_id' => $company_id, // Set the company ID
+        ]);
+
+        return redirect()->route('trainer_assigning.index')->with('success', 'Trainer assigned successfully!');
     }
 
-    $examResult = $this->getExamResult($trainee->id);
+    public function edit($id)
+    {
+        $trainer_assigning = TrainerAssigning::find($id);
 
-    // Check if the exam result is greater than 74
-    if ($examResult === null || $examResult <= 74) {
-        return redirect()->back()->with('error', 'Trainee cannot be assigned as their exam result is less than 75.');
+        if (!$trainer_assigning) {
+            return redirect()->route('trainer_assigning.index')->with('error', 'Trainer assignment not found.');
+        }
+
+        // Ensure the trainer assignment belongs to the current company
+        $this->authorizeCompany($trainer_assigning);
+
+        $activeTrainers = Trainer::where('status', 'active')->get();
+        $trainees = Trainee::all();
+
+        $trainerCounts = TrainerAssigning::where('end_date', '>=', now())
+            ->select('trainer_name', DB::raw('count(*) as count'))
+            ->groupBy('trainer_name')
+            ->pluck('count', 'trainer_name')
+            ->toArray();
+
+        $sortedTrainers = $activeTrainers->sortBy(function($trainer) use ($trainerCounts) {
+            return $trainerCounts[$trainer->trainer_name] ?? 0;
+        });
+
+        return view('trainer_assigning.edit', compact('trainer_assigning', 'trainees', 'sortedTrainers', 'trainerCounts'));
     }
-
-    // Create the TrainerAssigning record
-    $trainer_assigning = TrainerAssigning::create([
-        'trainee_name' => $request->trainee_name,
-        'trainer_name' => $request->trainer_name,
-        'start_date' => $request->start_date,
-        'end_date' => $request->end_date,
-        'category_id' => $request->category_id, // Use the found category id
-        'plate_no' => $request->plate_no,
-        'car_name' => $request->car_name,
-        'total_time' => $request->input('total_time'), // Store total time
-
-    ]);
-
-    return redirect()->route('trainer_assigning.index')->with('success', 'Trainer assigned successfully!');
-}
-
-public function edit($id)
-{
-    $trainer_assigning = TrainerAssigning::find($id);
-
-    if (!$trainer_assigning) {
-        return redirect()->route('trainer_assigning.index')->with('error', 'Trainer assignment not found.');
-    }
-
-    // Debugging: Log the trainer_assigning data
-    \Log::info('Editing Trainer Assigning:', $trainer_assigning->toArray());
-
-    $activeTrainers = Trainer::where('status', 'active')->get();
-    $trainees = Trainee::all();
-
-    $trainerCounts = TrainerAssigning::where('end_date', '>=', now())
-        ->select('trainer_name', DB::raw('count(*) as count'))
-        ->groupBy('trainer_name')
-        ->pluck('count', 'trainer_name')
-        ->toArray();
-
-    $sortedTrainers = $activeTrainers->sortBy(function($trainer) use ($trainerCounts) {
-        return $trainerCounts[$trainer->trainer_name] ?? 0;
-    });
-
-    return view('trainer_assigning.edit', compact('trainer_assigning', 'trainees', 'sortedTrainers', 'trainerCounts'));
-}
-
-    // Update the specified trainer in the database
 
     public function update(Request $request, TrainerAssigning $trainer_assigning)
-{
-    $request->validate([
-        'trainee_name' => 'required|string|max:255',
-        'trainer_name' => 'required|string|max:255',
-        'start_date' => 'required|date',
-        'end_date' => 'required|date|after_or_equal:start_date',
-        'category_id' => 'required|string|exists:trainers,category',
-        'plate_no' => 'required|string|max:255',
-        'car_name' => 'required|string|max:255',
-        'total_time' => 'required|numeric', // Add validation for total time
+    {
+        $request->validate([
+            'trainee_name' => 'required|string|max:255',
+            'trainer_name' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'category_id' => 'required|string|exists:trainers,category',
+            'plate_no' => 'required|string|max:255',
+            'car_name' => 'required|string|max:255',
+            'total_time' => 'required|numeric',
+        ]);
 
-    ]);
+        // Ensure the trainer assignment belongs to the current company
+        $this->authorizeCompany($trainer_assigning);
 
-    // Update the trainer assigning record
-    $trainer_assigning->update([
-        'trainee_name' => $request->trainee_name,
-        'trainer_name' => $request->trainer_name,
-        'start_date' => $request->start_date,
-        'end_date' => $request->end_date,
-        'category_id' => $request->category_id,
-        'plate_no' => $request->plate_no,
-        'car_name' => $request->car_name,
-        'total_time' => $request->input('total_time'), // Update total time
-    ]);
+        // Update the trainer assigning record
+        $trainer_assigning->update([
+            'trainee_name' => $request->trainee_name,
+            'trainer_name' => $request->trainer_name,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'category_id' => $request->category_id,
+            'plate_no' => $request->plate_no,
+            'car_name' => $request->car_name,
+            'total_time' => $request->input('total_time'),
+        ]);
 
-    return redirect()->route('trainer_assigning.index')->with('success', 'Trainer assignment updated successfully!');
-}
+        return redirect()->route('trainer_assigning.index')->with('success', 'Trainer assignment updated successfully!');
+    }
 
-    // Remove the specified trainer from the database
     public function destroy(TrainerAssigning $trainer_assigning)
     {
-        $trainer_assigning->delete(); // Delete the trainer_assigning record
+        // Ensure the trainer assignment belongs to the current company
+        $this->authorizeCompany($trainer_assigning);
+
+        $trainer_assigning->delete();
         return redirect()->route('trainer_assigning.index')->with('success', 'Trainer deleted successfully!');
     }
 
-
+    private function authorizeCompany(TrainerAssigning $trainer_assigning)
+    {
+        $companyId = app('currentCompanyId');
+        if ($trainer_assigning->company_id !== $companyId) {
+            abort(403, 'Unauthorized action.');
+        }
+    }
 }

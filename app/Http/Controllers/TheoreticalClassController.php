@@ -14,15 +14,17 @@ use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use Mpdf\Mpdf;
 
-
 class TheoreticalClassController extends Controller
 {
-
     public function exportPdf()
     {
-        $theoretical_classes = TheoreticalClass::all();
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
+
+        // Fetch theoretical classes specific to the current company
+        $theoretical_classes = TheoreticalClass::where('company_id', $companyId)->get();
         $html = view('theoretical_classes.pdf', compact('theoretical_classes'))->render();
-    
+
         // Initialize Mpdf and configure custom font settings
         $mpdf = new Mpdf([
             'format' => 'A4-L', // Landscape orientation
@@ -35,78 +37,98 @@ class TheoreticalClassController extends Controller
             ],
             'default_font_size' => 10, // Set the default font size
         ]);
-    
+
         $mpdf->WriteHTML($html);
-    
+
         return $mpdf->Output('class_assigning_list.pdf', 'D');
     }
 
     public function exportExcel()
     {
-        return Excel::download(new TheoreticalClassesExport, 'theoretical_classes_list.xlsx');
-    } 
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
+
+        // Fetch theoretical classes specific to the current company
+        $theoretical_classes = TheoreticalClass::where('company_id', $companyId)->get();
+
+        return Excel::download(new TheoreticalClassesExport($theoretical_classes), 'theoretical_classes_list.xlsx');
+    }
 
     public function index(Request $request)
-{
-    $search = $request->input('search'); // Get the search term
-    $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+    {
+        $search = $request->input('search'); // Get the search term
+        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
 
-    // Query the theoretical classes with search and pagination
-    $theoretical_classes = TheoreticalClass::when($search, function ($query) use ($search) {
-        return $query->where('trainee_name', 'like', '%' . $search . '%')
-                     ->orWhere('trainer_name', 'like', '%' . $search . '%')
-                     ->orWhere('class_name', 'like', '%' . $search . '%')
-                     ->orWhere('start_date', 'like', '%' . $search . '%')
-                     ->orWhere('end_date', 'like', '%' . $search . '%');
-    })->paginate($perPage);
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
 
-    return view('theoretical_classes.index', compact('theoretical_classes'));
-}
+        // Query the theoretical classes with search, pagination, and company filter
+        $theoretical_classes = TheoreticalClass::where('company_id', $companyId)
+            ->when($search, function ($query) use ($search) {
+                return $query->where('trainee_name', 'like', '%' . $search . '%')
+                             ->orWhere('trainer_name', 'like', '%' . $search . '%')
+                             ->orWhere('class_name', 'like', '%' . $search . '%')
+                             ->orWhere('start_date', 'like', '%' . $search . '%')
+                             ->orWhere('end_date', 'like', '%' . $search . '%');
+            })->paginate($perPage);
+
+        return view('theoretical_classes.index', compact('theoretical_classes'));
+    }
 
     public function create()
-{
-    // Fetch all classes
-    $classes = Classes::all();
+    {
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
 
-    // Fetch all active trainees
-    $assignedTrainees = TheoreticalClass::pluck('trainee_name')->toArray();
-    $trainees = Trainee::where('status', 'active')
-                       ->whereNotIn('full_name', $assignedTrainees)
-                       ->get();
+        // Fetch all classes specific to the current company
+        $classes = Classes::where('company_id', $companyId)->get();
 
+        // Fetch all active trainees specific to the current company
+        $assignedTrainees = TheoreticalClass::where('company_id', $companyId)->pluck('trainee_name')->toArray();
+        $trainees = Trainee::where('status', 'active')
+                           ->where('company_id', $companyId)
+                           ->whereNotIn('full_name', $assignedTrainees)
+                           ->get();
 
-    $trainers = Trainer::where('status', 'active')
-                        ->get();
-    // Get the current date
-    $currentDate = now();
+        // Fetch all active trainers specific to the current company
+        $trainers = Trainer::where('status', 'active')
+                           ->where('company_id', $companyId)
+                           ->get();
 
-    // Calculate the number of trainees per class where the end_date is greater than or equal to the current date
-    $classCounts = TheoreticalClass::where('end_date', '>=', $currentDate)
-        ->select('class_name', DB::raw('count(*) as count'))
-        ->groupBy('class_name')
-        ->pluck('count', 'class_name')
-        ->toArray();
+        // Get the current date
+        $currentDate = now();
 
-    // Sort classes by the count of trainees in ascending order
-    $sortedClasses = $classes->sortBy(function($class) use ($classCounts) {
-        return $classCounts[$class->class_name] ?? 0;
-    });
+        // Calculate the number of trainees per class where the end_date is greater than or equal to the current date
+        $classCounts = TheoreticalClass::where('end_date', '>=', $currentDate)
+            ->where('company_id', $companyId)
+            ->select('class_name', DB::raw('count(*) as count'))
+            ->groupBy('class_name')
+            ->pluck('count', 'class_name')
+            ->toArray();
 
-    return view('theoretical_classes.create', compact('sortedClasses', 'classCounts', 'trainees', 'trainers'));
-}
+        // Sort classes by the count of trainees in ascending order
+        $sortedClasses = $classes->sortBy(function($class) use ($classCounts) {
+            return $classCounts[$class->class_name] ?? 0;
+        });
+
+        return view('theoretical_classes.create', compact('sortedClasses', 'classCounts', 'trainees', 'trainers'));
+    }
 
     public function store(Request $request)
     {
         // Validate and store a new class
         $request->validate([
             'trainee_name' => 'required|string|max:255',
-            'trainer_name' => 'required|arr|max:255',
+            'trainer_name' => 'required|array|max:255',
             'class_name' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
-        TheoreticalClass::create($request->all());
+        // Get company_id from the logged-in user's profile
+        $company_id = auth()->user()->company_id;
+
+        TheoreticalClass::create(array_merge($request->all(), ['company_id' => $company_id]));
 
         return redirect()->route('theoretical_class.index')
                          ->with('success', 'Theoretical class created successfully.');
@@ -114,41 +136,51 @@ class TheoreticalClassController extends Controller
 
     public function show(TheoreticalClass $theoreticalClass)
     {
+        // Ensure the theoretical class belongs to the current company
+        $this->authorizeCompany($theoreticalClass);
+
         // Show a single class details
         return view('theoretical_classes.show', compact('theoreticalClass'));
     }
 
     public function edit($id)
-{
-    // Fetch the theoretical class being edited 
-    $theoreticalClass = TheoreticalClass::findOrFail($id);
-    
-    // Fetch all classes
-    $classes = Classes::all();
+    {
+        // Fetch the theoretical class being edited
+        $theoreticalClass = TheoreticalClass::findOrFail($id);
 
-    // Get the current date
-    $currentDate = now();
+        // Ensure the theoretical class belongs to the current company
+        $this->authorizeCompany($theoreticalClass);
 
-    // Manually count trainees per class for classes where end_date >= current date
-    $traineeCounts = DB::table('theoretical_classes')
-        ->where('end_date', '>=', $currentDate) // Only consider classes that haven't ended
-        ->select('class_name', DB::raw('COUNT(*) as count'))
-        ->groupBy('class_name')
-        ->pluck('count', 'class_name');
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
 
-    // Sort classes by the count of trainees in ascending order
-    $sortedClasses = $classes->sortBy(function($class) use ($traineeCounts) {
-        return $traineeCounts[$class->class_name] ?? 0;  // Default to 0 if no trainees
-    });
+        // Fetch all classes specific to the current company
+        $classes = Classes::where('company_id', $companyId)->get();
 
-    // Fetch all trainees
-    $trainees = Trainee::all();
+        // Get the current date
+        $currentDate = now();
 
-    // Fetch all trainees
-    $trainers = Trainer::all();
+        // Manually count trainees per class for classes where end_date >= current date
+        $traineeCounts = DB::table('theoretical_classes')
+            ->where('end_date', '>=', $currentDate)
+            ->where('company_id', $companyId)
+            ->select('class_name', DB::raw('COUNT(*) as count'))
+            ->groupBy('class_name')
+            ->pluck('count', 'class_name');
 
-    return view('theoretical_classes.edit', compact('theoreticalClass','trainers', 'trainees', 'sortedClasses', 'traineeCounts'));
-}
+        // Sort classes by the count of trainees in ascending order
+        $sortedClasses = $classes->sortBy(function($class) use ($traineeCounts) {
+            return $traineeCounts[$class->class_name] ?? 0;  // Default to 0 if no trainees
+        });
+
+        // Fetch all trainees specific to the current company
+        $trainees = Trainee::where('company_id', $companyId)->get();
+
+        // Fetch all trainers specific to the current company
+        $trainers = Trainer::where('company_id', $companyId)->get();
+
+        return view('theoretical_classes.edit', compact('theoreticalClass','trainers', 'trainees', 'sortedClasses', 'traineeCounts'));
+    }
 
     public function update(Request $request, TheoreticalClass $theoreticalClass)
     {
@@ -161,6 +193,9 @@ class TheoreticalClassController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
+        // Ensure the theoretical class belongs to the current company
+        $this->authorizeCompany($theoreticalClass);
+
         $theoreticalClass->update($request->all());
 
         return redirect()->route('theoretical_class.index')
@@ -169,11 +204,22 @@ class TheoreticalClassController extends Controller
 
     public function destroy(TheoreticalClass $theoreticalClass)
     {
+        // Ensure the theoretical class belongs to the current company
+        $this->authorizeCompany($theoreticalClass);
+
         \Log::info('Deleting theoretical class:', ['id' => $theoreticalClass->id]);
 
         // Delete a class
         $theoreticalClass->delete();
         return redirect()->route('theoretical_class.index')
                          ->with('success', 'Theoretical class deleted successfully.');
+    }
+
+    private function authorizeCompany(TheoreticalClass $theoreticalClass)
+    {
+        $companyId = app('currentCompanyId');
+        if ($theoreticalClass->company_id !== $companyId) {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }

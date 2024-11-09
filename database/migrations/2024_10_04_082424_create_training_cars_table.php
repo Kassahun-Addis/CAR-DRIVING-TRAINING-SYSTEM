@@ -10,6 +10,8 @@ class CreateTrainingCarsTable extends Migration
     {
         Schema::create('training_cars', function (Blueprint $table) {
             $table->id();
+            $table->string('company_id')->nullable();
+            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('set null');
             $table->string('name'); // Column for the car name 
             $table->string('category'); // Change to unsignedBigInteger for foreign key
             $table->string('model')->nullable(); // Column for the car model (optional)

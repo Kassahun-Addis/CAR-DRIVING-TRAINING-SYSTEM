@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('car_categories', function (Blueprint $table) {
             $table->id(); // Automatically creates an `id` column
-            $table->string('company_id');
-            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('cascade');
+            $table->string('company_id')->nullable();
+            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('set null');
             $table->string('car_category_name');
             $table->timestamps();
         });

@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('notification_user', function (Blueprint $table) {
             $table->id();
+            $table->string('company_id')->nullable();
+            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('set null');
             $table->foreignId('notification_id')->constrained()->onDelete('cascade');
             $table->foreignId('trainee_id')->constrained('trainees')->onDelete('cascade'); // Change user_id to trainee_id
             $table->timestamps();

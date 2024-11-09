@@ -43,6 +43,7 @@ class Trainee extends Authenticatable
         'education_level',
         'blood_type',
         'receipt_no',
+        'company_id'
     ];
 
     // The attributes that should be cast to native types (e.g., for dates)
@@ -63,5 +64,10 @@ class Trainee extends Authenticatable
     public function exams()
     {
         return $this->hasMany(Exam::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }

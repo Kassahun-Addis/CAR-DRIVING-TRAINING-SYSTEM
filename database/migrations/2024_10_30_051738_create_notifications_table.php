@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
+            $table->string('company_id')->nullable();
             $table->string('title');
             $table->text('content');
             $table->boolean('is_active')->default(true);
             $table->boolean('is_read')->default(false);
+            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('set null');
             $table->timestamps();
         });
     }

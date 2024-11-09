@@ -10,6 +10,8 @@ class CreateTrainerAssigningsTable extends Migration
     {
         Schema::create('trainer_assignings', function (Blueprint $table) {
             $table->increments('assigning_id'); // Primary key with auto-increment
+            $table->string('company_id')->nullable();
+            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('set null');
             $table->string('trainee_name'); // Trainee's name
             $table->string('trainer_name'); // Trainee's name
             $table->date('start_date'); // Start date of the assignment

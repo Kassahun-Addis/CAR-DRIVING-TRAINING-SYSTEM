@@ -169,56 +169,54 @@
             @endif
 
             <!-- Show View Agreement link only if not in the attendance create route -->
-            @auth
-                @if (!request()->routeIs('attendance.create'))
+            
                     <li>
                         <a href="{{ route('trainee.agreement', ['id' => auth()->user()->id]) }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
                             <i class="fas fa-briefcase mr-2"></i>View Agreement
                         </a>
                     </li>
-                @endif
-            @endauth
 
            <!-- Notification Link with Unread Count -->
            @if (Auth::guard('trainee')->check())
-                @php
-                    $user = Auth::guard('trainee')->user();
-                    if ($user) {
-                        \Log::info('User is authenticated: Trainee ID ' . $user->id);
+    @php
+        $user = Auth::guard('trainee')->user();
+        if ($user) {
+            \Log::info('User is authenticated: Trainee ID ' . $user->id);
 
-                        // Directly use the same logic as the successful query
-                        $readNotificationIds = \DB::table('notification_user')
-                            ->where('trainee_id', $user->id)
-                            ->pluck('notification_id');
+            // Fetch unread notifications for the current company and user
+            $readNotificationIds = \DB::table('notification_user')
+                ->where('trainee_id', $user->id)
+                ->pluck('notification_id');
 
-                        $unreadNotifications = \DB::table('notifications')
-                            ->where('is_active', true)
-                            ->whereNotIn('id', $readNotificationIds)
-                            ->get();
+            $unreadNotifications = \DB::table('notifications')
+                ->where('company_id', app('currentCompanyId')) // Ensure company_id is used
+                ->where('is_active', true)
+                ->whereNotIn('id', $readNotificationIds)
+                ->get();
 
-                        $unreadCount = $unreadNotifications->count();
+            $unreadCount = $unreadNotifications->count();
 
-                        // Debugging: Log the unread count
-                        \Log::info('Unread Notification Count for Trainee ID ' . $user->id . ': ' . $unreadCount);
-                    } else {
-                        \Log::info('User is not authenticated');
-                    }
-                @endphp
+            // Debugging: Log the unread count
+            \Log::info('Unread Notification Count for Trainee ID ' . $user->id . ': ' . $unreadCount);
+        } else {
+            \Log::info('User is not authenticated');
+        }
+    @endphp
 
-                <li>
-                    <a href="{{ route('student.notifications') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
-                        <i class="fas fa-bell mr-2"></i>Notification
-                        @if($unreadCount > 0)
-                            <span id="unread-count" class="badge badge-danger">{{ $unreadCount }}</span>
-                        @endif
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('student.exam') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
-                        <i class="fas fa-external-link-alt mr-2"></i>Take Exam
-                    </a>
-                </li>
+    <li>
+        <a href="{{ route('student.notifications') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
+            <i class="fas fa-bell mr-2"></i>Notification
+            @if($unreadCount > 0)
+                <span id="unread-count" class="badge badge-danger">{{ $unreadCount }}</span>
             @endif
+        </a>
+    </li>
+    <li>
+        <a href="{{ route('student.exam') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
+            <i class="fas fa-external-link-alt mr-2"></i>Take Exam
+        </a>
+    </li>
+@endif
 
             
             <!-- User Info & Logout (Visible only on small devices) -->
@@ -275,50 +273,47 @@
         overlay.addEventListener('click', () => {
             sidebar.classList.remove('active'); // Hide sidebar
             overlay.style.display = 'none'; // Hide overlay
-            categorySubmenu.classList.add('hidden'); // Ensure submenu is hidden
-            orderSubmenu.classList.add('hidden'); // Ensure submenu is hidden
-
         });
 
         function markAsRead(notificationId) {
-    // Move the notification to the bottom of the list
-    const notificationItem = document.getElementById(`notification-${notificationId}`);
-    const notificationList = document.getElementById('notification-list');
-    
-    // Clone the node and append it to the end of the list
-    const clone = notificationItem.cloneNode(true);
-    clone.classList.add('read'); // Add 'read' class to distinguish it
-    notificationList.appendChild(clone);
-    
-    // Remove the original node
-    notificationItem.remove();
+            // Move the notification to the bottom of the list
+            const notificationItem = document.getElementById(`notification-${notificationId}`);
+            const notificationList = document.getElementById('notification-list');
+            
+            // Clone the node and append it to the end of the list
+            const clone = notificationItem.cloneNode(true);
+            clone.classList.add('read'); // Add 'read' class to distinguish it
+            notificationList.appendChild(clone);
+            
+            // Remove the original node
+            notificationItem.remove();
 
-    // Decrement the unread count
-    const unreadCountBadge = document.getElementById('unread-count');
-    if (unreadCountBadge) {
-        let unreadCount = parseInt(unreadCountBadge.textContent);
-        if (unreadCount > 0) {
-            unreadCount -= 1;
-            unreadCountBadge.textContent = unreadCount;
-            if (unreadCount === 0) {
-                unreadCountBadge.style.display = 'none'; // Hide badge if count is zero
+            // Decrement the unread count
+            const unreadCountBadge = document.getElementById('unread-count');
+            if (unreadCountBadge) {
+                let unreadCount = parseInt(unreadCountBadge.textContent);
+                if (unreadCount > 0) {
+                    unreadCount -= 1;
+                    unreadCountBadge.textContent = unreadCount;
+                    if (unreadCount === 0) {
+                        unreadCountBadge.style.display = 'none'; // Hide badge if count is zero
+                    }
+                }
             }
-        }
-    }
 
-    // Send AJAX request to mark the notification as read in the backend
-    fetch(`/notifications/${notificationId}/read`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Content-Type': 'application/json'
-        }
-    }).then(response => response.json())
-      .then(data => {
-          if (!data.success) {
-              console.error('Failed to mark notification as read');
-          }
-            }).catch(error => console.error('Error:', error));
+            // Send AJAX request to mark the notification as read in the backend
+            fetch(`/notifications/${notificationId}/read`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json())
+              .then(data => {
+                  if (!data.success) {
+                      console.error('Failed to mark notification as read');
+                  }
+              }).catch(error => console.error('Error:', error));
         }
     });
 </script>

@@ -21,6 +21,8 @@ use App\Http\Controllers\Auth\TraineeLoginController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth;
+
 
 
 
@@ -36,10 +38,12 @@ Route::get('/trainee/login', [TraineeLoginController::class, 'showLoginForm'])->
 Route::post('/trainee/login', [TraineeLoginController::class, 'login']);
 
 // Trainee Dashboard
+Route::middleware('company.context')->group(function () {
 Route::get('/home', function () {
     return view('home');
 })->middleware('auth:trainee')->name('home');
-
+});
+    
 Route::post('/logout-trainee', [TraineeLoginController::class, 'logout'])->name('trainee.logout');
 Route::post('/logout-admin', [AdminLoginController::class, 'logout'])->name('admin.logout');
 
@@ -56,12 +60,8 @@ Route::get('/reports', function () {
     return view('reports.index');
 })->name('reports.index');
 
-
-Route::get('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
-
-
-// Trainee Routes
-//Route::middleware('auth')->group(function () {
+// Trainee and Admin Accessible Routes
+Route::middleware(['company.context'])->group(function () {
     Route::get('/trainee/create', [TraineeController::class, 'create'])->name('trainee.create');
     Route::post('/trainee/store', [TraineeController::class, 'store'])->name('trainee.store');
     Route::get('/trainee/list', [TraineeController::class, 'index'])->name('trainee.index');
@@ -72,23 +72,25 @@ Route::get('/reports/generate', [ReportController::class, 'generate'])->name('re
     Route::get('trainee/export-pdf', [TraineeController::class, 'exportPdf'])->name('trainee.exportPdf');    
     Route::get('/trainee/{id}/agreement', [TraineeController::class, 'showAgreement'])->name('trainee.agreement');
     Route::get('/trainee/{id}/download-agreement', [TraineeController::class, 'downloadAgreement'])->name('download.agreement');
-    Route::patch('/trainees/{trainee}/toggle-status', [TraineeController::class, 'toggleStatus']);        
- //}); Route::get('/trainee/export', [TraineeController::class, 'exportExcel'])->name('trainee.export');
+    Route::patch('/trainees/{trainee}/toggle-status', [TraineeController::class, 'toggleStatus']);
+    Route::get('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
+});
 
 
-// Attendance Routes
-// Route::middleware('auth:trainee')->group(function () {
-    //Route::get('/trainee/dashboard', [StudentDashboardController::class, 'showDashboard'])->name('trainee.dashboard'); // Trainee dashboard
+
+// Custom Middleware to Allow Both Admin and Trainee Access
+Route::middleware(['auth:trainee', 'company.context'])->group(function () {
     Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
-    Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit'); // Show edit form
-    Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update'); // Update attendance
-    Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy'); // Delete attendance
-    //Route::get('/attendance/{trainee_id}', [AttendanceController::class, 'showAttendance'])->name('attendance.show');
-    //Route::get('/attendance/{traineeId?}', [AttendanceController::class, 'index'])->name('attendance.index');
-    // Route::post('/attendance/store', [AttendanceController::class, 'storeAttendanceData'])->name('attendance.store');
-    // });
+    Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
+    Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
+    Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
+});
+
+Route::middleware(['auth:web', 'company.context'])->group(function () {
+    Route::get('/admin/attendance', [AttendanceController::class, 'adminIndex'])->name('attendance.admin_index');
+});
 
 
 // // Attendance Routes
@@ -104,6 +106,7 @@ Route::get('/reports/generate', [ReportController::class, 'generate'])->name('re
 
 // Trainer Routes
 //Route::middleware('auth:trainee')->group(function () {
+Route::middleware('company.context')->group(function () {
     Route::middleware('auth')->group(function () {
     Route::get('/trainers', [TrainerController::class, 'index'])->name('trainers.index');
     Route::get('/trainers/create', [TrainerController::class, 'create'])->name('trainers.create');
@@ -118,8 +121,10 @@ Route::get('/reports/generate', [ReportController::class, 'generate'])->name('re
     Route::get('/trainers/plate-number-by-car/{carId}', [TrainerController::class, 'getPlateNumberByCarId']);
 
 });
+});
 // Training Car Routes
 // Route::middleware('auth:trainee')->group(function () {
+Route::middleware('company.context')->group(function () {
     Route::middleware('auth')->group(function () {
     Route::get('/training_cars', [TrainingCarController::class, 'index'])->name('training_cars.index');
     Route::get('/training_cars/create', [TrainingCarController::class, 'create'])->name('training_cars.create');
@@ -131,9 +136,11 @@ Route::get('/reports/generate', [ReportController::class, 'generate'])->name('re
     Route::get('/training_cars/export-pdf', [TrainingCarController::class, 'exportPdf'])->name('training_cars.exportPdf');
     Route::post('/training_cars/export-excel', [TrainingCarController::class, 'exportExcel'])->name('training_cars.exportExcel');
 });
+});
 
 // Payment Routes
 // Route::middleware('auth:trainee')->group(function () {
+Route::middleware('company.context')->group(function () {
     Route::middleware('auth')->group(function () {
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::get('/payments/create', [PaymentController::class, 'create'])->name('payments.create');
@@ -147,7 +154,10 @@ Route::get('/reports/generate', [ReportController::class, 'generate'])->name('re
     Route::get('payments/{payment}/history', [PaymentController::class, 'showPaymentHistory'])->name('payments.history');
     Route::get('/payments/export-pdf', [PaymentController::class, 'exportPdf'])->name('payments.exportPdf');
     Route::post('/payments/export-excel', [PaymentController::class, 'exportExcel'])->name('payments.exportExcel');
-    Route::get('/trainee-info', [PaymentController::class, 'fetchTrainee']);});
+    Route::get('/trainee-info', [PaymentController::class, 'fetchTrainee']);
+});
+});
+
     Route::get('/test', function (Request $request) {
         \Log::info('Test route filter parameter:', ['filter' => $request->query('filter')]);
         return 'Check logs for filter parameter';
@@ -183,6 +193,7 @@ Route::post('/car_category/export-excel', [CarCategoryController::class, 'export
 });
 
 // theoretical_class Routes
+Route::middleware('company.context')->group(function () {
 Route::get('/trainer_assigning', [TrainerAssigningController::class, 'index'])->name('trainer_assigning.index'); // List all trainer_assigning
 Route::get('/trainer_assigning/create', [TrainerAssigningController::class, 'create'])->name('trainer_assigning.create'); // Show form to create a new CarCategory
 Route::post('/trainer_assigning', [TrainerAssigningController::class, 'store'])->name('trainer_assigning.store'); // Store a new CarCategory
@@ -206,6 +217,7 @@ Route::delete('/theoretical_class/{theoretical_class}', [TheoreticalClassControl
 Route::get('/trainers/{trainerName}/details', [TrainerController::class, 'getDetails']);
 Route::get('/theoretical_class/export-pdf', [TheoreticalClassController::class, 'exportPdf'])->name('theoretical_class.exportPdf');
 Route::post('/theoretical_class/export-excel', [TheoreticalClassController::class, 'exportExcel'])->name('theoretical_class.exportExcel');
+});
 
 Route::middleware('company.context')->group(function () {
 Route::resource('classes', ClassesController::class )->except('show');
@@ -213,19 +225,9 @@ Route::get('/classes/export-pdf', [ClassesController::class, 'exportPdf'])->name
 Route::post('/classes/export-excel', [ClassesController::class, 'exportExcel'])->name('classes.exportExcel');
 });
 
-
-// Auth routes (if you are using built-in authentication)
-Auth::routes();
-
-// Route to display the account management page
-Route::get('/account/manage', [AccountController::class, 'manage'])->name('account.manage');
-
-// Route to handle the account update
-Route::put('/account/update', [AccountController::class, 'update'])->name('account.update');
-
-
 // Route::middleware('auth:admin')->group(function () {
-    Route::middleware('auth:web')->group(function () {
+Route::middleware('company.context')->group(function () {
+Route::middleware('auth:web')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/create', [NotificationController::class, 'create'])->name('notifications.create');
     Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
@@ -233,11 +235,23 @@ Route::put('/account/update', [AccountController::class, 'update'])->name('accou
     Route::put('/notifications/{notification}', [NotificationController::class, 'update'])->name('notifications.update');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 });
-
+});
+Route::middleware('company.context')->group(function () {
 Route::middleware('auth:trainee')->group(function () {
     Route::get('/student/notifications', [NotificationController::class, 'index'])->name('student.notifications');
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 });
+});
+
+
+
+// Auth routes (if you are using built-in authentication)
+Auth::routes();
+
+// Route to display the account management page
+Route::get('/account/manage', [AccountController::class, 'manage'])->name('account.manage');
+Route::put('/account/update', [AccountController::class, 'update'])->name('account.update');
+
 
 Route::get('/exams', [ExamController::class, 'index'])->name('exams.index');
 Route::post('/exam/callback', [ExamController::class, 'handleExamCallback'])->name('exam.callback');
@@ -250,7 +264,7 @@ Route::middleware('auth:trainee')->group(function () {
 });
 
 //Route::get('/exams/callback', [ExamController::class, 'handleExamCallback'])->name('exams.callback');
-
+Route::middleware('company.context')->group(function () {
 Route::get('/', [UserController::class, 'index'])->name('users.index'); // Display a list of users
 Route::get('/create', [UserController::class, 'create'])->name('users.create'); // Show the form to create a new user
 Route::post('/', [UserController::class, 'store'])->name('users.store'); // Store a newly created user
@@ -258,3 +272,4 @@ Route::get('/{user}', [UserController::class, 'show'])->name('users.show'); // D
 Route::get('/{user}/edit', [UserController::class, 'edit'])->name('users.edit'); // Show the form to edit an existing user
 Route::put('/{user}', [UserController::class, 'update'])->name('users.update'); // Update a specific user
 Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy'); // Delete a specific user
+});

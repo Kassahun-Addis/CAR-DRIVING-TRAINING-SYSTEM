@@ -17,11 +17,15 @@ use Mpdf\Mpdf;
 class TrainerController extends Controller
 {
 
-public function exportPdf()
+    public function exportPdf()
     {
-        $trainers = Trainer::all();
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
+
+        // Fetch trainers specific to the current company
+        $trainers = Trainer::where('company_id', $companyId)->get();
         $html = view('Trainer.pdf', compact('trainers'))->render();
-    
+
         // Initialize Mpdf and configure custom font settings
         $mpdf = new Mpdf([
             'format' => 'A4-L', // Landscape orientation
@@ -34,15 +38,21 @@ public function exportPdf()
             ],
             'default_font_size' => 10, // Set the default font size
         ]);
-    
+
         $mpdf->WriteHTML($html);
-    
+
         return $mpdf->Output('trainers_list.pdf', 'D');
     }
 
     public function exportExcel()
     {
-        return Excel::download(new TrainersExport, 'trainers_list.xlsx');
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
+
+        // Fetch trainers specific to the current company
+        $trainers = Trainer::where('company_id', $companyId)->get();
+
+        return Excel::download(new TrainersExport($trainers), 'trainers_list.xlsx');
     }
 
        // TrainerController.php
@@ -89,26 +99,30 @@ public function toggleStatus(Request $request, Trainer $trainer)
     }
 
     public function index(Request $request)
-{
-    $search = $request->input('search'); // Get the search term
-    $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
+    {
+        $search = $request->input('search'); // Get the search term
+        $perPage = $request->input('perPage', 10); // Get the number of items per page, default to 10
 
-    // Query the trainers with search and pagination
-    $trainers = Trainer::when($search, function ($query) use ($search) {
-        return $query->where('trainer_name', 'like', '%' . $search . '%')
-                     ->orWhere('phone_number', 'like', '%' . $search . '%')
-                     ->orWhere('email', 'like', '%' . $search . '%')
-                     ->orWhere('experience', 'like', '%' . $search . '%')
-                     ->orWhere('training_type', 'like', '%' . $search . '%')
-                     ->orWhere('plate_no', 'like', '%' . $search . '%')
-                     ->orWhere('category', 'like', '%' . $search . '%')
-                     ->orWhere('car_name', 'like', '%' . $search . '%');
-    })->paginate($perPage);
+        // Get the current company ID from the application context
+        $companyId = app('currentCompanyId');
 
-    return view('trainer.index', compact('trainers'));
-}
+        // Query the trainers with search, pagination, and company filter
+        $trainers = Trainer::where('company_id', $companyId)
+            ->when($search, function ($query) use ($search) {
+                return $query->where('trainer_name', 'like', '%' . $search . '%')
+                             ->orWhere('phone_number', 'like', '%' . $search . '%')
+                             ->orWhere('email', 'like', '%' . $search . '%')
+                             ->orWhere('experience', 'like', '%' . $search . '%')
+                             ->orWhere('training_type', 'like', '%' . $search . '%')
+                             ->orWhere('plate_no', 'like', '%' . $search . '%')
+                             ->orWhere('category', 'like', '%' . $search . '%')
+                             ->orWhere('car_name', 'like', '%' . $search . '%');
+            })
+            ->paginate($perPage);
 
-    // Show the form for creating a new trainer
+        return view('trainer.index', compact('trainers'));
+    }
+
     public function create()
     {
         $trainingCars = TrainingCar::all(); // Fetch all training cars
@@ -116,24 +130,21 @@ public function toggleStatus(Request $request, Trainer $trainer)
         return view('trainer.create', compact('trainingCars', 'carCategories')); // Return create view with car categories
     }
 
-    
     public function store(Request $request)
-{
-    // Log the incoming request data
-    \Log::info('Incoming request data:', $request->all());
+    {
+        $request->validate([
+            'trainer_name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:20',
+            'email' => 'required|email|unique:trainers,email',
+            'experience' => 'required|integer',
+            'training_type' => 'required|string|in:Theoretical,Practical,Both',
+            'plate_no' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
+            'category' => $request->training_type !== 'Theoretical' ? 'required|exists:car_categories,id' : 'nullable',
+            'car_name' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
+        ]);
 
-    // Validate based on the training type
-    $request->validate([
-        'trainer_name' => 'required|string|max:255',
-        'phone_number' => 'required|string|max:20',
-        'email' => 'required|email|unique:trainers,email',
-        'experience' => 'required|integer',
-        'training_type' => 'required|string|in:Theoretical,Practical,Both',
-        // Only validate these fields if the training type is not 'Theoretical'
-        'plate_no' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
-        'category' => $request->training_type !== 'Theoretical' ? 'required|exists:car_categories,id' : 'nullable',
-        'car_name' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
-    ]);
+    // Get company_id from the logged-in user's profile
+    $company_id = auth()->user()->company_id;
 
     // Fetch the car category name based on the provided category ID if applicable
     $carCategory = $request->training_type !== 'Theoretical'
@@ -153,54 +164,63 @@ public function toggleStatus(Request $request, Trainer $trainer)
         'plate_no' => $request->training_type !== 'Theoretical' ? $request->plate_no : null,
         'car_name' => $request->training_type !== 'Theoretical' ? $request->car_name : null,
         'category' => $request->training_type !== 'Theoretical' ? $carCategory->car_category_name : null,
-        'training_type' => $request->training_type, // Save the training type
+        'training_type' => $request->training_type,
+        'company_id' => $company_id, // Set the company ID
     ]);
 
-    return redirect()->route('trainers.index')->with('success', 'Trainer registered successfully!');
-}
+        return redirect()->route('trainers.index')->with('success', 'Trainer registered successfully!');
+    }
 
     // Show the form for editing the specified trainer
     public function edit(Trainer $trainer)
     {
+        // Ensure the trainer belongs to the current company
+        $this->authorizeCompany($trainer);
+
         $trainingCars = TrainingCar::all(); // Fetch all training cars
         $carCategories = CarCategory::all(); // Fetch all car categories
         return view('trainer.edit', compact('trainer', 'trainingCars', 'carCategories')); // Return edit view with car categories
     }
 
     public function update(Request $request, Trainer $trainer)
-{
-    // Validate based on the training type
-    $request->validate([
-        'trainer_name' => 'required|string|max:255',
-        'phone_number' => 'required|string|max:20',
-        'email' => 'required|email|unique:trainers,email,' . $trainer->id,
-        'experience' => 'required|integer',
-        'training_type' => 'required|string|in:Theoretical,Practical,Both',
-        // Only validate these fields if the training type is not 'Theoretical'
-        'plate_no' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
-        'category' => $request->training_type !== 'Theoretical' ? 'required|exists:car_categories,id' : 'nullable',
-        'car_name' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
-    ]);
+    {
+        $request->validate([
+            'trainer_name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:20',
+            'email' => 'required|email|unique:trainers,email,' . $trainer->id,
+            'experience' => 'required|integer',
+            'training_type' => 'required|string|in:Theoretical,Practical,Both',
+            'plate_no' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
+            'category' => $request->training_type !== 'Theoretical' ? 'required|exists:car_categories,id' : 'nullable',
+            'car_name' => $request->training_type !== 'Theoretical' ? 'required|string|max:255' : 'nullable',
+        ]);
 
-    // Fetch the car category name if applicable
-    $carCategory = $request->training_type !== 'Theoretical'
-        ? \DB::table('car_categories')->where('id', $request->category)->first()
-        : null;
+        // Ensure the trainer belongs to the current company
+        $this->authorizeCompany($trainer);
 
-    // Update the Trainer
-    $trainer->update([
-        'trainer_name' => $request->trainer_name,
-        'phone_number' => $request->phone_number,
-        'email' => $request->email,
-        'experience' => $request->experience,
-        'plate_no' => $request->training_type !== 'Theoretical' ? $request->plate_no : null,
-        'car_name' => $request->training_type !== 'Theoretical' ? $request->car_name : null,
-        'category' => $request->training_type !== 'Theoretical' ? $carCategory->car_category_name : null,
-        'training_type' => $request->training_type, // Update the training type
-    ]);
+        // Get company_id from the logged-in user's profile
+        $company_id = auth()->user()->company_id;
 
-    return redirect()->route('trainers.index')->with('success', 'Trainer updated successfully!');
-}
+        // Fetch the car category name if applicable
+        $carCategory = $request->training_type !== 'Theoretical'
+            ? \DB::table('car_categories')->where('id', $request->category)->first()
+            : null;
+
+        // Update the Trainer
+        $trainer->update([
+            'trainer_name' => $request->trainer_name,
+            'phone_number' => $request->phone_number,
+            'email' => $request->email,
+            'experience' => $request->experience,
+            'plate_no' => $request->training_type !== 'Theoretical' ? $request->plate_no : null,
+            'car_name' => $request->training_type !== 'Theoretical' ? $request->car_name : null,
+            'category' => $request->training_type !== 'Theoretical' ? $carCategory->car_category_name : null,
+            'training_type' => $request->training_type,
+            'company_id' => $company_id, // Update the company ID
+        ]);
+
+        return redirect()->route('trainers.index')->with('success', 'Trainer updated successfully!');
+    }
 
 public function getCarsByCategory($categoryId)
 {
@@ -240,12 +260,18 @@ public function getPlateNumberByCarId($carId)
 
 public function destroy(Trainer $trainer)
 {
-    // Delete the trainer from the database
-    $trainer->delete();
+    // Ensure the trainer belongs to the current company
+    $this->authorizeCompany($trainer);
 
-    // Redirect back to the trainers list with a success message
-    return redirect()->route('trainers.index')
-        ->with('success', 'Trainer deleted successfully.');
+    $trainer->delete();
+    return redirect()->route('trainers.index')->with('success', 'Trainer deleted successfully.');
 }
 
+private function authorizeCompany(Trainer $trainer)
+{
+    $companyId = app('currentCompanyId');
+    if ($trainer->company_id !== $companyId) {
+        abort(403, 'Unauthorized action.');
+    }
+}
 }

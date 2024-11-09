@@ -13,7 +13,7 @@
             </ul>
         </div>
     @endif
-    @if(@success)
+    @if(session('success'))
     <div class="alert alert-success" id="success-message">
         {{ session('success') }}
     </div>

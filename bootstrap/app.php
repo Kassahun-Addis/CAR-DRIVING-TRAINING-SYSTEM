@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
+            'adminOrTrainee' => \App\Http\Middleware\AdminOrTrainee::class,
+        ]);
+        $middleware->alias([
             'company.context' => \App\Http\Middleware\SetCompanyContext::class,
         ]);
     })

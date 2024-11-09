@@ -13,6 +13,8 @@ class CreatePaymentsTable extends Migration
             $table->string('full_name'); // Updated to underscore
             $table->string('tin_no')->nullable(); // Updated to underscore
             $table->string('custom_id', 5)->nullable(); // Updated to underscore
+            $table->string('company_id')->nullable(); // Foreign key for Company
+            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('set null'); // Foreign key for Company
             $table->date('payment_date')->nullable(false); // Updated to underscore
             $table->enum('payment_method', ['Cash', 'Bank', 'Telebirr'])->nullable(false); // Updated to underscore
             $table->foreignId('bank_id')->nullable() // Updated to underscore

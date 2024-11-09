@@ -62,18 +62,18 @@
                 <th>No</th>
                 <th>Car Category Name</th>
                 <th>Price</th>
-                @if(Auth::check() && Auth::user()->user_type === 'admin')
+                @if(Auth::check() && Auth::user()->role === 'admin')
                 <th>Actions</th>
                 @endif
             </tr>
         </thead>
         <tbody>
-            @foreach ($CarCategorys as $CarCategory)
+            @foreach ($CarCategorys as $key => $CarCategory)
                 <tr>
-                    <td>{{ $CarCategory->id }}</td>
+                    <td>{{ $key + 1 }}</td>
                     <td>{{ $CarCategory->car_category_name }}</td>
                     <td>{{ number_format($CarCategory->price, 2) }}</td>
-                    @if(Auth::check() && Auth::user()->user_type === 'admin')
+                    @if(Auth::check() && Auth::user()->role === 'admin')
 
                     <td class="text-nowrap">
                         <a href="{{ route('car_category.edit', $CarCategory) }}" class="btn btn-warning">Edit</a>

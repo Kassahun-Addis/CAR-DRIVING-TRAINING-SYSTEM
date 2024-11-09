@@ -16,6 +16,7 @@ class TrainingCar extends Model
         'model',
         'year',
         'plate_no',
+        'company_id'
     ];
 
 // public function category()
@@ -28,5 +29,10 @@ class TrainingCar extends Model
 // {
 //     return $this->belongsTo(CarCategory::class, 'category');
 // }
+
+public function company()
+{
+    return $this->belongsTo(Company::class, 'company_id');
+}
 
  }

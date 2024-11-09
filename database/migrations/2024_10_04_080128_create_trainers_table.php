@@ -10,6 +10,8 @@ class CreateTrainersTable extends Migration
 {
     Schema::create('trainers', function (Blueprint $table) {
         $table->id(); // Primary key
+        $table->string('company_id')->nullable();
+        $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('set null');
         $table->string('trainer_name'); // Trainer's name
         $table->string('phone_number', 20); // Trainer's phone number
         $table->string('email')->unique(); // Trainer's email, must be unique

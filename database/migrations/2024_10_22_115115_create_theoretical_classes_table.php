@@ -15,6 +15,8 @@ class CreateTheoreticalClassesTable extends Migration
     {
         Schema::create('theoretical_classes', function (Blueprint $table) {
             $table->id();  // Primary key
+            $table->string('company_id')->nullable();
+            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('set null');
             $table->string('class_name');  // Name of the class
             $table->string('trainee_name');  // Class description
             $table->date('start_date');  // Start date of the class

@@ -11,13 +11,19 @@ class Notification extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
+     'title',
      'content', 
-     'is_active'
+     'is_active',
+     'company_id'
     ];
 
     public function users()
        {
            return $this->belongsToMany(Trainee::class, 'notification_user', 'notification_id', 'trainee_id')->withTimestamps();
        }
+       
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
 }

@@ -15,5 +15,11 @@ class TheoreticalClass extends Model
         'trainer_name',
         'start_date',
         'end_date',
+        'company_id'
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
 }

@@ -18,8 +18,13 @@
             </ul>
         </div>
     @endif
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
 
-    <form action="{{ route('companies.update', $company->id) }}" method="POST">
+    <form action="{{ route('companies.update', $company->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
@@ -67,5 +72,9 @@
         <a href="{{ route('companies.index') }}" class="btn btn-secondary">Back to list</a>
     </form>
 </div>
-
+<script>
+    setTimeout(function() {
+        $('#success-message').fadeOut('slow');
+    }, 5000); // 5000 milliseconds = 5 seconds
+</script>
 @endsection

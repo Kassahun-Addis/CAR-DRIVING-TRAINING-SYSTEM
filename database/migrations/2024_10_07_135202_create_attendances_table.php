@@ -11,6 +11,8 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id('attendance_id'); // Primary key
             $table->foreignId('trainee_id')->constrained('trainees')->onDelete('cascade'); // Foreign key for Trainee
+            $table->string('company_id')->nullable(); // Foreign key for Company
+            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('set null'); // Foreign key for Company
             $table->date('date')->nullable(false); // Attendance date
             $table->time('start_time')->nullable(false); // Start time of the session
             $table->time('finish_time')->nullable(false); // Finish time of the session

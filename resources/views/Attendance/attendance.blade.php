@@ -31,6 +31,12 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger" id="error-alert">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="form-section">
         <form action="{{ route('attendance.store') }}" method="POST">
             @csrf
