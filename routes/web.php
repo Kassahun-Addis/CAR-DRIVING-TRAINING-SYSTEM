@@ -92,18 +92,6 @@ Route::middleware(['auth:web', 'company.context'])->group(function () {
     Route::get('/admin/attendance', [AttendanceController::class, 'adminIndex'])->name('attendance.admin_index');
 });
 
-
-// // Attendance Routes
-// Route::middleware('auth')->group(function () {
-//     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
-//     Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
-//     Route::post('/attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
-//     Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
-//     Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
-//     Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
-//     Route::get('/attendance/{trainee_id}', [AttendanceController::class, 'showAttendance'])->name('attendance.show');
-// });
-
 // Trainer Routes
 //Route::middleware('auth:trainee')->group(function () {
 Route::middleware('company.context')->group(function () {
@@ -170,16 +158,6 @@ Route::get('/banks/export-pdf', [BankController::class, 'exportPdf'])->name('ban
 Route::post('/banks/export-excel', [BankController::class, 'exportExcel'])->name('banks.exportExcel');
 });
 
-
-// Bank Routes
-// Route::get('/banks', [BankController::class, 'index'])->name('banks.index'); // List all banks
-// Route::get('/banks/create', [BankController::class, 'create'])->name('banks.create'); // Show form to create a new bank
-// Route::post('/banks', [BankController::class, 'store'])->name('banks.store'); // Store a new bank
-// Route::get('/banks/{bank}', [BankController::class, 'show'])->name('banks.show'); // Show a specific bank
-// Route::get('/banks/{bank}/edit', [BankController::class, 'edit'])->name('banks.edit'); // Show form to edit a specific bank
-// Route::put('/banks/{bank}', [BankController::class, 'update'])->name('banks.update'); // Update a specific bank
-// Route::delete('/banks/{bank}', [BankController::class, 'destroy'])->name('banks.destroy'); // Delete a specific bank
-
 // Bank Routes
 Route::middleware('company.context')->group(function () {
 Route::get('/car_category', [CarCategoryController::class, 'index'])->name('car_category.index'); // List all car_category
@@ -243,8 +221,6 @@ Route::middleware('auth:trainee')->group(function () {
 });
 });
 
-
-
 // Auth routes (if you are using built-in authentication)
 Auth::routes();
 
@@ -252,15 +228,24 @@ Auth::routes();
 Route::get('/account/manage', [AccountController::class, 'manage'])->name('account.manage');
 Route::put('/account/update', [AccountController::class, 'update'])->name('account.update');
 
-
+Route::middleware('company.context')->group(function () {
 Route::get('/exams', [ExamController::class, 'index'])->name('exams.index');
 Route::post('/exam/callback', [ExamController::class, 'handleExamCallback'])->name('exam.callback');
+Route::get('/exam/user/quizquestion', [ExamController::class, 'showQuizQuestion'])->name('quizquestion');
 
 
 Route::middleware('auth:trainee')->group(function () {
     Route::get('/student/exam', [ExamController::class, 'redirectToExam'])->name('student.exam');
     Route::get('/exams/take/{traineeId}', [ExamController::class, 'takeExam'])->name('exams.take');
     Route::get('/exams/results', [ExamController::class, 'showResults'])->name('exams.results');
+});
+});
+
+// In your routes/web.php or routes/api.php
+    Route::post('/api/save-exam-score', [ExamController::class, 'saveExamScore']);
+
+Route::get('/test-form', function () {
+    return view('test-form');
 });
 
 //Route::get('/exams/callback', [ExamController::class, 'handleExamCallback'])->name('exams.callback');

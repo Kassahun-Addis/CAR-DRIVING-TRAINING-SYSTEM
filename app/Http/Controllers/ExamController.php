@@ -31,16 +31,12 @@ class ExamController extends Controller
     
     public function redirectToExam()
 {
-    Log::info('Redirecting to external exam site');
-    $traineeId = auth()->id(); // Get the authenticated trainee's ID
+    // Assuming the PHP exam system is accessible at this URL
+    $examUrl = url('/exam/index.php'); // Adjust the path if necessary
 
-    // The external exam URL with trainee ID as a query parameter
-    $examUrl = 'https://ethioautosafety.com/educations/qsm_quiz?trainee_id=' . $traineeId;
-
-    // Redirect the trainee to the external exam site
+    // Redirect the trainee to the PHP exam system
     return redirect()->away($examUrl);
 }
- // ExamController.php
 
  public function handleExamCallback(Request $request)
 {
@@ -88,27 +84,6 @@ class ExamController extends Controller
     }
 }
 
-//     public function redirectToExam()
-// {
-//     // Simulate taking an exam locally
-//     $traineeId = auth()->id(); // Assuming the trainee is authenticated
-//     return $this->takeExam($traineeId);
-// }
-
-    // public function fetchAndStoreExamResults($traineeId)
-    // {
-    //     // Mock response for local testing
-    //     $mockExamResult = 85; // Example score to simulate
-
-    //     // Store the mock exam result in the local database
-    //     $trainee = Trainee::find($traineeId);
-    //     if ($trainee) {
-    //         $trainee->exams()->create([
-    //             'score' => $mockExamResult,
-    //         ]);
-    //     }
-    // }
-
     public function index(Request $request)
 {
     $search = $request->input('search'); // Get the search term
@@ -148,6 +123,45 @@ class ExamController extends Controller
         $exams = Exam::with('trainee')->where('trainee_id', $traineeId)->get(); // Eager load trainee relationship
 
         return view('exams.results', compact('exams')); // Pass the exams to the view
+    }
+
+    public function saveExamScore(Request $request)
+    {
+        Log::info('Save exam score hit');
+        Log::info('Save exam score received:', ['data' => $request->all()]);
+        $traineeId = $request->input('trainee_id');
+        $score = $request->input('score');
+        $companyId = $request->input('company_id');
+ 
+        if (!$traineeId || !$score) {
+            return response()->json(['error' => 'Invalid data'], 400);
+        }
+ 
+        // Assuming you have a Trainee model and Exam model
+        $trainee = Trainee::find($traineeId);
+        if (!$trainee) {
+            return response()->json(['error' => 'Trainee not found'], 404);
+        }
+ 
+        try {
+            Exam::create([
+                'trainee_id' => $traineeId,
+                'score' => $score,
+                'company_id' => $companyId,
+            ]);
+ 
+            return response()->json(['message' => 'Exam score saved successfully!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to save exam score'], 500);
+        }
+    }
+
+    public function showQuizQuestion()
+    {
+        // Fetch any necessary data from the database
+        // $questions = Question::all(); // Example: Fetch questions from the database
+
+        return view('exams.quizquestion'); // Pass data to the view if needed
     }
 
 }

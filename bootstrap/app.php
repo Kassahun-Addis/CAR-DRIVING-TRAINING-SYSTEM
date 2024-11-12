@@ -13,9 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'adminOrTrainee' => \App\Http\Middleware\AdminOrTrainee::class,
-        ]);
-        $middleware->alias([
             'company.context' => \App\Http\Middleware\SetCompanyContext::class,
+        ]);
+
+        // Add CSRF exclusion for specific routes here
+        $middleware->validateCsrfTokens(except: [
+            'api/save-exam-score',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
