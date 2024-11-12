@@ -48,7 +48,6 @@ if (mysqli_num_rows($sql) > 0) {
         $total = $_REQUEST['total'] ?? 0; // Default to 0 if not set
         $_SESSION['total'] = $total;
         // Display question image if it exists
-      
 
         // Initialize result variable
         $result = null; // Variable to store the result of the answer check
@@ -68,11 +67,8 @@ if (mysqli_num_rows($sql) > 0) {
                  // Store result as correct
             } else {
                 $result = 'Incorrect. Correct answer: ' . htmlspecialchars($correctAnswer); // Store result as incorrect with correct answer
-            }
-            
-        }
-
-      
+            }            
+        }      
         ?>
         
         <?php
@@ -86,7 +82,6 @@ echo '</div>'; // Close question-container
 ?>
 <head>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Add Font Awesome -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body{
             background-image: url('../image/93bgh.png');
@@ -151,6 +146,10 @@ echo '</div>'; // Close question-container
         #skipped-questions-list li:hover {
             background-color: green; /* Change background color on hover */
         }
+    #pass {
+        z-index: 1000; /* Ensure it's on top */
+        position: relative; /* Required for z-index to work */
+    }
     </style>
 </head>
 
@@ -192,7 +191,6 @@ echo '</div>'; // Close question-container
     let timeLeft = 60 * 50; // Set timer for 60 seconds
     const timerElement = document.getElementById('time'); // Assuming you have an element with id 'time' in the header
     document.getElementById('timer').style.display = 'block'; // Show the timer in the header
-
     // Start the timer
     const timer = setInterval(function() {
         if (timeLeft <= 0) {
@@ -230,19 +228,14 @@ echo '</div>'; // Close question-container
             
             document.getElementById('prevBtn').style.display = 'block';
             document.getElementById('nextBtn').style.display = 'none';
-            document.getElementById('submitBtn').style.display = 'block';
-            
-           
+            document.getElementById('submitBtn').style.display = 'block';                       
         }
         else{
             document.getElementById('prevBtn').style.display = 'block';
             document.getElementById('nextBtn').style.display = 'block';
             document.getElementById('submitBtn').style.display = 'none';
-            console.log(currentQuestion);
-            
-        }
-        
-       
+            console.log(currentQuestion);            
+        }            
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -269,27 +262,20 @@ echo '</div>'; // Close question-container
                 
                 document.getElementById('prevBtn').style.display = 'block';
                 document.getElementById('nextBtn').style.display = 'none';
-                document.getElementById('submitBtn').style.display = 'block';
-                
-               
+                document.getElementById('submitBtn').style.display = 'block';                               
             }
             else{
                 document.getElementById('prevBtn').style.display = 'block';
                 document.getElementById('nextBtn').style.display = 'block';
                 document.getElementById('submitBtn').style.display = 'none';
-                console.log(currentQuestion);
-                
-            }
-            
-           
+                console.log(currentQuestion);                
+            }                       
         }
 
         document.querySelector('.next-btn').addEventListener('click', function() {
       
             saveScore(); // Load the next question
         });
-
-       
 
         let skippedQuestions = []; // Array to store skipped question numbers
 
@@ -306,9 +292,7 @@ echo '</div>'; // Close question-container
             nextQuestion = currentQuestion + 1; // Increment the question number
             loadQuestion(nextQuestion);
             // Load the next question
-        });
-       
-        
+        });        
 
         // After loading the 50th question, display skipped questions
         if (currentQuestion >= 50) {
@@ -340,73 +324,82 @@ echo '</div>'; // Close question-container
                 }
             }
         }
-
         // Automatically load the next question
         nextQuestion = questionNumber + 1; // Increment the question number
         loadQuestion(nextQuestion); // Load the next question
     }
 
-
     document.addEventListener('DOMContentLoaded', function() {
-       const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
-       const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : null;
-       console.log('CSRF Token:', csrfToken); // This should log the actual token value
+    // Ensure the pass and scoretextbg elements are correctly selected
+    const pass = document.getElementById('pass');
+    const scoretextbg = document.getElementById('scoretextbg');
 
-       window.saveScore = function() {
-           let total = correctANS.length + wrongANS.length;
-           let correct = correctANS.length;
-           let wrong = wrongANS.length;
-           let score = correct;
-           let user = "<?php echo htmlspecialchars($_SESSION['name']); ?>";
-           let traineeId = 1; // Replace with actual trainee ID
-           let companyId = 2; // Replace with actual company ID
+    window.saveScore = function() {
+        let total = correctANS.length + wrongANS.length;
+        let correct = correctANS.length;
+        let wrong = wrongANS.length;
+        let score = correct;
+        let user = "<?php echo htmlspecialchars($_SESSION['name']); ?>";
+        let traineeId = <?php echo $_SESSION['trainee_id']; ?>;
+        let title = "<?php echo htmlspecialchars($tableName); ?>"; 
+    console.log("saveScore function called");
+        console.log("Checking pass/fail condition...");
+        if (correctANS.length * 2 >= 74) {
+            console.log("Pass condition met.");
+            pass.innerHTML = "😄😃Dear <?php echo htmlspecialchars($_SESSION['name']); ?>, you passed! 😄😃";
+            pass.style.display = 'block';
+            scoretextbg.style.backgroundImage = 'url(../image/pass.jpg)';
+        } else {
+            console.log("Fail condition met.");
+            pass.innerHTML = "😥😥Dear <?php echo htmlspecialchars($_SESSION['name']); ?>, you failed the exam. 😥😥";
+            pass.style.display = 'block';
+            scoretextbg.style.backgroundImage = 'url(../image/fail.jpg)';
+        }
+    console.log(pass); // Check if the element is correctly selected
+        // Ensure all fields are included and have default values
+        const payload = {
+            total: total || 0,
+            correct: correct || 0,
+            wrong: wrong || 0,
+            user: user || '',
+            title: title || '',
+            trainee_id: traineeId || 0,
+            score: score || 0,
+        };
 
-           console.log("Data to be sent:", { total, correct, wrong, user, title, traineeId, score, companyId });
+        console.log("Data to be sent:", payload);
 
-           fetch('http://127.0.0.1:8000/api/save-exam-score', {
-               method: 'POST',
-               headers: {
-                   'Content-Type': 'application/json',
-                   //'X-CSRF-TOKEN': csrfToken
-               },
-               body: JSON.stringify({
-                   total: total,
-                   correct: correct,
-                   wrong: wrong,
-                   user: user,
-                   title: title,
-                   trainee_id: traineeId,
-                   score: score,
-                   company_id: companyId
-               })
-           })
-           .then(response => {
-               if (!response.ok) {
-                   throw new Error('Network response was not ok: ' + response.statusText);
-               }
-               return response.json();
-           })
-           .then(data => {
-               console.log('Score saved successfully:', data);
-           })
-           .catch(error => {
-               console.error('Error saving score:', error);
-           });
-       };
+        fetch('http://127.0.0.1:8000/api/save-exam-score', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Score saved successfully:', data);
+        })
+        .catch(error => {
+            console.error('Error saving score:', error);
+        });
+    };
 
-       const submitButton = document.getElementById('submitBtn');
-       if (submitButton) {
-           submitButton.addEventListener('click', saveScore);
-       }
-   });
-
-
+    const submitButton = document.getElementById('submitBtn');
+    if (submitButton) {
+        submitButton.addEventListener('click', saveScore);
+    }
+});
 
 let skippedQuestions = []; // Initialize the skippedQuestions array
 
     function displayScore(total, correct, wrong, score, user,title) {
-        // Create a new XMLHttpRequest to send score data
-            
+        // Create a new XMLHttpRequest to send score data            
         document.getElementById('question-container').style.display = 'none';
         document.getElementById('scoretext').style.display = 'block'; // Display score
         document.getElementById('score').style.display = 'block';
@@ -422,7 +415,6 @@ let skippedQuestions = []; // Initialize the skippedQuestions array
         document.getElementById('submitBtn').style.display = 'none';
     }
 
-
     // Update the existing event listener for radio buttons
     document.querySelectorAll('input[type=radio]').forEach(radio => {
         radio.addEventListener('change', function() {
@@ -431,23 +423,18 @@ let skippedQuestions = []; // Initialize the skippedQuestions array
             sendUserChoice(questionNumber, userChoice, correctAnswer); // Call the function to send choice
             
             // Show score after question 50
-            
         });
     });
 
-
-            document.addEventListener("keydown", function(event) {
-                if ("1234".includes(event.key)) {
-                    var choiceId = "choice" + event.key; 
-                    document.getElementById(choiceId).checked = true;
-                    
-                }
-            });
+    document.addEventListener("keydown", function(event) {
+        if ("1234".includes(event.key)) {
+            var choiceId = "choice" + event.key; 
+            document.getElementById(choiceId).checked = true;
             
-        
-
+        }
+    });
+            
     // Assuming this array is populated with skipped question numbers
-
     function toggleSkippedQuestions() {
         const dropdown = document.getElementById('skipped-questions-dropdown');
         dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none'; // Toggle dropdown visibility

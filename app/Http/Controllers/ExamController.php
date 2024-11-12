@@ -126,35 +126,49 @@ class ExamController extends Controller
     }
 
     public function saveExamScore(Request $request)
-    {
-        Log::info('Save exam score hit');
-        Log::info('Save exam score received:', ['data' => $request->all()]);
-        $traineeId = $request->input('trainee_id');
-        $score = $request->input('score');
-        $companyId = $request->input('company_id');
- 
-        if (!$traineeId || !$score) {
-            return response()->json(['error' => 'Invalid data'], 400);
-        }
- 
-        // Assuming you have a Trainee model and Exam model
-        $trainee = Trainee::find($traineeId);
-        if (!$trainee) {
-            return response()->json(['error' => 'Trainee not found'], 404);
-        }
- 
-        try {
-            Exam::create([
-                'trainee_id' => $traineeId,
-                'score' => $score,
-                'company_id' => $companyId,
-            ]);
- 
-            return response()->json(['message' => 'Exam score saved successfully!'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to save exam score'], 500);
-        }
+{
+    Log::info('Save exam score hit');
+    Log::info('Save exam score received:', ['data' => $request->all()]);
+    
+    $traineeId = $request->input('trainee_id');
+    $score = $request->input('score');
+    $companyId = $request->input('company_id', null); // Optional
+
+    // Modify validation to explicitly check for null, allowing zero scores
+    if (is_null($traineeId) || is_null($score)) {
+        Log::error('Missing trainee_id or score in request', ['data' => $request->all()]);
+        return response()->json(['error' => 'Invalid data'], 400);
     }
+
+    // Check trainee existence
+    $trainee = Trainee::find($traineeId);
+    if (!$trainee) {
+        Log::error('Trainee not found', ['traineeId' => $traineeId]);
+        return response()->json(['error' => 'Trainee not found'], 404);
+    }
+
+    try {
+        Exam::create([
+            'trainee_id' => $traineeId,
+            'score' => $score, // This will now allow a score of 0
+            'company_id' => $companyId,
+        ]);
+
+        Log::info('Exam score saved successfully', [
+            'traineeId' => $traineeId,
+            'score' => $score
+        ]);
+
+        return response()->json(['message' => 'Exam score saved successfully!'], 200);
+    } catch (\Exception $e) {
+        Log::error('Error saving exam score', [
+            'error' => $e->getMessage(),
+            'traineeId' => $traineeId,
+            'score' => $score
+        ]);
+        return response()->json(['error' => 'Failed to save exam score'], 500);
+    }
+}
 
     public function showQuizQuestion()
     {

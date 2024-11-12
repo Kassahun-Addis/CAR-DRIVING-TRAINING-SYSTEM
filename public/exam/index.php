@@ -1,3 +1,35 @@
+<?php
+// Start the session at the very beginning
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+include('dbcon_trainee.php'); // Include the new trainee database connection
+
+if (!isset($_SESSION['trainee'])) {
+    if (isset($_POST['login'])) {
+        $email = mysqli_real_escape_string($conn_trainee, trim($_POST['email']));
+        $yellow_card = mysqli_real_escape_string($conn_trainee, trim($_POST['yellow_card']));
+
+        $sql = "SELECT * FROM trainees WHERE email='$email' AND yellow_card='$yellow_card' LIMIT 1";
+        $result = $conn_trainee->query($sql);
+
+        if ($result->num_rows == 1) {
+            $row = mysqli_fetch_assoc($result);
+            $_SESSION['trainee'] = true;
+            $_SESSION['trainee_id'] = $row['id'];
+            $_SESSION['name'] = $row['full_name'];
+            echo "<script> location.href='user/slide.html'; </script>";
+            exit;
+        } else {
+            $msg = "Invalid email or yellow card.";
+        }
+    }
+} else {
+    echo "<script> location.href='user/slide.html'; </script>";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,33 +103,7 @@
 
     <!--login section  start-->
     <div id="login" style="display: block;">
-        <?php
-        include('dbcon.php');
-       
-        if(!isset($_SESSION['ruser'])) {
-            if (isset($_REQUEST['rsignin'])) {
-                $remail = mysqli_real_escape_string($conn, trim($_REQUEST['remail']));
-                $rpassword = mysqli_real_escape_string($conn, trim($_REQUEST['rpassword']));
-                $sql = "select email,password from user where email='".$remail."' and password='".$rpassword."' limit 1";
-                $result = $conn->query($sql);
-                if($result->num_rows == 1) {
-                    $sql = "select name from user where email='".$remail."' and password='".$rpassword."' limit 1";
-                    $result = $conn->query($sql);
-                    $row = mysqli_fetch_assoc($result);
-                    $name = $row['name']; 
-                    $_SESSION['ruser'] = true;
-                    $_SESSION['remail'] = $remail;
-                    $_SESSION['name'] = $name;
-                    echo "<script> location.href='user/slide.html'; </script>";
-                    exit;
-                } else {
-                    $msg = "Enter valid email and password";
-                }      
-            }
-        } else {
-            echo "<script> location.href='user/slide.html'; </script>";
-        }
-        ?>
+    
         <div class="text-center mt-5">
             <div style="color: white; font-weight: bold; font-size: 40px;">Login to Exam Portal</div>
         </div>
@@ -106,16 +112,16 @@
                 <div class="col-sm-6 col-md-4 text-white" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 10px;">
                     <form action="" class="p-4 shadow-lg" method="POST" id="myForm">
                         <div class="form-group">
-                            <i class="fas fa-user mr-2"></i><label for="name" class="font-weight-bold">Email</label>
-                            <input type="text" name="remail" placeholder="Enter email" class="form-control">
+                            <i class="fas fa-user mr-2"></i><label for="email" class="font-weight-bold">Email</label>
+                            <input type="text" name="email" placeholder="Enter email" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <i class="fas fa-key mr-2"></i><label for="name" class="font-weight-bold">Password</label>
-                            <input type="password" name="rpassword" placeholder="Enter password" class="form-control">
+                            <i class="fas fa-id-card mr-2"></i><label for="yellow_card" class="font-weight-bold">Yellow Card</label>
+                            <input type="text" name="yellow_card" placeholder="Enter yellow card" class="form-control" required>
                         </div>
                         <div class="submit" style="display: flex;">
-                            <button class="btn btn-outline-danger p-1 font-weight-bold mr-5" name="rsignin">Submit</button>
-                            <div><a class="btn btn-outline-info ml-1" onclick="toggleRegistration()" >sign up</a></div>
+                            <button class="btn btn-outline-danger p-1 font-weight-bold mr-5" name="login">Submit</button>
+                            <div><a class="btn btn-outline-info ml-1" onclick="toggleRegistration()">Sign up</a></div>
                         </div>
                     </form>
                     <div class="alert"><?php if(isset($msg)) { echo $msg; } ?></div>
