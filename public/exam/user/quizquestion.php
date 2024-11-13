@@ -146,10 +146,14 @@ echo '</div>'; // Close question-container
         #skipped-questions-list li:hover {
             background-color: green; /* Change background color on hover */
         }
-    #pass {
-        z-index: 1000; /* Ensure it's on top */
-        position: relative; /* Required for z-index to work */
-    }
+        #pass, #scoretext, #wrong, #skipped, #score {
+            font-size: 24px;
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -164,6 +168,7 @@ echo '</div>'; // Close question-container
         <div id="scoretextbg" ><img src="../image/fail.jpg" alt="93" style="width: 30%; height: 30%; object-fit: cover;  opacity: 0.5; z-index: -1;margin-left:200px"></div>
         
 </div>
+
 <p style="font-size: 24px; color: green; font-weight: bold; margin: 0; opacity: 1; display: inline-flex; position: absolute; top: 0; right: -230px;" id="skipped-count" title="Number of skipped questions" onclick="toggleSkippedQuestions()">
     <img src="../image/skip.png" alt="93" style="width: 30px; height: 30px; object-fit: cover; margin-right: 10px; border:2px solid red; border-radius: 50%; background-color: red;"><span id="skippedc">0</span>
 </p>
@@ -180,6 +185,7 @@ echo '</div>'; // Close question-container
     var score = 1;
     let correctANS = [];
     let wrongANS = [];
+    let skippedQuestions = [];
     let title = "<?php echo htmlspecialchars($tableName); ?>"; 
     var nextQuestion = "";
     let currentQuestion = <?php echo $currentQuestion; ?>; 
@@ -330,34 +336,39 @@ echo '</div>'; // Close question-container
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-    // Ensure the pass and scoretextbg elements are correctly selected
-    const pass = document.getElementById('pass');
-    const scoretextbg = document.getElementById('scoretextbg');
+        const pass = document.getElementById('pass');
+        const scoretextbg = document.getElementById('scoretextbg');
+        // const scoretext = document.getElementById('scoretext');
 
-    window.saveScore = function() {
-        let total = correctANS.length + wrongANS.length;
-        let correct = correctANS.length;
-        let wrong = wrongANS.length;
-        let score = correct;
-        let user = "<?php echo htmlspecialchars($_SESSION['name']); ?>";
-        let traineeId = <?php echo $_SESSION['trainee_id']; ?>;
-        let title = "<?php echo htmlspecialchars($tableName); ?>"; 
-    console.log("saveScore function called");
-        console.log("Checking pass/fail condition...");
-        if (correctANS.length * 2 >= 74) {
-            console.log("Pass condition met.");
-            pass.innerHTML = "😄😃Dear <?php echo htmlspecialchars($_SESSION['name']); ?>, you passed! 😄😃";
-            pass.style.display = 'block';
-            scoretextbg.style.backgroundImage = 'url(../image/pass.jpg)';
-        } else {
-            console.log("Fail condition met.");
-            pass.innerHTML = "😥😥Dear <?php echo htmlspecialchars($_SESSION['name']); ?>, you failed the exam. 😥😥";
-            pass.style.display = 'block';
-            scoretextbg.style.backgroundImage = 'url(../image/fail.jpg)';
-        }
-    console.log(pass); // Check if the element is correctly selected
-        // Ensure all fields are included and have default values
-        const payload = {
+        window.saveScore = function() {
+            let total = correctANS.length + wrongANS.length;
+            let correct = correctANS.length;
+            let wrong = wrongANS.length;
+            let skipped = skippedQuestions.length;
+            let score = correct;
+            let user = "<?php echo htmlspecialchars($_SESSION['name']); ?>";
+            let traineeId = <?php echo isset($_SESSION['trainee_id']) ? $_SESSION['trainee_id'] : 'null'; ?>;
+
+
+            console.log("saveScore function called");
+            console.log("Total:", total, "Correct:", correct, "Wrong:", wrong);
+
+            if (correct * 2 >= 74) {
+                pass.innerHTML = "😄😃Dear <?php echo htmlspecialchars($_SESSION['name']); ?>, you passed! 😄😃";
+                scoretextbg.style.backgroundImage = 'url(../image/pass.jpg)';
+                pass.style.display = 'block';
+                scoretext.style.display = 'block'; // Show the scoretext container
+            } else {
+                pass.innerHTML = "😥😥Dear <?php echo htmlspecialchars($_SESSION['name']); ?>, you failed the exam. 😥😥";
+                scoretextbg.style.backgroundImage = 'url(../image/fail.jpg)';
+                pass.style.display = 'block';
+                scoretext.style.display = 'block'; // Show the scoretext container
+            }
+
+            console.log("Pass message displayed:", pass.innerHTML);
+
+            // Send data using fetch
+            const payload = {
             total: total || 0,
             correct: correct || 0,
             wrong: wrong || 0,
@@ -368,48 +379,50 @@ echo '</div>'; // Close question-container
         };
 
         console.log("Data to be sent:", payload);
-
+        
         fetch('http://127.0.0.1:8000/api/save-exam-score', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok: ' + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Score saved successfully:', data);
-        })
-        .catch(error => {
-            console.error('Error saving score:', error);
-        });
-    };
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Score saved successfully:', data);
+                displayScore(total, correct, wrong, score, user, title);
+            })
+            .catch(error => {
+                console.error('Error saving score:', error);
+            });
+        };
 
-    const submitButton = document.getElementById('submitBtn');
-    if (submitButton) {
-        submitButton.addEventListener('click', saveScore);
-    }
-});
+        const submitButton = document.getElementById('submitBtn');
+        if (submitButton) {
+            submitButton.addEventListener('click', saveScore);
+        }
+    });
 
-let skippedQuestions = []; // Initialize the skippedQuestions array
-
+   
     function displayScore(total, correct, wrong, score, user,title) {
         // Create a new XMLHttpRequest to send score data            
         document.getElementById('question-container').style.display = 'none';
         document.getElementById('scoretext').style.display = 'block'; // Display score
         document.getElementById('score').style.display = 'block';
         document.getElementById('wrong').style.display = 'block';
+        // document.getElementById('skipped').style.display = 'block';
         document.getElementById('score').innerHTML = 'በትክክል የተመለሱ: ' + correctANS.length;
         document.getElementById('wrong').innerHTML = 'በትክክልያልተመለሱ: ' + wrongANS.length;
         document.getElementById('skipped').innerHTML = 'የተዘለሉ ጥያቂዎች: ' + skippedQuestions.length;
 
         console.log('correctANS: ' + correctANS.length);
         console.log('wrongANS: ' + wrongANS.length);
+        console.log('skippedQuestions: ' + skippedQuestions.length);
         document.getElementById('prevBtn').style.display = 'none';
         document.getElementById('nextBtn').style.display = 'none';
         document.getElementById('submitBtn').style.display = 'none';
@@ -421,8 +434,6 @@ let skippedQuestions = []; // Initialize the skippedQuestions array
             const questionNumber = this.name.match(/\d+/)[0]; // Extract question number from name
             const userChoice = this.value; // Get the selected choice
             sendUserChoice(questionNumber, userChoice, correctAnswer); // Call the function to send choice
-            
-            // Show score after question 50
         });
     });
 

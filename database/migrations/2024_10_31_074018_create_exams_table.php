@@ -13,6 +13,9 @@ class CreateExamsTable extends Migration
             $table->unsignedBigInteger('trainee_id');
             $table->string('company_id');
             $table->integer('score');
+            $table->integer('total');
+            $table->integer('correct');
+            $table->integer('wrong');
             $table->timestamps();
 
             // Foreign key constraint if you have a trainees table

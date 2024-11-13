@@ -3,9 +3,11 @@
     @if($company && $company->logo)
         <img src="{{ asset('storage/company_logos/' . $company->logo) }}" alt="Logo" class="logo-small">
     @else
-        <img src="{{ asset('default-logo.png') }}" alt="Default Logo" class="logo-small"> <!-- Fallback logo -->
+        <img src="{{ asset('storage/company_logos/09874253.jfif') }}" alt="Default Logo" class="logo-small"> <!-- Fallback logo -->
     @endif
-    <h4 class="text-2xl font-bold d-none d-sm-block" style="margin-left: 15px;">CAR Driver Training System</h4>
+    <h4 class="text-2xl font-bold d-none d-sm-block" style="margin-left: 15px;">
+        {{ $company->name ?? 'CAR Driver Training System' }}
+    </h4>
     <div class="flex items-center ml-auto relative">
         <a href="#" class="text-white flex items-center mr-4" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-user mr-1"></i>

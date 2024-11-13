@@ -14,6 +14,9 @@ class Exam extends Model
     protected $fillable = [
         'trainee_id',
         'score',
+        'total',
+        'correct',
+        'wrong',
     ];
 
     public function trainee()

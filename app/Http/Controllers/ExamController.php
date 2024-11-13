@@ -21,6 +21,9 @@ class ExamController extends Controller
         if ($trainee) {
             $trainee->exams()->create([
                 'score' => $score,
+                'total' => 50,
+                'correct' => 0,
+                'wrong' => 0,
             ]);
 
             return redirect()->route('exams.results')->with('success', 'Exam taken successfully!');
@@ -48,9 +51,12 @@ class ExamController extends Controller
     // Check both JSON and standard request input
     $traineeId = $request->input('trainee_id') ?? $request->json('trainee_id');
     $examResult = $request->input('exam_result') ?? $request->json('exam_result');
+    $total = $request->input('total') ?? $request->json('total');
+    $correct = $request->input('correct') ?? $request->json('correct');
+    $wrong = $request->input('wrong') ?? $request->json('wrong');
 
-    if (!$traineeId || !$examResult) {
-        Log::error('Missing trainee_id or exam_result in callback data', ['data' => $request->all()]);
+    if (!$traineeId || !$examResult || !$total || !$correct || !$wrong) {
+        Log::error('Missing trainee_id or exam_result or total or correct or wrong in callback data ', ['data' => $request->all()]);
         return response()->json(['error' => 'Invalid data'], 400);
     }
 
@@ -66,11 +72,17 @@ class ExamController extends Controller
         Exam::create([
             'trainee_id' => $trainee->id,
             'score' => $examResult,
+            'total' => $total,
+            'correct' => $correct,
+            'wrong' => $wrong,
         ]);
         
         Log::info('Exam result stored successfully', [
             'traineeId' => $traineeId,
-            'score' => $examResult
+            'score' => $examResult,
+            'total' => $total,
+            'correct' => $correct,
+            'wrong' => $wrong,
         ]);
 
         return response()->json(['message' => 'Exam result stored successfully!'], 200);
@@ -78,7 +90,10 @@ class ExamController extends Controller
         Log::error('Error saving exam result', [
             'error' => $e->getMessage(),
             'traineeId' => $traineeId,
-            'score' => $examResult
+            'score' => $examResult,
+            'total' => $total,
+            'correct' => $correct,
+            'wrong' => $wrong,
         ]);
         return response()->json(['error' => 'Failed to save exam result'], 500);
     }
@@ -132,11 +147,14 @@ class ExamController extends Controller
     
     $traineeId = $request->input('trainee_id');
     $score = $request->input('score');
+    $total = $request->input('total');
+    $correct = $request->input('correct');
+    $wrong = $request->input('wrong');
     $companyId = $request->input('company_id', null); // Optional
 
     // Modify validation to explicitly check for null, allowing zero scores
-    if (is_null($traineeId) || is_null($score)) {
-        Log::error('Missing trainee_id or score in request', ['data' => $request->all()]);
+    if (is_null($traineeId) || is_null($score) || is_null($total) || is_null($correct) || is_null($wrong)) {
+        Log::error('Missing trainee_id or score or total or correct or wrong in request', ['data' => $request->all()]);
         return response()->json(['error' => 'Invalid data'], 400);
     }
 
@@ -151,12 +169,18 @@ class ExamController extends Controller
         Exam::create([
             'trainee_id' => $traineeId,
             'score' => $score, // This will now allow a score of 0
+            'total' => $total,
+            'correct' => $correct,
+            'wrong' => $wrong,
             'company_id' => $companyId,
         ]);
 
         Log::info('Exam score saved successfully', [
             'traineeId' => $traineeId,
-            'score' => $score
+            'score' => $score,
+            'total' => $total,
+            'correct' => $correct,
+            'wrong' => $wrong,
         ]);
 
         return response()->json(['message' => 'Exam score saved successfully!'], 200);
@@ -164,7 +188,10 @@ class ExamController extends Controller
         Log::error('Error saving exam score', [
             'error' => $e->getMessage(),
             'traineeId' => $traineeId,
-            'score' => $score
+            'score' => $score,
+            'total' => $total,
+            'correct' => $correct,
+            'wrong' => $wrong,
         ]);
         return response()->json(['error' => 'Failed to save exam score'], 500);
     }

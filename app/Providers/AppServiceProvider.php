@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Company;
-
+use Illuminate\Support\Facades\Auth;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -26,7 +26,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Share the company data with the header view
         View::composer('partials.header', function ($view) {
-            $company = Company::first(); // Adjust this logic if needed
+            $user = Auth::user();
+            $company = $user ? Company::where('company_id', $user->company_id)->first() : null;
             $view->with('company', $company);
         });
     }

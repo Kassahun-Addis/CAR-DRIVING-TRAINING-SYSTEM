@@ -21,9 +21,7 @@ class CompanyController extends Controller
             'email' => 'required|email|max:255',
             'address' => 'required|string|max:255',
             'company_id' => 'required|string|max:255',
-            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,jfif,svg|max:2048',
-        ], [
-            'logo.required' => 'The logo field is required.',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,jfif,svg|max:2048', // No custom error message necessary
         ]);
 
         $logoName = null;
@@ -84,10 +82,8 @@ class CompanyController extends Controller
             'phone' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'address' => 'required|string|max:255',
-            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,jfif,svg|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,jfif,svg|max:2048', // No custom error message necessary
             'company_id' => 'required|string|max:255',
-        ],[
-            'logo.required' => 'The logo field is required.',
         ]);
 
         $logoName = null;

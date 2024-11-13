@@ -70,8 +70,18 @@
         </form>
 </div>
 <script>
-    setTimeout(function() {
-        $('#success-message').fadeOut('slow');
-    }, 5000); // 5000 milliseconds = 5 seconds
+   // Fetch car details when the trainer is selected
+   document.addEventListener('DOMContentLoaded', function() {
+    var successAlert = document.getElementById('success-alert');
+
+    if (successAlert) {
+        setTimeout(function() {
+            successAlert.style.opacity = '0';
+            setTimeout(function() {
+                successAlert.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+});
 </script>
 @endsection
