@@ -75,7 +75,10 @@ Route::middleware(['company.context'])->group(function () {
     Route::patch('/trainees/{trainee}/toggle-status', [TraineeController::class, 'toggleStatus']);
     Route::get('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
 });
-
+// Trainee Accessible Route
+Route::middleware(['auth:trainee', 'company.context'])->group(function () {
+    Route::get('/trainee/agreement', [TraineeController::class, 'showOwnAgreement'])->name('trainee.ownAgreement');
+});
 
 
 // Custom Middleware to Allow Both Admin and Trainee Access
@@ -216,7 +219,7 @@ Route::middleware('auth:web')->group(function () {
 });
 Route::middleware('company.context')->group(function () {
 Route::middleware('auth:trainee')->group(function () {
-    Route::get('/student/notifications', [NotificationController::class, 'index'])->name('student.notifications');
+    Route::get('/trainee/notifications', [NotificationController::class, 'indexTrainee'])->name('trainee.notifications');
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 });
 });

@@ -1,4 +1,4 @@
-@extends('student.app')
+@extends('layouts.app')
 <style>
     @media print {
         .container {

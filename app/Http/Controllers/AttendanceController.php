@@ -121,14 +121,6 @@ class AttendanceController extends Controller
 
     public function index(Request $request)
 {
-    // Log the entry into the method and capture relevant data
-    \Log::info('Entering AttendanceController@index', [
-        'user_id' => Auth::id(),
-        'trainee_id' => $request->input('trainee_id'),
-        'trainee_name' => $request->input('trainee_name'),
-        'company_id' => app()->bound('currentCompanyId') ? app('currentCompanyId') : 'not set',
-    ]);
-
     $search = $request->input('search');
     $perPage = $request->input('perPage', 10);
 
@@ -148,7 +140,7 @@ class AttendanceController extends Controller
             'user_id' => Auth::id(),
             'message' => 'User is not authenticated',
         ]);
-        return redirect()->route('admin.login')->with('error', 'Please log in to view attendance.');
+        return redirect()->route('trainee.login')->with('error', 'Please log in to view attendance.');
     }
 
     // Get the current company ID from the application context
@@ -157,24 +149,25 @@ class AttendanceController extends Controller
     try {
         // Fetch attendances based on the authenticated user's role and company
         $attendances = Attendance::where('company_id', $companyId)
-            ->when($traineeId, function ($query) use ($traineeId) {
-                return $query->where('trainee_id', $traineeId);
-            })
-            ->when($traineeName, function ($query) use ($traineeName) {
-                return $query->where('trainee_name', 'like', '%' . $traineeName . '%');
-            })
-            ->when($search, function ($query) use ($search) {
-                return $query->where('date', 'like', '%' . $search . '%')
-                             ->orWhere('status', 'like', '%' . $search . '%')
-                             ->orWhere('trainee_name', 'like', '%' . $search . '%')
-                             ->orWhere('trainer_name', 'like', '%' . $search . '%')
-                             ->orWhere('comment', 'like', '%' . $search . '%');
-            })
-            ->paginate($perPage);
-
-        \Log::info('Attendance records fetched successfully', [
-            'total_records' => $attendances->total(),
-        ]);
+        ->when($traineeId, function ($query) use ($traineeId) {
+            // Restrict results to the specific trainee's attendance
+            return $query->where('trainee_id', $traineeId);
+        })
+        ->when($traineeName && !$traineeId, function ($query) use ($traineeName) {
+            // Apply the trainee name filter only if traineeId is not specified (like when an admin is viewing)
+            return $query->where('trainee_name', 'like', '%' . $traineeName . '%');
+        })
+        ->when($search, function ($query) use ($search) {
+            return $query->where(function ($query) use ($search) {
+                $query->where('date', 'like', '%' . $search . '%')
+                    ->orWhere('status', 'like', '%' . $search . '%')
+                    ->orWhere('trainee_name', 'like', '%' . $search . '%')
+                    ->orWhere('trainer_name', 'like', '%' . $search . '%')
+                    ->orWhere('comment', 'like', '%' . $search . '%');
+            });
+        })
+        ->paginate($perPage);
+            
 
         // Calculate total time for the trainee if traineeName is provided
         if ($traineeName) {

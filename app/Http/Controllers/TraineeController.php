@@ -356,23 +356,40 @@ class TraineeController extends Controller
         return redirect()->route('trainee.login')->withErrors('You are not logged in.');
     }
 
-    public function showAgreement($id)
-{
-    // Attempt to retrieve the current company ID, if set
-    $companyId = app()->bound('currentCompanyId') ? app('currentCompanyId') : null;
+        public function showAgreement($id)
+    {
+        // Attempt to retrieve the current company ID, if set
+        $companyId = app()->bound('currentCompanyId') ? app('currentCompanyId') : null;
 
-    if ($companyId) {
-        // If companyId is set, ensure the trainee belongs to the current company
-        $trainee = Trainee::where('company_id', $companyId)->findOrFail($id);
-    } else {
-        // If companyId is not set, allow access as a guest
-        // Fetch the trainee without company restriction
-        $trainee = Trainee::findOrFail($id);
+        if ($companyId) {
+            // If companyId is set, ensure the trainee belongs to the current company
+            $trainee = Trainee::where('company_id', $companyId)->findOrFail($id);
+        } else {
+            // If companyId is not set, allow access as a guest
+            // Fetch the trainee without company restriction
+            $trainee = Trainee::findOrFail($id);
+        }
+
+        // Return the agreement view with the trainee data
+        return view('Trainee.agreement', compact('trainee'));
     }
 
-    // Return the agreement view with the trainee data
-    return view('Trainee.agreement', compact('trainee'));
-}
+    public function showOwnAgreement()
+    {
+        // Get the currently authenticated trainee
+        $trainee = Auth::guard('trainee')->user();
+
+        if ($trainee) {
+            // Ensure the trainee belongs to the current company
+            $trainee = Trainee::where('company_id', app('currentCompanyId'))->findOrFail($trainee->id);
+
+            // Return the agreement view with the trainee data
+            return view('Trainee.trainee_agreement', compact('trainee'));
+        }
+
+        // If the trainee is not authenticated, redirect to login
+        return redirect()->route('trainee.login')->withErrors('You are not logged in.');
+    }
 
     public function downloadAgreement($id)
     {

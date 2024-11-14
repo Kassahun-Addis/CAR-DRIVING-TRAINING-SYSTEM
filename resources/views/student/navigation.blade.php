@@ -113,8 +113,15 @@
 
 <!-- Header Section -->
 <header class="header bg-blue-600 text-white p-2 flex justify-between items-center shadow-lg">
-<img src="{{ asset('storage/trainee_photos/12.jfif') }}" alt="Logo" class="logo-small">    
-<h4 class="text-2xl font-bold d-none d-sm-block" style="margin-left: 15px;">CAR Driver Training System</h4>
+    @if($company && $company->logo)
+        <img src="{{ asset('storage/company_logos/' . $company->logo) }}" alt="Logo" class="logo-small">
+    @else
+        <img src="{{ asset('storage/company_logos/09874253.jfif') }}" alt="Default Logo" class="logo-small"> <!-- Fallback logo -->
+    @endif
+    <h4 class="text-2xl font-bold d-none d-sm-block" style="margin-left: 15px;">
+        {{ $company->name ?? 'CAR Driver Training System' }}
+    </h4>
+
     <div class="header-user-info flex items-center ml-auto hidden md:flex">
         <form id="logout-form" action="{{ route('trainee.logout') }}" method="POST" style="display: none;">
             @csrf
@@ -168,13 +175,12 @@
                 </li>
             @endif
 
-            <!-- Show View Agreement link only if not in the attendance create route -->
-            
-                    <li>
-                        <a href="{{ route('trainee.agreement', ['id' => auth()->user()->id]) }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
-                            <i class="fas fa-briefcase mr-2"></i>View Agreement
-                        </a>
-                    </li>
+            <!-- Show View Agreement link -->
+            <li>
+                <a href="{{ route('trainee.ownAgreement') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
+                    <i class="fas fa-briefcase mr-2"></i>View Agreement
+                </a>
+            </li>
 
            <!-- Notification Link with Unread Count -->
            @if (Auth::guard('trainee')->check())
@@ -204,7 +210,7 @@
     @endphp
 
     <li>
-        <a href="{{ route('student.notifications') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
+        <a href="{{ route('trainee.notifications') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
             <i class="fas fa-bell mr-2"></i>Notification
             @if($unreadCount > 0)
                 <span id="unread-count" class="badge badge-danger">{{ $unreadCount }}</span>

@@ -92,4 +92,17 @@
             {{ $users->links() }} <!-- This will display the pagination links -->
         </div>
 </div>
+<script>
+    // Success alert timeout
+    document.addEventListener('DOMContentLoaded', function() {
+        var successAlert = document.getElementById('success-alert');
+        if (successAlert) {
+            setTimeout(function() {
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    successAlert.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+    });
 @endsection

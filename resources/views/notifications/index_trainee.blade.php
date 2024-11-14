@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('student.app')
 
 @section('title', 'Notifications - List')
 
@@ -30,10 +30,8 @@
 
         <div class="col-12 col-md-6 d-flex justify-content-end">
             <form action="{{ Auth::guard('trainee')->check() ? route('trainee.notifications') : route('notifications.index') }}" method="GET" class="form-inline w-100">
-                <div class="form-group w-100 d-flex justify-content-end align-items-center">
-                    @if(Auth::guard('web')->check())
-                        <a href="{{ route('notifications.create') }}" class="btn btn-primary add-new-btn">Add New</a>
-                    @endif
+            <form action="{{ route('trainee.notifications') }}" method="GET" class="form-inline w-100">    
+            <div class="form-group w-100 d-flex justify-content-end align-items-center">
                     <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request('search') }}" style="flex-grow: 1; margin-right: 5px;">
                     <button type="submit" class="btn btn-primary d-flex align-items-center" style="height: 40px;">Search</button>
                 </div>
@@ -41,7 +39,7 @@
         </div>
     </div>
 
-    <ul class="list-group" id="notification-list">
+        <ul class="list-group" id="notification-list">
         @foreach($unreadNotifications as $notification)
             <li class="list-group-item p-4 notification-item" id="notification-{{ $notification->id }}">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
@@ -56,12 +54,9 @@
                         <button class="btn btn-sm btn-outline-primary mr-2" onclick="toggleDetails({{ $notification->id }})">
                             <span id="toggle-text-{{ $notification->id }}">View Details</span>
                         </button>
-                        @if(Auth::guard('web')->check())
-                            <button class="btn btn-sm btn-outline-warning mr-2" onclick="editNotification({{ $notification->id }})">
-                                Edit
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteNotification({{ $notification->id }})">
-                                Delete
+                        @if(Auth::guard('trainee')->check())
+                            <button class="btn btn-sm btn-outline-secondary mark-as-read-button" onclick="markAsRead({{ $notification->id }})">
+                                Mark as Read
                             </button>
                         @endif
                     </div>
@@ -73,28 +68,19 @@
         @endforeach
 
         @foreach($readNotifications as $notification)
-            <li class="list-group-item p-4 notification-item read" id="notification-{{ $notification->id }}">
+            <li class="list-group-item p-4 notification-item" id="notification-{{ $notification->id }}">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                     <div class="d-flex align-items-center mb-3 mb-md-0">
-                        <i class="fas fa-bell text-secondary mr-3" style="font-size: 1.5rem;"></i>
+                        <i class="fas fa-bell text-primary mr-3" style="font-size: 1.5rem;"></i>
                         <div>
                             <h5 class="mb-1 font-weight-bold">{{ $notification->title }}</h5>
                             <small class="text-muted">{{ $notification->created_at->format('F j, Y, g:i a') }}</small>
                         </div>
                     </div>
-                    <div>
-                        <button class="btn btn-sm btn-outline-primary" onclick="toggleDetails({{ $notification->id }})">
+                    <div class="d-flex">
+                        <button class="btn btn-sm btn-outline-primary mr-2" onclick="toggleDetails({{ $notification->id }})">
                             <span id="toggle-text-{{ $notification->id }}">View Details</span>
                         </button>
-
-                        @if(Auth::guard('web')->check())
-                            <button class="btn btn-sm btn-outline-warning mr-2" onclick="editNotification({{ $notification->id }})">
-                                Edit
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteNotification({{ $notification->id }})">
-                                Delete
-                            </button>
-                        @endif
                     </div>
                 </div>
                 <div id="notification-content-{{ $notification->id }}" class="notification-content mt-3">
@@ -174,60 +160,37 @@
     });
 
     function toggleDetails(notificationId) {
-        const contentDiv = document.getElementById(`notification-content-${notificationId}`);
-        const toggleText = document.getElementById(`toggle-text-${notificationId}`);
+    const contentDiv = document.getElementById(`notification-content-${notificationId}`);
+    const toggleText = document.getElementById(`toggle-text-${notificationId}`);
 
-        if (contentDiv.style.display === "block") {
-            contentDiv.style.display = "none";
-            toggleText.textContent = "View Details"; // Change button text to "View Details"
-        } else {
-            contentDiv.style.display = "block";
-            toggleText.textContent = "Hide Details"; // Change button text to "Hide Details"
-            markAsRead(notificationId); // Mark notification as read when details are shown
+    if (contentDiv.classList.contains('show-content')) {
+        contentDiv.classList.remove('show-content');
+        toggleText.textContent = "View Details"; // Change button text to "View Details"
+    } else {
+        contentDiv.classList.add('show-content');
+        toggleText.textContent = "Hide Details"; // Change button text to "Hide Details"
+        markAsRead(notificationId); // Mark notification as read when details are shown
+    }
+}
+
+function markAsRead(notificationId) {
+    fetch(`/notifications/${notificationId}/read`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
         }
-    }
-
-    function markAsRead(notificationId) {
-        fetch(`/notifications/${notificationId}/read`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                const notificationItem = document.getElementById(`notification-${notificationId}`);
-                notificationItem.classList.add('read'); // Mark notification as read
-            }
-        })
-        .catch(error => {
-            console.error('Error marking notification as read:', error);
-        });
-    }
-
-    function editNotification(notificationId) {
-        window.location.href = `/notifications/${notificationId}/edit`; // Redirect to edit page
-    }
-
-    function deleteNotification(notificationId) {
-        if (confirm('Are you sure you want to delete this notification?')) {
-            fetch(`/notifications/${notificationId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    const notificationItem = document.getElementById(`notification-${notificationId}`);
-                    notificationItem.remove(); // Remove notification from the DOM
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting notification:', error);
-            });
+    })
+    .then(response => {
+        if (response.ok) {
+            const notificationItem = document.getElementById(`notification-${notificationId}`);
+            notificationItem.classList.add('read'); // Mark notification as read
+            // Removed the line that resets the toggle text
         }
-    }
+    })
+    .catch(error => {
+        console.error('Error marking notification as read:', error);
+    });
+}
 </script>
 @endsection

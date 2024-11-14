@@ -9,7 +9,9 @@
     <div class="d-flex justify-content-between align-items-center mb-3"></div>
     
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success" id="success-alert">
+            {{ session('success') }}
+        </div>
     @endif
 
    <div class="row mb-3" style="display: flex; justify-content: space-between; align-items: center;">
@@ -125,4 +127,17 @@
     </div>
 </div>
 </div>
+<script>
+    // Success alert timeout
+    document.addEventListener('DOMContentLoaded', function() {
+        var successAlert = document.getElementById('success-alert');
+        if (successAlert) {
+            setTimeout(function() {
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    successAlert.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+    });
 @endsection

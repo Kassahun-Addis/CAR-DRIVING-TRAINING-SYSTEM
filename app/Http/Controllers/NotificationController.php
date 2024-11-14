@@ -50,6 +50,49 @@ class NotificationController extends Controller
         return view('notifications.index', compact('unreadNotifications', 'readNotifications'));
     }
 
+        public function indexTrainee(Request $request)
+    {
+        $user = Auth::guard('trainee')->user();
+        $companyId = app('currentCompanyId'); // Retrieve the current company ID
+        $search = $request->input('search');
+
+        // Unread notifications for the specific company
+        $unreadQuery = Notification::whereDoesntHave('users', function ($query) use ($user) {
+                $query->where('trainee_id', $user->id);
+            })
+            ->where('company_id', $companyId) // Filter by company ID
+            ->where('is_active', true);
+
+        // Read notifications for the specific company
+        $readQuery = Notification::whereHas('users', function ($query) use ($user) {
+                $query->where('trainee_id', $user->id);
+            })
+            ->where('company_id', $companyId) // Filter by company ID
+            ->where('is_active', true);
+
+        // Apply search filters if a search term is provided
+        if ($search) {
+            $unreadQuery->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%")
+                    ->orWhere('created_at', 'like', "%{$search}%");
+            });
+
+            $readQuery->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%")
+                    ->orWhere('created_at', 'like', "%{$search}%");
+            });
+        }
+
+        // Paginate the results
+        $unreadNotifications = $unreadQuery->orderBy('created_at', 'desc')->paginate(10);
+        $readNotifications = $readQuery->orderBy('created_at', 'desc')->paginate(10);
+
+        // Return the trainee-specific view
+        return view('notifications.index_trainee', compact('unreadNotifications', 'readNotifications'));
+    }
+
     public function markAsRead(Notification $notification)
     {
         $user = Auth::guard('trainee')->user();

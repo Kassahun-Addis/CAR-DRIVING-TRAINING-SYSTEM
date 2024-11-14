@@ -4,7 +4,9 @@
 <div class="container mt-5">
     <h1>Edit Training Car</h1>
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success" id="success-alert">
+            {{ session('success') }}
+        </div>
     @endif
 
     <div class="form-section">
@@ -51,4 +53,17 @@
         </form>
     </div>
 </div>
+<script>
+    // Success alert timeout
+    document.addEventListener('DOMContentLoaded', function() {
+        var successAlert = document.getElementById('success-alert');
+        if (successAlert) {
+            setTimeout(function() {
+                successAlert.style.opacity = '0';
+                setTimeout(function() {
+                    successAlert.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+    });
 @endsection
