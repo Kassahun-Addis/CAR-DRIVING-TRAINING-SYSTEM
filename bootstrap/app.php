@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'adminOrTrainee' => \App\Http\Middleware\AdminOrTrainee::class,
             'company.context' => \App\Http\Middleware\SetCompanyContext::class,
+            'redirectIfUnauthenticated' => \App\Http\Middleware\RedirectIfUnauthenticated::class, // Register your middleware
         ]);
 
         // Add CSRF exclusion for specific routes here

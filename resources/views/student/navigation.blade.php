@@ -166,15 +166,11 @@
                 </a>
             </li>
             
-            <!-- Check if the current route is for filling attendance -->
-            @if (!request()->routeIs('attendance.create'))
-                <li>
-                    <a href="{{ route('attendance.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
-                        <i class="fas fa-briefcase mr-2"></i>Fill Attendance
-                    </a>
-                </li>
-            @endif
-
+            <li>
+                <a href="{{ route('attendance.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
+                    <i class="fas fa-briefcase mr-2"></i>Fill Attendance
+                </a>
+            </li>
             <!-- Show View Agreement link -->
             <li>
                 <a href="{{ route('trainee.ownAgreement') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">

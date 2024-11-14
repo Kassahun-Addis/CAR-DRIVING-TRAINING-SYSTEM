@@ -52,16 +52,6 @@
         .btn-primary:hover {
             background-color: #0056b3;
         }
-        .forgot-password-link {
-            font-size: 0.85rem;
-            text-align: right;
-            display: block;
-            margin-top: 10px;
-            color: #007bff; /* Link color */
-        }
-        .forgot-password-link:hover {
-            text-decoration: underline; /* Underline on hover */
-        }
         .show-password {
             cursor: pointer;
             font-size: 0.9rem;
@@ -119,10 +109,6 @@
                         <div class="show-password">
                             <input type="checkbox" id="showPasswordCheckbox"> <label for="showPasswordCheckbox">Show Password</label>
                         </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <a href="{{ route('password.request') }}" class="forgot-password-link">{{ __('Forgot Password?') }}</a>
                     </div>
 
                     <div class="form-group mb-0">

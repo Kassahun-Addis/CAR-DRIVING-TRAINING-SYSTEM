@@ -295,6 +295,4 @@
         }
     }
 </script>
-
-
 @endsection

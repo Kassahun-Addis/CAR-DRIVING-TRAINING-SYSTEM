@@ -26,9 +26,13 @@ use Illuminate\Support\Facades\Auth;
 
 
 
+Route::middleware(['redirectIfUnauthenticated'])->group(function () {
+    // Protected routes go here
+});
 // Admin Login Routes
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AdminLoginController::class, 'login']);
+Route::post('/logout-admin', [AdminLoginController::class, 'logout'])->name('admin.logout');
 
 // Admin Dashboard
 Route::get('/welcome', [DashboardController::class, 'index'])->middleware('auth:web')->name('welcome');
@@ -36,6 +40,7 @@ Route::get('/welcome', [DashboardController::class, 'index'])->middleware('auth:
 // Trainee Login Routes
 Route::get('/trainee/login', [TraineeLoginController::class, 'showLoginForm'])->name('trainee.login');
 Route::post('/trainee/login', [TraineeLoginController::class, 'login']);
+Route::post('/logout-trainee', [TraineeLoginController::class, 'logout'])->name('trainee.logout');
 
 // Trainee Dashboard
 Route::middleware('company.context')->group(function () {
@@ -44,9 +49,6 @@ Route::get('/home', function () {
 })->middleware('auth:trainee')->name('home');
 });
     
-Route::post('/logout-trainee', [TraineeLoginController::class, 'logout'])->name('trainee.logout');
-Route::post('/logout-admin', [AdminLoginController::class, 'logout'])->name('admin.logout');
-
 Route::middleware('company.context')->group(function () {
 Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
 Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store');

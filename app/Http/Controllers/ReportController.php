@@ -13,9 +13,6 @@ class ReportController extends Controller
 {
     public function generate(Request $request)
     {
-        // Log the incoming request data
-        \Log::info('Request Data:', $request->all());
-
         $recordType = $request->input('record_type');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
@@ -43,8 +40,6 @@ class ReportController extends Controller
                     ->when($bloodType, fn($query) => $query->where('blood_type', $bloodType))
                     ->get();
 
-                \Log::info('Trainee Data:', $data->toArray());
-
                 $view = 'reports.trainee_report';
                 break;
 
@@ -55,8 +50,6 @@ class ReportController extends Controller
                     ->when($endDate, fn($query) => $query->where('payment_date', '<=', $endDate))
                     ->when($paymentStatus, fn($query) => $query->where('payment_status', $paymentStatus))
                     ->get();
-
-                \Log::info('Payment Data:', $data->toArray());
 
                 $view = 'reports.payment_report';
                 break;
@@ -72,8 +65,6 @@ class ReportController extends Controller
                     ->when($gender && $gender !== 'all', fn($query) => $query->where('gender', $gender))
                     ->get();
 
-                \Log::info('Trainer Data:', $data->toArray());
-
                 $view = 'reports.trainer_report';
                 break;
 
@@ -85,8 +76,6 @@ class ReportController extends Controller
                     ->when($endDate, fn($query) => $query->where('created_at', '<=', $endDate))
                     ->when($selectedClass, fn($query) => $query->where('class_name', $selectedClass))
                     ->get();
-
-                \Log::info('Class Data:', $data->toArray());
 
                 $view = 'reports.class_report';
                 break;

@@ -23,11 +23,8 @@
 </form> -->
 <!-- Container for the button and photo -->
 <div>
-    <button onclick="printAgreement()" class="btn btn-primary" style="float: left; margin-top: 1%;">Print Document</button>
-
-    <a href="{{ auth()->check() ? route('trainee.index') : url('/home') }}" class="btn btn-secondary btn-custom" style="float: left; margin-top: 1%;">
-        <i class="fas fa-arrow-left mr-2"></i> Back
-    </a>
+<button onclick="printAgreement()" class="btn btn-primary" style="float: right; margin-top: 1%;">
+    <i class="fas fa-print"></i> Print
 </div>
 
 <div id="agreement-content">

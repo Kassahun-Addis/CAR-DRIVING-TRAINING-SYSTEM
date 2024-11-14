@@ -80,4 +80,5 @@
             }, 3000);
         }
     });
+</script>
 @endsection
