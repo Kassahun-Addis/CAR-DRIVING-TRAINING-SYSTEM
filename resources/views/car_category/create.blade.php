@@ -13,6 +13,11 @@
             </ul>
         </div>
     @endif
+    @if (session('success'))
+        <div class="alert alert-success" id="success-alert">
+            {{ session('success') }}
+        </div>
+    @endif
     <div class="form-section">
     <form action="{{ route('car_category.store') }}" method="POST">
         @csrf
@@ -34,4 +39,13 @@
     </form>
   </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('success-alert')) {
+            setTimeout(function() {
+                document.getElementById('success-alert').style.display = 'none';
+            }, 3000);
+        }
+    });
+</script>
 @endsection

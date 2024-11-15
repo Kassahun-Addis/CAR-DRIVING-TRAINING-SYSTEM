@@ -30,12 +30,16 @@ Route::middleware(['redirectIfUnauthenticated'])->group(function () {
     // Protected routes go here
 });
 // Admin Login Routes
+Route::middleware('company.context')->group(function () {
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AdminLoginController::class, 'login']);
 Route::post('/logout-admin', [AdminLoginController::class, 'logout'])->name('admin.logout');
+});
 
 // Admin Dashboard
+Route::middleware('company.context')->group(function () {
 Route::get('/welcome', [DashboardController::class, 'index'])->middleware('auth:web')->name('welcome');
+});
 
 // Trainee Login Routes
 Route::get('/trainee/login', [TraineeLoginController::class, 'showLoginForm'])->name('trainee.login');

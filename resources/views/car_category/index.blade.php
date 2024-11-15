@@ -10,7 +10,9 @@
     </div>
     
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success" id="success-alert"> 
+            {{ session('success') }}
+        </div>
     @endif
 
    <div class="row mb-3" style="display: flex; justify-content: space-between; align-items: center;">
@@ -126,4 +128,13 @@
     </div>
 </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('success-alert')) {
+            setTimeout(function() {
+                document.getElementById('success-alert').style.display = 'none';
+            }, 3000);
+        }
+    });
+</script>
 @endsection

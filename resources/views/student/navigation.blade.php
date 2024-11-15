@@ -215,7 +215,12 @@
     </li>
     <li>
         <a href="{{ route('student.exam') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
-            <i class="fas fa-external-link-alt mr-2"></i>Take Exam
+            <i class="fas fa-external-link-alt mr-2"></i>Take Final Exam
+        </a>
+    </li>
+    <li>
+        <a href="{{ route('student.exam') }}" class="flex items-center p-2 hover:bg-gray-700 rounded">
+            <i class="fas fa-external-link-alt mr-2"></i>Take Exercise Exam
         </a>
     </li>
 @endif
