@@ -65,9 +65,11 @@ include('includes/footer.php');
 ?>
 <style>
     body{
-        background-image: url(../image/93bgh.png);
+        /* background-image: url(../image/93bgh.png); 
         background-size: cover;
-        background-position: center;
+        background-position: center;*/
+        background-color: white; /* Set the gray background */
+        
     }
     #gob{
         margin-top: 100px;

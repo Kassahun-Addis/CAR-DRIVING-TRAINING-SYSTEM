@@ -41,6 +41,15 @@ class ExamController extends Controller
     return redirect()->away($examUrl);
 }
 
+public function redirectToExercise()
+{
+    // Assuming the PHP exam system is accessible at this URL
+    $examUrl = url('/exercise/index.php'); // Adjust the path if necessary
+
+    // Redirect the trainee to the PHP exam system
+    return redirect()->away($examUrl);
+}
+
  public function handleExamCallback(Request $request)
 {
 

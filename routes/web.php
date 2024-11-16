@@ -245,6 +245,7 @@ Route::get('/exam/user/quizquestion', [ExamController::class, 'showQuizQuestion'
 
 Route::middleware('auth:trainee')->group(function () {
     Route::get('/student/exam', [ExamController::class, 'redirectToExam'])->name('student.exam');
+    Route::get('/student/exercise', [ExamController::class, 'redirectToExercise'])->name('exercise.exam');
     Route::get('/exams/take/{traineeId}', [ExamController::class, 'takeExam'])->name('exams.take');
     Route::get('/exams/results', [ExamController::class, 'showResults'])->name('exams.results');
 });

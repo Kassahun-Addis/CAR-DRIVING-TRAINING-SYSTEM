@@ -84,9 +84,10 @@ echo '</div>'; // Close question-container
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Add Font Awesome -->
     <style>
         body{
-            background-image: url('../image/93bgh.png');
+            background-color: white;     /* Set the gray background */
+            /* background-image: url('../image/93bgh.png'); 
             background-size: cover;
-            background-position: center;
+            background-position: center;*/
         }
          .card {
             border: none;

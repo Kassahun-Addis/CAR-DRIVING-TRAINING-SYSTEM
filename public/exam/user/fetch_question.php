@@ -40,7 +40,7 @@ if ($row = mysqli_fetch_array($sql)) {
         $binaryData = hex2bin(substr($row['Image'], 2));
         $imageData = base64_encode($binaryData);
         echo "<div class='question-image'>
-                <img src='data:image/png;base64," . $imageData . "' alt='Question Image' style='width: 100px; height: 100px;'><br>
+                <img src='data:image/png;base64," . $imageData . "'style='width: 100px; height: 100px;'><br>
               </div>";
     }
 
