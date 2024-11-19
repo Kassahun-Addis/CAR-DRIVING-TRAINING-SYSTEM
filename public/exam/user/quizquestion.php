@@ -1,7 +1,7 @@
 <?php
 ob_start();
-define('TITLE','quizquestion');
-define('page','quizquestion');
+define('TITLE', 'quizquestion');
+define('page', 'quizquestion');
 include('includes/header.php');
 include('../dbcon.php');
 
@@ -9,19 +9,17 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start(); // Start the session only if it hasn't been started yet
 }
 
-if(isset($_SESSION['name']))
-{
-$user= $_SESSION['name'];
-echo htmlspecialchars($user);
+if (isset($_SESSION['name'])) {
+    $user = $_SESSION['name'];
+    echo htmlspecialchars($user);
+} else {
+    echo "not set";
 }
-else
-{
-   echo "not set";
-}
+
 echo '<div class="col-sm-9 col-md-9" id="gob">';
 
 // Initialize current question
-$currentQuestion = isset($_GET['q+1']) ? (int)$_GET['q'] : 1; // Start at question 1
+$currentQuestion = isset($_GET['q']) ? (int)$_GET['q'] : 1; // Start at question 1
 
 // Get the table name from the URL parameter
 $tableName = isset($_GET['table']) ? $_GET['table'] : 'sign'; // Default to 'sign' if not set
@@ -31,23 +29,31 @@ $_SESSION['table'] = $tableName; // Store the table name in session
 
 // Fetch the current question
 $sql = mysqli_query($conn, "SELECT QNo, Question, Choice1, Choice2, Choice3, Choice4, Answer, Image FROM $tableName WHERE QNo = $currentQuestion");
-$canswer = mysqli_query($conn, "SELECT Answer FROM $tableName WHERE QNo = $currentQuestion");
-$correctAnswerRow = mysqli_fetch_assoc($canswer); // Fetch the correct answer
-$correctAnswer = $correctAnswerRow['Answer'] ?? ''; // Get the correct answer or set to empty if not found
-// echo $correctAnswer; // Remove this line as it causes the error
-// Debugging: Check the SQL query
+
 if (!$sql) {
     echo '<p>Error in SQL query: ' . mysqli_error($conn) . '</p>';
+    exit();
 }
 
 echo '<div id="question-container">'; // Container for the question
 if (mysqli_num_rows($sql) > 0) {
-    while($row = mysqli_fetch_array($sql)) {
+    while ($row = mysqli_fetch_array($sql)) {
         $qns = $row['Question'];
         $qid = $row['QNo'];
+        $correctAnswer = $row['Answer']; // Fetch the correct answer
         $total = $_REQUEST['total'] ?? 0; // Default to 0 if not set
         $_SESSION['total'] = $total;
+
+        // echo '<h3>' . htmlspecialchars($qns) . '</h3>'; // Display the question
+
         // Display question image if it exists
+        if (!empty($row['Image'])) {
+            $binaryData = hex2bin(substr($row['Image'], 2));
+            $imageData = base64_encode($binaryData);
+            echo "<div class='question-image'>
+                    <img src='data:image/png;base64," . $imageData . "' alt='Question Image' style='width: 100px; height: 100px;'><br>
+                  </div>";
+        }
 
         // Initialize result variable
         $result = null; // Variable to store the result of the answer check
@@ -57,29 +63,26 @@ if (mysqli_num_rows($sql) > 0) {
             // Store the user's answer in the session
             foreach ($_POST['uid'] as $questionNumber => $userAnswer) {
                 $_SESSION['answers'][$questionNumber] = (int)$userAnswer; // Store the answer as an integer in session
-            }
 
-            $correctAnswer = (string)$row['Answer']; // Get the correct answer from the database
-            
-            // Check if the user's answer matches the correct answer
-            if ($userAnswer == $correctAnswer) {
-                $result = 'Correct';
-                 // Store result as correct
-            } else {
-                $result = 'Incorrect. Correct answer: ' . htmlspecialchars($correctAnswer); // Store result as incorrect with correct answer
-            }            
-        }      
-        ?>
-        
-        <?php
+                // Check if the user's answer matches the correct answer
+                if ($userAnswer == $correctAnswer) {
+                    $result = 'Correct';
+                } else {
+                    $result = 'Incorrect. Correct answer: ' . htmlspecialchars($correctAnswer); // Store result as incorrect with correct answer
+                }
+
+                // Display the result
+                echo '<p>' . $result . '</p>';
+            }
+        }
     }
 } else {
     echo '<p>No questions found.</p>'; // Debugging message
 }
 echo '</div>'; // Close question-container
-
-// Add AJAX script
 ?>
+
+
 <head>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Add Font Awesome -->
     <style>
@@ -155,7 +158,7 @@ echo '</div>'; // Close question-container
             display: none;
             opacity: 1;
         }
-    </style>
+</style>
 </head>
 
 <div id="scoretext" style="background-color: white; display: block; display: none; position: relative; width: 100%; height: 100%; padding: 100px;padding-bottom: 20px; border-radius: 60px; margin-left: 140px;margin-top:100px;">
@@ -315,26 +318,45 @@ echo '</div>'; // Close question-container
     });
 
     function sendUserChoice(questionNumber, userChoice, correctAnswer) {
-        // Check if the user answered the question
-        if (userChoice == correctAnswer) {
-            if (!correctANS.includes(questionNumber)) { // Check if questionNumber is NOT in correctANS
-                correctANS.push(questionNumber);
-                if (wrongANS.includes(questionNumber)) {
-                    wrongANS.splice(wrongANS.indexOf(questionNumber), 1);
-                }
-            }
-        } else {
-            if (!wrongANS.includes(questionNumber)) { // Check if questionNumber is NOT in wrongANS
-                wrongANS.push(questionNumber);
-                if (correctANS.includes(questionNumber)) {
-                    correctANS.splice(correctANS.indexOf(questionNumber), 1);
-                }
+    if (userChoice == correctAnswer) {
+        if (!correctANS.includes(questionNumber)) {
+            correctANS.push(questionNumber);
+            if (wrongANS.includes(questionNumber)) {
+                wrongANS.splice(wrongANS.indexOf(questionNumber), 1);
             }
         }
-        // Automatically load the next question
-        nextQuestion = questionNumber + 1; // Increment the question number
-        loadQuestion(nextQuestion); // Load the next question
+    } else {
+        if (!wrongANS.includes(questionNumber)) {
+            wrongANS.push(questionNumber);
+            if (correctANS.includes(questionNumber)) {
+                correctANS.splice(correctANS.indexOf(questionNumber), 1);
+            }
+        }
+        // Display the modal with the incorrect message
+        // showModal(`ትክትክለኛውን መልስ የያዘው ምርጫ ምርጫ ${correctAnswer} ነው።`);
     }
+    nextQuestion = questionNumber + 1;
+    loadQuestion(nextQuestion);
+}
+
+function showModal(message) {
+    const modal = document.getElementById('incorrectModal');
+    const modalMessage = document.getElementById('modalMessage');
+    const okButton = document.getElementById('okButton');
+
+    modalMessage.textContent = message;
+    modal.style.display = 'block';
+
+    okButton.onclick = function() {
+        modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+}
 
     document.addEventListener('DOMContentLoaded', function() {
         const pass = document.getElementById('pass');

@@ -52,6 +52,7 @@ include('includes/footer.php');
 ?>
 <style>
     body{
-        background-image: url(../image/93bgh.png);
+        /* background-image: url(../image/93bgh.png); */
+        background-color: white; /* Set the gray background */
     }
 </style>

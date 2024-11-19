@@ -82,22 +82,11 @@
                 <div class="left-sidebar">
                     <ul class="nav flex-column">
                         <li class="nav-item"> 
-                            <a style="color: white" class="nav-link <?php if (page=='dashboard.php') { echo 'active';} ?>" href="dashboard.php"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+                             <a style="color: black" class="nav-link <?php if (page=='showquiz.php') { echo 'active';} ?>" href="showquiz.php"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
                         <li class="nav-item menu">
-                             <a style="color: white" class="nav-link <?php if (page=='quiz.php') { echo 'active';} ?>" href="quiz.php"><i class="fas fa-plus-circle mr-2"></i>Add Quiz</a></li>
+                             <a style="color: black" class="nav-link <?php if (page=='quiz.php') { echo 'active';} ?>" href="quiz.php"><i class="fas fa-plus-circle mr-2"></i>Add Quiz</a></li>
                         <li class="nav-item">
-                             <a style="color: white" class="nav-link <?php if (page=='showquiz.php') { echo 'active';} ?>" href="showquiz.php"><i class="fas fa-store mr-2"></i>Show quiz</a></li>
-                        <li class="nav-item"> 
-                            <a style="color: white" class="nav-link <?php if (page=='rank.php') { echo 'active';} ?>" href="rank.php"><i class="fas fa-star mr-2"></i>Ranking</a></li>
-                        <li class="nav-item"> 
-                            <a style="color: white" class="nav-link <?php if (page=='feedback.php') { echo 'active';} ?>" href="afeedback.php"><i class="fas fa-comment-alt mr-2"></i>Feedback</a></li>
-                        <!-- <li class="nav-item">  -->
-                            <!-- <a style="color: white" class="nav-link <?php if (page=='history.php') { echo 'active';} ?>" href="history.php"><i class="fas fa-history mr-2"></i>History</a></li>    -->
-                        <li class="nav-item"> 
-                            <a style="color: white" class="nav-link <?php if (page=='notification.php') { echo 'active';} ?>" href="notification.php"><i class="fas fa-inbox mr-2"></i>Notification</a></li>
-                        <li class="nav-item"> 
-                            <a style="color: white" class="nav-link <?php if (page=='meeting.php') { echo 'active';} ?>" href="meeting.php"><i class="fas fa-video mr-2"></i>Meetings</a></li>      
-                        <li class="nav-item"> <a style="color: white" class="nav-link" href="../logout.php"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a></li>
+                        <li class="nav-item"> <a style="color: black" class="nav-link" href="../logout.php"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a></li>
                     </ul>
                 </div>
 

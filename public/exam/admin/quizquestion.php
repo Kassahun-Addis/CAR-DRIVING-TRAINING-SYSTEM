@@ -24,7 +24,7 @@ echo '<div class="col-sm-9 col-md-9" id="gob">';
 $currentQuestion = isset($_GET['q+1']) ? (int)$_GET['q'] : 1; // Start at question 1
 
 // Get the table name from the URL parameter
-$tableName = isset($_GET['table']) ? $_GET['table'] : 'sign'; // Default to 'sign' if not set
+$tableName = isset($_GET['table']) ? $_GET['table'] : 'sign1'; // Default to 'sign' if not set
 
 // Set the table name in the session
 $_SESSION['table'] = $tableName; // Store the table name in session
@@ -48,8 +48,6 @@ if (mysqli_num_rows($sql) > 0) {
         $total = $_REQUEST['total'] ?? 0; // Default to 0 if not set
         $_SESSION['total'] = $total;
         // Display question image if it exists
-      
-
         // Initialize result variable
         $result = null; // Variable to store the result of the answer check
 
@@ -68,11 +66,8 @@ if (mysqli_num_rows($sql) > 0) {
                  // Store result as correct
             } else {
                 $result = 'Incorrect. Correct answer: ' . htmlspecialchars($correctAnswer); // Store result as incorrect with correct answer
-            }
-            
+            }   
         }
-
-      
         ?>
         
         <?php
@@ -144,197 +139,129 @@ echo '</div>'; // Close question-container
     <p id="pass" style="font-size: 24px; color: red; font-weight: bold; margin-top: 10px; display: none;opacity: 1; "></p>
     
  </div> <!-- Initially hidden -->
-<script>
+ <div id="timer" style="display: none;">00:00</div>
+ <script>
+ document.addEventListener('DOMContentLoaded', function() {
     let pass = document.getElementById('pass');
     let scoretext = document.getElementById('scoretext');
     let result = document.getElementById('result');
     let scoreU = document.getElementById('score');
-    var score = 1;
+    let timerElement = document.getElementById('time');
+    let timerContainer = document.getElementById('timer');
+    let questionContainer = document.getElementById('question-container');
+    let prevBtn = document.getElementById('prevBtn');
+    let nextBtn = document.getElementById('nextBtn');
+    let submitBtn = document.getElementById('submitBtn');
+
+    if (timerContainer) {
+        timerContainer.style.display = 'block';
+    } else {
+        console.error('Timer element not found.');
+    }
+
+    let score = 1;
     let correctANS = [];
     let wrongANS = [];
-    let title = "<?php echo htmlspecialchars($tableName); ?>"; 
+    let title = "<?php echo htmlspecialchars($tableName); ?>";
     console.log(title);
 
     // Timer variables
     let timeLeft = 60 * 50; // Set timer for 60 seconds
-    const timerElement = document.getElementById('time'); // Assuming you have an element with id 'time' in the header
-    document.getElementById('timer').style.display = 'block'; // Show the timer in the header
 
     // Start the timer
     const timer = setInterval(function() {
         if (timeLeft <= 0) {
             clearInterval(timer);
             alert("Time's up!");
-            saveScore(); // Call saveScore when time is up
+            // saveScore(); // Call saveScore when time is up (remove if not needed)
         } else {
             // Format minutes and seconds
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
 
-            timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`; // Update the timer display
+            if (timerElement) {
+                timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`; // Update the timer display
+            }
             timeLeft -= 1; // Decrease time left
         }
     }, 1000);
 
-    document.addEventListener('DOMContentLoaded', function() {
-        let currentQuestion = <?php echo $currentQuestion; ?>; // Initialize current question in JavaScript
-        loadQuestion(currentQuestion); // Fetch the current question on load
-     
-        function loadQuestion(questionNumber) {
-            console.log('Loading question:', questionNumber); // Debugging log
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', 'fetch_question.php?q=' + questionNumber + '&tablename=' + encodeURIComponent(title), true); // Send table name
-            xhr.onload = function() {
-                if (this.status === 200) {
-                    document.getElementById('question-container').innerHTML = this.responseText;
-                    currentQuestion = questionNumber; // Update current question after loading
-                } else {
-                    console.error('Error loading question:', this.status, this.statusText); // Debugging message
+    let currentQuestion = <?php echo $currentQuestion; ?>; // Initialize current question in JavaScript
+    loadQuestion(currentQuestion); // Fetch the current question on load
+
+    function loadQuestion(questionNumber) {
+        console.log('Loading question:', questionNumber); // Debugging log
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'fetch_question.php?q=' + questionNumber + '&tablename=' + encodeURIComponent(title), true); // Send table name
+        xhr.onload = function() {
+            if (this.status === 200) {
+                if (questionContainer) {
+                    questionContainer.innerHTML = this.responseText;
                 }
-            };
-            xhr.onerror = function() {
-                console.error('Request failed'); // Debugging message
-            };
-            xhr.send();
-            if(questionNumber >= 50){
-                
-                document.getElementById('prevBtn').style.display = 'block';
-                document.getElementById('nextBtn').style.display = 'none';
-                document.getElementById('submitBtn').style.display = 'block';
-                
-               
+                currentQuestion = questionNumber; // Update current question after loading
+            } else {
+                console.error('Error loading question:', this.status, this.statusText); // Debugging message
             }
-            else{
-                document.getElementById('prevBtn').style.display = 'block';
-                document.getElementById('nextBtn').style.display = 'block';
-                document.getElementById('submitBtn').style.display = 'none';
-                console.log(currentQuestion);
-                
-            }
-            
-           
+        };
+        xhr.onerror = function() {
+            console.error('Request failed'); // Debugging message
+        };
+        xhr.send();
+
+        if (questionNumber >= 50) {
+            if (prevBtn) prevBtn.style.display = 'block';
+            if (nextBtn) nextBtn.style.display = 'none';
+            if (submitBtn) submitBtn.style.display = 'block';
+        } else {
+            if (prevBtn) prevBtn.style.display = 'block';
+            if (nextBtn) nextBtn.style.display = 'block';
+            if (submitBtn) submitBtn.style.display = 'none';
+            console.log(currentQuestion);
         }
+    }
 
-        // Add event listeners for number keys and arrow keys
-       /* document.addEventListener('keydown', function(event) {
-            if (event.key >= '1' && event.key <= '4') {
-                const choiceIndex = event.key - 1; // Convert key to index (0-3)
-                const radioButton = document.querySelector(`input[type=radio][value="${choiceIndex + 1}"]`);
-                if (radioButton) {
-                    radioButton.checked = true; // Select the corresponding radio button
-                }
-            } else if (event.key === 'ArrowRight') {
-                const nextQuestion = currentQuestion + 1; // Increment the current question number
-                loadQuestion(nextQuestion); // Load the next question
-            } else if (event.key === 'ArrowLeft') {
-                const prevQuestion = currentQuestion - 1; // Decrement the current question number
-                if (prevQuestion > 0) {
-                    loadQuestion(prevQuestion); // Load the previous question
-                }
-            }
-
-        
-        });*/
-       
-            
-
-        
-
-        document.querySelector('.next-btn').addEventListener('click', function() {
+    // Event listeners for buttons
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
             const nextQuestion = currentQuestion + 1; // Increment the current question number
             loadQuestion(nextQuestion); // Load the next question
         });
+    }
 
-       
-
-        document.querySelector('.prev-btn').addEventListener('click', function() {
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function() {
             const prevQuestion = currentQuestion - 1; // Decrement the current question number
             if (prevQuestion > 0) {
                 loadQuestion(prevQuestion); // Load the previous question
             }
         });
-    });
-
-    function sendUserChoice(questionNumber, userChoice, correctAnswer) {
-
-        if(userChoice == correctAnswer){
-            if (!correctANS.includes(questionNumber)) { // Check if questionNumber is NOT in correctANS
-                correctANS.push(questionNumber);
-                if(wrongANS.includes(questionNumber)){
-                    wrongANS.splice(wrongANS.indexOf(questionNumber), 1);
-                }
-               
-            } 
-                  
-        }
-        else{
-            if (!wrongANS.includes(questionNumber)) { // Check if questionNumber is NOT in wrongANS
-                wrongANS.push(questionNumber);
-                if(correctANS.includes(questionNumber)){
-                    correctANS.splice(correctANS.indexOf(questionNumber), 1);
-                }
-            }       
-        }
-       
-       
-
-       
-    }
-    function saveScore(){
-        
-            let total = correctANS.length + wrongANS.length;
-            let correct = correctANS.length;
-            let wrong = wrongANS.length;
-            let score = correct;
-            let user = "<?php echo htmlspecialchars($_SESSION['name']); ?>"; // Correctly echo the PHP variable into JavaScript
-             if(correctANS.length*2 >= 74){
-                pass.innerHTML = "😄😃ውድ <?php echo htmlspecialchars($_SESSION['name']); ?>  እንኳን ደስ አለዎ ፈተናውን በተሳካ ሁኔታ አልፈዋል😄😃 ";
-                pass.style.display = 'block';
-                scoretextbg.style.backgroundImage = 'url(pass.png)';
-             }
-             else{
-                pass.innerHTML = "😥😥ውድ <?php echo htmlspecialchars($_SESSION['name']); ?> የፈተና ውጤትዎ በቂ አደለም እባክዎን እንደገና ይሞክሩ😥😥";
-                pass.style.display = 'block';
-                scoretextbg.style.backgroundImage = 'url(fail.png)';
-             }
-            console.log("title"+title);
-            displayScore(total, correct, wrong, score, user,title)
-            // Add AJAX request to save score to the database
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'save_score.php', true); // Create a new PHP file to handle the score saving
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onload = function() {
-                if (this.status === 200) {
-                    console.log('Score saved successfully:', this.responseText);
-                    
-                } else {
-                    console.error('Error saving score:', this.status, this.statusText);
-                }
-            };
-             
-            xhr.send('total=' + encodeURIComponent(total) + '&correct=' + encodeURIComponent(correct) + '&wrong=' + encodeURIComponent(wrong) + '&user=' + encodeURIComponent(user) + '&title=' + encodeURIComponent(title)); // Send score data
-        }
-
-    function displayScore(total, correct, wrong, score, user,title) {
-        // Create a new XMLHttpRequest to send score data
-            
-        document.getElementById('question-container').style.display = 'none';
-        document.getElementById('scoretext').style.display = 'block'; // Display score
-        document.getElementById('score').style.display = 'block';
-        document.getElementById('result').style.display = 'block';
-        document.getElementById('score').innerHTML = 'SCORE: ' + correctANS.length;
-        document.getElementById('result').innerHTML = 'wrong: ' + wrongANS.length;
-
-        console.log('correctANS: ' + correctANS.length);
-        console.log('wrongANS: ' + wrongANS.length);
-        document.getElementById('prevBtn').style.display = 'none';
-        document.getElementById('nextBtn').style.display = 'none';
-        document.getElementById('submitBtn').style.display = 'none';
     }
 
-
-    // Update the existing event listener for radio buttons
-    document.querySelectorAll('input[type=radio]').forEach(radio => {
+function sendUserChoice(questionNumber, userChoice, correctAnswer) {
+    // Check if the user answered the question
+    if (userChoice == correctAnswer) {
+        if (!correctANS.includes(questionNumber)) { // Check if questionNumber is NOT in correctANS
+            correctANS.push(questionNumber);
+            if (wrongANS.includes(questionNumber)) {
+                wrongANS.splice(wrongANS.indexOf(questionNumber), 1);
+            }
+        }
+    } else {
+        if (!wrongANS.includes(questionNumber)) { // Check if questionNumber is NOT in wrongANS
+            wrongANS.push(questionNumber);
+            if (correctANS.includes(questionNumber)) {
+                correctANS.splice(correctANS.indexOf(questionNumber), 1);
+            }
+        }
+        // Show an alert if the answer is incorrect
+        alert('Incorrect answer. Please try again.');
+    }
+    // Automatically load the next question
+    nextQuestion = questionNumber + 1; // Increment the question number
+    loadQuestion(nextQuestion); // Load the next question
+}
+  // Update the existing event listener for radio buttons
+  document.querySelectorAll('input[type=radio]').forEach(radio => {
         radio.addEventListener('change', function() {
             const questionNumber = this.name.match(/\d+/)[0]; // Extract question number from name
             const userChoice = this.value; // Get the selected choice
@@ -345,17 +272,7 @@ echo '</div>'; // Close question-container
         });
     });
 
-
-            document.addEventListener("keydown", function(event) {
-                if ("1234".includes(event.key)) {
-                    var choiceId = "choice" + event.key; 
-                    document.getElementById(choiceId).checked = true;
-                    
-                }
-            });
-            
-        
-
+});
 </script>
 
 <div class="button-container">

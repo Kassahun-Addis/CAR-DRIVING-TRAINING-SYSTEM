@@ -11,14 +11,14 @@ if (!isset($_SESSION['radmin'])) {
         if ($result->num_rows == 1) {
             $_SESSION['radmin'] = true;
             $_SESSION['remail'] = $remail;
-            echo "<script>location.href='dashboard.php';</script>";
+            echo "<script>location.href='quiz.php';</script>";
             exit;
         } else {
             $msg = "Enter valid email and password";
         }
     }
 } else {
-    echo "<script>location.href='dashboard.php';</script>";
+    echo "<script>location.href='quiz.php';</script>";
 }
 ?>
 
