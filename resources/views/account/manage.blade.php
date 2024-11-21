@@ -55,14 +55,16 @@
     </style>
 </head>
 <body>
+    
     <div class="container mt-5 custom-container">
+
         <div class="card">
             <div class="card-body">
                 <h2 class="card-title text-center">Manage Your Account</h2>
 
                 <!-- Success Message -->
                 @if (session('success'))
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert alert-success" role="alert" id="success-alert">
                         {{ session('success') }}
                     </div>
                 @endif
@@ -145,6 +147,15 @@
                 icon.classList.add('fa-eye');
             }
         }
+// Hide success message after 3 seconds
+document.addEventListener('DOMContentLoaded', function() {
+            const successAlert = document.getElementById('success-alert');
+            if (successAlert) {
+                setTimeout(() => {
+                    successAlert.style.display = 'none';
+                }, 3000);
+            }
+        });
     </script>
 </body>
 </html>

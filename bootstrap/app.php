@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'adminOrTrainee' => \App\Http\Middleware\AdminOrTrainee::class,
             'company.context' => \App\Http\Middleware\SetCompanyContext::class,
             'redirectIfUnauthenticated' => \App\Http\Middleware\RedirectIfUnauthenticated::class, // Register your middleware
+            'isSuperAdmin' => \App\Http\Middleware\IsSuperAdmin::class, // Register your superadmin middleware
+
         ]);
 
         // Add CSRF exclusion for specific routes here

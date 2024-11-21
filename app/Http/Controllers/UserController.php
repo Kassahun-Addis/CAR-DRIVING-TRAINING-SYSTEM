@@ -5,9 +5,47 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserRegistered;
 
 class UserController extends Controller
 {
+
+    public function toggleVerification(User $user)
+    {
+        $user->active = !$user->active; // Toggle the active status
+        $user->save();
+    
+        return response()->json(['success' => true, 'active' => $user->active]);
+    }
+    
+    public function showUnverifiedUsers()
+    {
+        //$users = User::where('active', false)->paginate(10); // Paginate the results
+        //$users = User::paginate(10); // Retrieve all users with pagination
+        $users = User::orderBy('active', 'asc')->paginate(10); // Order by 'active' status
+        return view('admin.verify_users', compact('users'));
+    }
+
+    // private function notifySuperAdmin($user)
+    // {
+    //     $superAdminEmail = 'superadmin@example.com'; // Replace with actual super admin email
+    //     \Log::info('Sending email to super admin for user: ' . $user->email);
+    //     Mail::to($superAdminEmail)->send(new UserRegistered($user));
+    // }
+
+    public function verifyUser(User $user)
+    {
+        if (!$user->active) {
+            $user->active = true;
+            $user->save();
+
+            return redirect()->route('admin.unverifiedUsers')->with('success', 'User verified successfully.');
+        }
+
+        return redirect()->route('admin.unverifiedUsers')->with('info', 'User is already verified.');
+    }
+
     public function index(Request $request)
     {
         $perPage = $request->input('perPage', 10); // Default to 10 if not specified
@@ -39,21 +77,28 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|string',
-            'company_id' => 'required|exists:companies,company_id', // Validate company_id
+            'company_id' => 'required|exists:companies,company_id',
         ]);
 
-        // Get the current company ID from the application context
         $companyId = app('currentCompanyId');
 
-        User::create([
+        // Capture the created user instance
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'company_id' => $companyId, // Set company_id
+            'company_id' => $companyId,
+            'active' => false, // Set user as inactive by default
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        // Send email to super admin
+       // $this->notifySuperAdmin($user);
+
+        // Send verification email to user
+       // Mail::to($user->email)->send(new UserVerification($user));
+
+        return redirect()->route('users.index')->with('success', 'User registered successfully. Awaiting verification.');
     }
 
     public function edit(User $user)

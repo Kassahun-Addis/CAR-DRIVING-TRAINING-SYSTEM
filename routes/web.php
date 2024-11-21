@@ -22,9 +22,30 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 
 
+
+// Route::get('/send-test-email', function () {
+//     Mail::raw('This is a test email using Postmark!', function ($message) {
+//         $message->to('kassahun.addiss-ug@aau.edu.et')
+//                 ->subject('Test Email');
+//     });
+
+//     return 'Test email sent!';
+// });
+
+Route::middleware(['auth', 'isSuperAdmin'])->group(function () {
+    Route::get('/admin/verify-user/{user}', [UserController::class, 'verifyUser'])->name('admin.verifyUser');
+    Route::get('/admin/unverified-users', [UserController::class, 'showUnverifiedUsers'])->name('admin.unverifiedUsers');
+    Route::post('/admin/toggle-verification/{user}', [UserController::class, 'toggleVerification'])->name('admin.toggleVerification');
+});
+
+
+Route::middleware('company.context')->group(function () {
+Route::get('/verify-user/{user}', [UserController::class, 'verifyUser'])->name('users.verify');
+});
 
 Route::middleware(['redirectIfUnauthenticated'])->group(function () {
     // Protected routes go here
@@ -39,13 +60,13 @@ Route::post('/logout-admin', [AdminLoginController::class, 'logout'])->name('adm
 // Admin Dashboard
 Route::middleware('company.context')->group(function () {
 Route::get('/welcome', [DashboardController::class, 'index'])->middleware('auth:web')->name('welcome');
-});
+
 
 // Trainee Login Routes
 Route::get('/trainee/login', [TraineeLoginController::class, 'showLoginForm'])->name('trainee.login');
 Route::post('/trainee/login', [TraineeLoginController::class, 'login']);
 Route::post('/logout-trainee', [TraineeLoginController::class, 'logout'])->name('trainee.logout');
-
+});
 // Trainee Dashboard
 Route::middleware('company.context')->group(function () {
 Route::get('/home', function () {
@@ -155,10 +176,12 @@ Route::middleware('company.context')->group(function () {
 });
 });
 
-    Route::get('/test', function (Request $request) {
-        \Log::info('Test route filter parameter:', ['filter' => $request->query('filter')]);
-        return 'Check logs for filter parameter';
-            });
+    // Route::get('/test', function (Request $request) {
+    //     \Log::info('Test route filter parameter:', ['filter' => $request->query('filter')]);
+    //     return 'Check logs for filter parameter';
+    //         });
+
+
 // Bank Routes
 //Route::resource('banks', BankController::class);
 Route::middleware('company.context')->group(function () {

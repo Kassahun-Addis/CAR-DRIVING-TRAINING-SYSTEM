@@ -7,8 +7,8 @@ if (!isset($_SESSION['ruser'])) {
         $remail = mysqli_real_escape_string($conn_trainee, trim($_REQUEST['remail']));
         $rpassword = mysqli_real_escape_string($conn_trainee, trim($_REQUEST['rpassword']));
 
-        // Corrected SQL query to use yellow_card instead of password
-        $sql = "SELECT id, full_name FROM trainees WHERE email='$remail' AND yellow_card='$rpassword' LIMIT 1";
+        // Corrected SQL query to use n_number instead of password
+        $sql = "SELECT id, full_name FROM trainees WHERE phone_no='$remail' AND n_number='$rpassword' LIMIT 1";
         $result = $conn_trainee->query($sql);
 
         if ($result->num_rows == 1) {
@@ -22,7 +22,7 @@ if (!isset($_SESSION['ruser'])) {
             echo "<script> location.href='slide.html'; </script>";
             exit;
         } else {
-            $msg = "Enter valid email and yellow card.";
+            $msg = "Enter valid phone number and yellow card.";
         }
     }
 } else {
@@ -71,12 +71,12 @@ if (!isset($_SESSION['ruser'])) {
              <div class="col-sm-6 col-md-4 text-white " style="background-color: rgba(0, 0, 0, 0.6); border-radius: 10px;">
                  <form action="" class="p-4 shadow-lg" method="POST" id="myForm">
                      <div class="form-group">
-                         <i class="fas fa-user mr-2"></i><label for="name" class="font-weight-bold">Email</label>
-                         <input type="text" name="remail" placeholder="Enter email" class="form-control">
+                         <i class="fas fa-user mr-2"></i><label for="name" class="font-weight-bold">Phone Number</label>
+                         <input type="text" name="remail" placeholder="Enter phone number" class="form-control">
                      </div>
                      <div class="form-group">
-                        <i class="fas fa-key mr-2"></i><label for="name" class="font-weight-bold">Password</label>
-                        <input type="password" name="rpassword" placeholder="Enter passsword" class="form-control">
+                        <i class="fas fa-key mr-2"></i><label for="name" class="font-weight-bold">N number</label>
+                        <input type="password" name="rpassword" placeholder="Enter n number" class="form-control">
                     </div>
                     <div class="submit" style="display: flex;">
                         <button class="btn btn-outline-danger  p-1 font-weight-bold mr-5" name="rsignin" >Submit</button>

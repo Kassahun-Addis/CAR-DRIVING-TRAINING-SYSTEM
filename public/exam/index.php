@@ -8,10 +8,10 @@ include('dbcon_trainee.php'); // Include the new trainee database connection
 
 if (!isset($_SESSION['trainee'])) {
     if (isset($_POST['login'])) {
-        $email = mysqli_real_escape_string($conn_trainee, trim($_POST['email']));
-        $yellow_card = mysqli_real_escape_string($conn_trainee, trim($_POST['yellow_card']));
+        $phone_no = mysqli_real_escape_string($conn_trainee, trim($_POST['phone_no']));
+        $n_number = mysqli_real_escape_string($conn_trainee, trim($_POST['n_number']));
 
-        $sql = "SELECT * FROM trainees WHERE email='$email' AND yellow_card='$yellow_card' LIMIT 1";
+        $sql = "SELECT * FROM trainees WHERE phone_no='$phone_no' AND n_number='$n_number' LIMIT 1";
         $result = $conn_trainee->query($sql);
 
         if ($result->num_rows == 1) {
@@ -22,7 +22,7 @@ if (!isset($_SESSION['trainee'])) {
             echo "<script> location.href='user/slide.html'; </script>";
             exit;
         } else {
-            $msg = "Invalid email or yellow card.";
+            $msg = "Invalid phone_no or yellow card.";
         }
     }
 } else {
@@ -112,12 +112,12 @@ if (!isset($_SESSION['trainee'])) {
                 <div class="col-sm-6 col-md-4 text-white" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 10px;">
                     <form action="" class="p-4 shadow-lg" method="POST" id="myForm">
                         <div class="form-group">
-                            <i class="fas fa-user mr-2"></i><label for="email" class="font-weight-bold">Email</label>
-                            <input type="text" name="email" placeholder="Enter email" class="form-control" required>
+                            <i class="fas fa-user mr-2"></i><label for="phone_no" class="font-weight-bold">Phone Number</label>
+                            <input type="text" name="phone_no" placeholder="Enter phone number" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <i class="fas fa-id-card mr-2"></i><label for="yellow_card" class="font-weight-bold">Yellow Card</label>
-                            <input type="text" name="yellow_card" placeholder="Enter yellow card" class="form-control" required>
+                            <i class="fas fa-id-card mr-2"></i><label for="n_number" class="font-weight-bold">N number</label>
+                            <input type="text" name="n_number" placeholder="Enter n number" class="form-control" required>
                         </div>
                         <div class="submit" style="display: flex;">
                             <button class="btn btn-outline-danger p-1 font-weight-bold mr-5" name="login">Submit</button>
