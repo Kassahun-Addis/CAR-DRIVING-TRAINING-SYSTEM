@@ -63,20 +63,20 @@
         .btn-primary {
             background-color: #ff9800; /* Orange */
             color: white;
-            padding: 10px 15px;
+            /* padding: 10px 15px; */
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-right: 5px;
+            /* margin-right: 0px; */
         }
         .btn-secondary {
             background-color: #e0e0e0; /* Light gray */
             color: black;
-            padding: 10px 15px;
+            /* padding: 10px 15px; */
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-right: 5px;
+             /* margin-right: 0px; */            
         }
         .btn-link {
             background-color: transparent;

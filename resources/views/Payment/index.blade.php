@@ -96,15 +96,15 @@
                     <td>{{ $payment->remaining_balance }}</td>
                     <td>{{ $payment->payment_status }}</td>
                     <td class="text-nowrap">
-                        @if(Auth::check() && Auth::user()->role === 'admin')
-                            <a href="{{ route('payments.edit', $payment) }}" class="btn btn-warning" style="margin-right: 5px;">Edit</a>
-                            <form action="{{ route('payments.destroy', $payment) }}" method="POST" style="display:inline; margin-right: 5px;">
+                        @if(Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin'))
+                            <a href="{{ route('payments.edit', $payment) }}" class="btn btn-warning " style="margin-right: 0px;">Edit</a>
+                            <form action="{{ route('payments.destroy', $payment) }}" method="POST" style="display:inline; margin-right: 0px;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this car category?')">Delete</button>
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this car category?')">Delete</button>
                             </form>
                         @endif
-                        <a href="{{ route('payments.print', $payment) }}" class="btn btn-secondary" style="margin-right: 5px;">Print</a>
+                        <a href="{{ route('payments.print', $payment) }}" class="btn btn-secondary" style="margin-right: 0px;">Print</a>
                         
                         <!-- Pay Remaining Dropdown -->
                         <div class="btn-group" style="display: inline-block;">

@@ -64,7 +64,7 @@
                 <th>No</th>
                 <th>Car Category Name</th>
                 <th>Price</th>
-                @if(Auth::check() && Auth::user()->role === 'admin')
+                @if(Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin'))
                 <th>Actions</th>
                 @endif
             </tr>
@@ -75,11 +75,9 @@
                     <td>{{ $key + 1 }}</td>
                     <td>{{ $CarCategory->car_category_name }}</td>
                     <td>{{ number_format($CarCategory->price, 2) }}</td>
-                    @if(Auth::check() && Auth::user()->role === 'admin')
-
+                    @if(Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin'))
                     <td class="text-nowrap">
                         <a href="{{ route('car_category.edit', $CarCategory) }}" class="btn btn-warning">Edit</a>
-
                         <form action="{{ route('car_category.destroy', $CarCategory) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')

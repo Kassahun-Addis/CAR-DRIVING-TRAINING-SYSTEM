@@ -64,14 +64,14 @@
                         <td>{{ $user->role }}</td>
                         <td>{{ $user->company_id }}</td>
                         <td class="text-nowrap">
-                            <button class="btn btn-sm toggle-verify-btn {{ $user->active ? 'btn-secondary' : 'btn-success' }}" data-user-id="{{ $user->id }}">
+                            <button class="btn toggle-verify-btn {{ $user->active ? 'btn-secondary' : 'btn-success' }}" data-user-id="{{ $user->id }}">
                                 {{ $user->active ? 'Verified' : 'Verify' }}
                             </button>
-                            <a href="{{ route('users.edit', $user) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{{ route('users.edit', $user) }}" class="btn btn-warning">Edit</a>
                             <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
                             </form>
                         </td>
                     </tr>
