@@ -119,6 +119,9 @@
                             {{ __('Login') }}
                         </button>
                     </div>
+                    <div class="text-center mt-3">
+                        <p>{{ __("Don't have an account?") }} <a href="{{ route('register') }}">{{ __('Sign Up') }}</a></p>
+                    </div>
                 </form>
             </div>
         </div>

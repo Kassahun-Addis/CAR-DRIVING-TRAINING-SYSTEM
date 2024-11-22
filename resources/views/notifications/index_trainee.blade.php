@@ -41,7 +41,7 @@
 
         <ul class="list-group" id="notification-list">
         @foreach($unreadNotifications as $notification)
-            <li class="list-group-item p-4 notification-item" id="notification-{{ $notification->id }}">
+            <li class="list-group-item p-4 notification-item {{ $notification->read_at ? 'read' : 'unread' }}" id="notification-{{ $notification->id }}">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                     <div class="d-flex align-items-center mb-3 mb-md-0">
                         <i class="fas fa-bell text-primary mr-3" style="font-size: 1.5rem;"></i>
@@ -54,7 +54,7 @@
                         <button class="btn btn-sm btn-outline-primary mr-2" onclick="toggleDetails({{ $notification->id }})">
                             <span id="toggle-text-{{ $notification->id }}">View Details</span>
                         </button>
-                        @if(Auth::guard('trainee')->check())
+                        @if(Auth::guard('trainee')->check() && !$notification->read_at)
                             <button class="btn btn-sm btn-outline-secondary mark-as-read-button" onclick="markAsRead({{ $notification->id }})">
                                 Mark as Read
                             </button>
@@ -68,7 +68,7 @@
         @endforeach
 
         @foreach($readNotifications as $notification)
-            <li class="list-group-item p-4 notification-item" id="notification-{{ $notification->id }}">
+            <li class="list-group-item p-4 notification-item read" id="notification-{{ $notification->id }}">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                     <div class="d-flex align-items-center mb-3 mb-md-0">
                         <i class="fas fa-bell text-primary mr-3" style="font-size: 1.5rem;"></i>
@@ -110,6 +110,10 @@
         background-color: #e9ecef;
         border-left: 5px solid #007bff;
         margin-bottom: 1rem;
+    }
+    .notification-item.unread {
+    background-color: #e9ecef;
+        border-left: 5px solid #007bff;
     }
 
     .notification-item.read {

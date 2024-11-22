@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Edit - User')
+@section('title', 'Edit User')
 
 @section('content')
 <div class="container mt-5">
-    <h2>Edit - User</h2>
+    <h2>Edit User</h2>
 
     @if(session('success'))
         <div class="alert alert-success" id="success-alert">
@@ -23,13 +23,16 @@
     @endif
 
     <div class="form-section">
-        <form method="POST" action="{{ route('users.update', $user) }}">
+        <form method="POST" action="{{ route('super.update', $user) }}">
             @csrf
             @method('PUT')
             <div class="form-group">
                 <label for="company_id">Company ID</label>
-                <input type="text" id="company_id" name="company_id" class="form-control" 
-                       value="{{ auth()->user()->company_id }}" readonly>
+                <input type="text" id="company_id" name="company_id" class="form-control" value="{{ old('company_id', $user->company_id) }}" required>
+            </div>
+            <div class="form-group">
+                <label for="phone_no">Phone Number</label>
+                <input type="text" id="phone_no" name="phone_no" class="form-control" value="{{ old('phone_no', $user->phone_no) }}" required>
             </div>
             <div class="form-group">
                 <label for="name">Name</label>
@@ -38,10 +41,6 @@
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
-            </div>
-            <div class="form-group">
-                <label for="phone_no">Phone Number</label>
-                <input type="text" id="phone_no" name="phone_no" class="form-control" value="{{ old('phone_no', $user->phone_no) }}" required>
             </div>
             <div class="form-group">
                 <label for="password">Password (leave blank to keep current password)</label>
@@ -55,6 +54,7 @@
                 <label for="role">Role</label>
                 <select id="role" name="role" class="form-control" required>
                     <option value="" disabled>Select Role</option>
+                    <option value="superadmin" {{ $user->role == 'superadmin' ? 'selected' : '' }}>Super Admin</option>
                     <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
                     <option value="clerk" {{ $user->role == 'clerk' ? 'selected' : '' }}>Clerk</option>
                 </select>
@@ -62,7 +62,7 @@
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary btn-custom">Update</button>
                 <button type="reset" class="btn btn-secondary btn-custom">Reset</button>
-                <a href="{{ route('users.index') }}" class="btn btn-secondary btn-custom">Back to list</a>
+                <a href="{{ route('admin.unverifiedUsers') }}" class="btn btn-secondary btn-custom">Back to list</a>
             </div>
         </form>
     </div> 

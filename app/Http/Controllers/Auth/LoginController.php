@@ -1,108 +1,60 @@
 <?php
+// app/Http/Controllers/Auth/AdminLoginController.php
 
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Trainee; // Import the Trainee model
-use App\Models\User; // Import the User model for admin authentication
 
 class LoginController extends Controller
 {
-    use AuthenticatesUsers;
-
-    public function __construct()
+    public function showLoginForm()
     {
-        $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
+        return view('auth.admin-login');
     }
 
-    /**
-     * Handle a login request to the application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    
-     protected function sendFailedLoginResponse(Request $request)
-     {
-         throw ValidationException::withMessages([
-             $this->username() => [trans('auth.failed')],
-         ]);
-     }
-     
-     public function login(Request $request)
-{
-    \Log::info('Login attempt:', $request->all());
+    public function showLoginForms()
+    {
+        return view('auth.login');
+    }
 
-    // Basic validation
-    $credentials = $request->validate([
-        'password' => 'required',
-        'user_type' => 'required|in:admin,student',
-    ]);
 
-    try {
-        if ($credentials['user_type'] === 'admin') {
-            // Validate admin credentials
-            $adminCredentials = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
+    public function login(Request $request)
+    {
+        \Log::info('Login attempt:', $request->only('email', 'role'));
 
-            // Attempt to log in the admin
-            if (Auth::attempt($adminCredentials)) {
-                return redirect()->intended('/welcome'); // Admin dashboard
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+            'role' => 'required|in:admin,clerk', // Only admin and clerk
+        ]);
+
+        // Check if the user exists with the given credentials
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
+
+        if ($user && Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
+            // Check if the user is verified and the role matches
+            if ($user->active && (
+                ($credentials['role'] === 'admin' && ($user->role === 'admin' || $user->role === 'superadmin')) ||
+                ($credentials['role'] === 'superadmin' && $user->role === 'superadmin') || // Allow superadmin role
+                ($credentials['role'] === 'clerk' && $user->role === 'clerk')
+            )) {
+                return redirect()->intended('/'); // Redirect to the appropriate dashboard
             }
-
-            return back()->withErrors(['email' => 'Admin credentials do not match.']);
-        } elseif ($credentials['user_type'] === 'student') {
-            // Attempt to log in the student using yellow card number
-            $yellowCardNumber = $credentials['password'];
-            $trainee = Trainee::where('yellow_card', $yellowCardNumber)->first();
-
-            if ($trainee) {
-                \Log::info('Trainee found: ', [$trainee]);
-                Auth::guard('trainee')->login($trainee);
-                if ($trainee) {
-                    \Log::info('Trainee found: ', [$trainee]);
-                    Auth::guard('trainee')->login($trainee);
-                    
-                    // Check if the user is logged in
-                    if (Auth::guard('trainee')->check()) {
-                        \Log::info('Trainee logged in successfully: ' . $trainee->id);
-                        return redirect()->intended('/home'); // Student dashboard
-                    } else {
-                        \Log::error('Failed to log in trainee: ' . $trainee->id);
-                    }
-                }
-                return redirect()->intended('/home'); // Student dashboard
-            } else {
-                \Log::info('Trainee not found for yellow card: ' . $yellowCardNumber);
-                return back()->withErrors(['password' => 'Invalid yellow card number.']);
-            }
+            Auth::logout(); // Log out if the user is not verified or role does not match
+            return back()->withErrors(['email' => 'You are not authorized to log in as this role.']);
         }
-    } catch (\Exception $e) {
-        // Log the exception message
-        \Log::error('Login error: ' . $e->getMessage());
 
-        // Return a generic error message to the user
-        return back()->withErrors(['login' => 'An error occurred during login. Please try again.']);
+        return back()->withErrors(['email' => 'Invalid credentials.']);
     }
 
-    return back()->withErrors(['user_type' => 'Invalid user type.']);
-}
-
-    /**
-     * Handle a successful authentication attempt.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  mixed  $user
-     * @return \Illuminate\Http\Response
-     */
-    protected function authenticated(Request $request, $user)
+    public function logout(Request $request)
     {
-        // This method can be omitted since we are handling redirects directly in the login method
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/admin/login'); // Redirect to admin login page
     }
 }

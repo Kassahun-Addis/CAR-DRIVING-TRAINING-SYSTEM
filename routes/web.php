@@ -8,7 +8,7 @@ use App\Http\Controllers\TrainingCarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\BankController;
-//use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CarCategoryController;
 use App\Http\Controllers\TheoreticalClassController;
 use App\Http\Controllers\ClassesController;
@@ -18,11 +18,13 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\TraineeLoginController;
+use App\Http\Controllers\SuperAdminCompanyController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Auth\RegisterController;
 
 
 
@@ -36,15 +38,24 @@ use Illuminate\Support\Facades\Mail;
 //     return 'Test email sent!';
 // });
 
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
+
+Route::middleware('company.context')->group(function () {
 Route::middleware(['auth', 'isSuperAdmin'])->group(function () {
     Route::get('/admin/verify-user/{user}', [UserController::class, 'verifyUser'])->name('admin.verifyUser');
     Route::get('/admin/unverified-users', [UserController::class, 'showUnverifiedUsers'])->name('admin.unverifiedUsers');
     Route::post('/admin/toggle-verification/{user}', [UserController::class, 'toggleVerification'])->name('admin.toggleVerification');
+    Route::get('/admin/users/{user}/edit', [UserController::class, 'editUserAsSuperAdmin'])->name('admin.users.edit');
+    Route::put('/admin/{user}', [UserController::class, 'superupdate'])->name('super.update'); // Update a specific user
+    Route::delete('/admin/{user}', [UserController::class, 'superdestroy'])->name('super.destroy'); // Delete a specific user
+    Route::get('/admin/create', [UserController::class, 'supercreate'])->name('super.create'); // Show form to create a new user
+    Route::post('/admin', [UserController::class, 'superstore'])->name('super.store'); // Store a new user
 });
 
 
-Route::middleware('company.context')->group(function () {
 Route::get('/verify-user/{user}', [UserController::class, 'verifyUser'])->name('users.verify');
+
 });
 
 Route::middleware(['redirectIfUnauthenticated'])->group(function () {
@@ -53,13 +64,21 @@ Route::middleware(['redirectIfUnauthenticated'])->group(function () {
 // Admin Login Routes
 Route::middleware('company.context')->group(function () {
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
+Route::get('/admin/login', [LoginController::class, 'showLoginForms'])->name('login');
 Route::post('/admin/login', [AdminLoginController::class, 'login']);
 Route::post('/logout-admin', [AdminLoginController::class, 'logout'])->name('admin.logout');
 });
 
+// Admin Login Routes
+    Route::middleware('company.context')->group(function () {
+    Route::get('/admin/login', [LoginController::class, 'showLoginForm'])->name('admin.login');
+    Route::post('/admin/login', [LoginController::class, 'login']);
+    Route::post('/logout-admin', [LoginController::class, 'logout'])->name('admin.logout');
+    });
+
 // Admin Dashboard
 Route::middleware('company.context')->group(function () {
-Route::get('/welcome', [DashboardController::class, 'index'])->middleware('auth:web')->name('welcome');
+Route::get('/', [DashboardController::class, 'index'])->middleware('auth:web')->name('welcome');
 
 
 // Trainee Login Routes
@@ -73,7 +92,17 @@ Route::get('/home', function () {
     return view('home');
 })->middleware('auth:trainee')->name('home');
 });
-    
+   
+
+Route::middleware(['auth', 'isSuperAdmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+    Route::get('/companies', [SuperAdminCompanyController::class, 'index'])->name('index');
+    Route::get('/companies/create', [SuperAdminCompanyController::class, 'create'])->name('create');
+    Route::post('/companies', [SuperAdminCompanyController::class, 'store'])->name('store');
+    Route::get('/companies/{id}/edit', [SuperAdminCompanyController::class, 'edit'])->name('edit');
+    Route::put('/companies/{id}', [SuperAdminCompanyController::class, 'update'])->name('update');
+    Route::delete('/companies/{id}', [SuperAdminCompanyController::class, 'destroy'])->name('destroy');
+});
+
 Route::middleware('company.context')->group(function () {
 Route::get('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
 Route::post('/companies', [CompanyController::class, 'store'])->name('companies.store');
@@ -283,10 +312,9 @@ Route::get('/test-form', function () {
 
 //Route::get('/exams/callback', [ExamController::class, 'handleExamCallback'])->name('exams.callback');
 Route::middleware('company.context')->group(function () {
-Route::get('/', [UserController::class, 'index'])->name('users.index'); // Display a list of users
+Route::get('/users/lists', [UserController::class, 'index'])->name('users.index'); // Display a list of users
 Route::get('/create', [UserController::class, 'create'])->name('users.create'); // Show the form to create a new user
-Route::post('/', [UserController::class, 'store'])->name('users.store'); // Store a newly created user
-Route::get('/{user}', [UserController::class, 'show'])->name('users.show'); // Display a specific user
+Route::post('/users/store', [UserController::class, 'store'])->name('users.store'); // Store a newly created user
 Route::get('/{user}/edit', [UserController::class, 'edit'])->name('users.edit'); // Show the form to edit an existing user
 Route::put('/{user}', [UserController::class, 'update'])->name('users.update'); // Update a specific user
 Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy'); // Delete a specific user

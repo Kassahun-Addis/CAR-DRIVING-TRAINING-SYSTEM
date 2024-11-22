@@ -14,6 +14,12 @@ class AdminLoginController extends Controller
         return view('auth.admin-login');
     }
 
+    public function showLoginForms()
+    {
+        return view('auth.login');
+    }
+
+
     public function login(Request $request)
     {
         \Log::info('Login attempt:', $request->only('email', 'role'));
@@ -31,9 +37,10 @@ class AdminLoginController extends Controller
             // Check if the user is verified and the role matches
             if ($user->active && (
                 ($credentials['role'] === 'admin' && ($user->role === 'admin' || $user->role === 'superadmin')) ||
+                ($credentials['role'] === 'superadmin' && $user->role === 'superadmin') || // Allow superadmin role
                 ($credentials['role'] === 'clerk' && $user->role === 'clerk')
             )) {
-                return redirect()->intended('/welcome'); // Redirect to the appropriate dashboard
+                return redirect()->intended('/'); // Redirect to the appropriate dashboard
             }
             Auth::logout(); // Log out if the user is not verified or role does not match
             return back()->withErrors(['email' => 'You are not authorized to log in as this role.']);

@@ -67,7 +67,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            /* margin-right: 0px; */
+            margin-right: 5px;
         }
         .btn-secondary {
             background-color: #e0e0e0; /* Light gray */
@@ -76,7 +76,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-             /* margin-right: 0px; */            
+             margin-right: 5px;            
         }
         .btn-link {
             background-color: transparent;
@@ -191,7 +191,7 @@
         <ul class="mt-0 space-y-1 pl-0 list-none">
             @if (Auth::user()->role === 'superadmin')
                 <!-- Superadmin has access to all links -->
-                <li><a href="/welcome" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+                <li><a href="/" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
                 <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-user-graduate mr-2"></i>Trainee</a></li>
                 <li><a href="{{ route('trainers.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-chalkboard-teacher mr-2"></i>Trainer</a></li>
                 <li><a href="{{ route('payments.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-money-check-alt mr-2"></i>Payment</a></li>
@@ -203,12 +203,13 @@
                 <li><a href="{{ route('trainer_assigning.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Practical Training </a></li>
                 <li><a href="{{ route('theoretical_class.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users-cog mr-2"></i>Theoretical Training </a></li>
                 <li><a href="{{ route('notifications.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-bell mr-2"></i>Notification</a></li>
-                <li><a href="{{ route('companies.index') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-building mr-2"></i>Company Info</a></li>
+                <!-- <li><a href="{{ route('companies.index') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-building mr-2"></i>Company Info</a></li> -->
+                <li><a href="{{ route('superadmin.index') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-building mr-2"></i>Company Info</a></li>
                 <li><a href="{{ route('reports.index') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-file-alt mr-2"></i>Reports</a></li>
                 <li><a href="{{ route('admin.unverifiedUsers') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users mr-2"></i>Users</a></li>
             @elseif (Auth::user()->role === 'admin')
                 <!-- Admin specific links -->
-                <li><a href="/welcome" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+                <li><a href="/" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
                 <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-user-graduate mr-2"></i>Trainee</a></li>
                 <li><a href="{{ route('trainers.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-chalkboard-teacher mr-2"></i>Trainer</a></li>
                 <li><a href="{{ route('payments.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-money-check-alt mr-2"></i>Payment</a></li>
@@ -225,7 +226,7 @@
                 <li><a href="{{ route('users.index') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-users mr-2"></i>Users</a></li>
             @elseif (Auth::user()->role === 'clerk')
                 <!-- Clerk specific links -->
-                <li><a href="/welcome" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+                <li><a href="/" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
                 <li><a href="{{ route('trainee.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-user-graduate mr-2"></i>Trainee</a></li>
                 <li><a href="{{ route('trainers.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-chalkboard-teacher mr-2"></i>Trainer</a></li>
                 <li><a href="{{ route('payments.create') }}" class="flex items-center p-2 hover:bg-gray-700 rounded"><i class="fas fa-money-check-alt mr-2"></i>Payment</a></li>

@@ -29,7 +29,7 @@
         </div>
 
         <div class="col-12 col-md-6 d-flex justify-content-end">
-            <form action="{{ Auth::guard('trainee')->check() ? route('trainee.notifications') : route('notifications.index') }}" method="GET" class="form-inline w-100">
+            <form action="{{ route('notifications.index') }}" method="GET" class="form-inline w-100">
                 <div class="form-group w-100 d-flex justify-content-end align-items-center">
                     @if(Auth::guard('web')->check())
                         <a href="{{ route('notifications.create') }}" class="btn btn-primary add-new-btn">Add New</a>

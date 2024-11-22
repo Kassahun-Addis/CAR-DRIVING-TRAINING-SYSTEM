@@ -15,10 +15,12 @@
             background-color: #f0f2f5;
             font-family: 'Roboto', sans-serif;
         }
-        .login-container {
+                .login-container {
             margin-top: 80px;
             max-width: 450px;
-            margin: auto; /* Centering the login container */
+            margin-left: auto;
+            margin-right: auto;
+            /* Remove margin: auto; to prevent overriding */
         }
         .card {
             border: none;
@@ -76,17 +78,18 @@
                 <form method="POST" action="{{ route('admin.login') }}">
                     @csrf
                     
+                    <!-- resources/views/auth/admin-login.blade.php -->
                     <div class="form-group role-select">
-    <label>{{ __('Select Role') }}</label>
-    <div class="radio-group">
-        <label class="radio-label">
-            <input type="radio" name="role" value="admin" required> {{ __('Admin') }}
-        </label>
-        <label class="radio-label">
-                            <input type="radio" name="role" value="clerk"> {{ __('Clerk') }}
+                        <label>{{ __('Select Role') }}</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="role" value="admin" required> {{ __('Admin') }}
                             </label>
+                            <label class="radio-label">
+                                <input type="radio" name="role" value="clerk"> {{ __('Clerk') }}
+                            </label>
+                        </div>
                     </div>
-                </div>
 
                     <div class="form-group">
                         <label for="email">{{ __('Email Address') }}</label>
@@ -115,6 +118,9 @@
                         <button type="submit" class="btn btn-primary">
                             {{ __('Login') }}
                         </button>
+                    </div>
+                    <div class="text-center mt-3">
+                        <p>{{ __("Don't have an account?") }} <a href="{{ route('register') }}">{{ __('Sign Up') }}</a></p>
                     </div>
                 </form>
             </div>

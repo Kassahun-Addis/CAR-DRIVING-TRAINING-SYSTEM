@@ -1,4 +1,3 @@
-<!-- resources/views/auth/trainee-login.blade.php -->
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -65,9 +64,9 @@
                 <form method="POST" action="{{ route('trainee.login') }}">
                     @csrf
                     <div class="form-group row">
-                        <label for="email" class="col-form-label text-md-right">{{ __('Email') }}</label>
-                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" required autofocus>
-                        @error('email')
+                        <label for="phone_no" class="col-form-label text-md-right">{{ __('Phone Number') }}</label>
+                        <input id="phone_no" type="text" class="form-control @error('phone_no') is-invalid @enderror" name="phone_no" required autofocus>
+                        @error('phone_no')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>

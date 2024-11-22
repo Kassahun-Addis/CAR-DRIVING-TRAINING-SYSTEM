@@ -15,7 +15,7 @@
     <div class="row mb-3" style="display: flex; justify-content: space-between; align-items: center;">
         <!-- Entries selection and Add New button -->
         <div class="col-12 col-md-6 d-flex justify-content-between mb-2 mb-md-0">
-            <form action="{{ route('users.index') }}" method="GET" class="form-inline" style="flex: 1;">
+            <form action="{{ route('admin.unverifiedUsers') }}" method="GET" class="form-inline" style="flex: 1;">
                 <div class="form-group">
                     <span>Show
                         <select name="perPage" class="form-control" onchange="this.form.submit()" style="display: inline-block; width: auto;">
@@ -28,12 +28,12 @@
                     </span>
                 </div>
             </form>
-            <a href="{{ route('users.create') }}" class="btn btn-primary ml-2">Add New</a>
+            <a href="{{ route('super.create') }}" class="btn btn-primary ml-2">Add New</a>
         </div>
 
         <!-- Search and Export buttons -->
         <div class="col-12 col-md-6 d-flex">
-            <form action="{{ route('users.index') }}" method="GET" class="form-inline" style="flex: 1;">
+            <form action="{{ route('admin.unverifiedUsers') }}" method="GET" class="form-inline" style="flex: 1;">
                 <div class="form-group w-100" style="display: flex; align-items: center;">
                     <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request('search') }}" style="flex-grow: 1; margin-right: 5px; min-width: 0;">
                     <button type="submit" class="btn btn-primary mr-1">Search</button>
@@ -50,6 +50,7 @@
                     <th>No</th>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Phone Number</th>
                     <th>Role</th>
                     <th>Company ID</th>
                     <th>Actions</th>
@@ -61,14 +62,15 @@
                         <td>{{ $key + 1 }}</td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
+                        <td>{{ $user->phone_no }}</td>
                         <td>{{ $user->role }}</td>
                         <td>{{ $user->company_id }}</td>
                         <td class="text-nowrap">
                             <button class="btn toggle-verify-btn {{ $user->active ? 'btn-secondary' : 'btn-success' }}" data-user-id="{{ $user->id }}">
                                 {{ $user->active ? 'Verified' : 'Verify' }}
                             </button>
-                            <a href="{{ route('users.edit', $user) }}" class="btn btn-warning">Edit</a>
-                            <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline-block;">
+                            <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-warning">Edit</a>
+                            <form action="{{ route('super.destroy', $user) }}" method="POST" style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>

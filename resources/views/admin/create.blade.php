@@ -23,12 +23,11 @@
     @endif
 
     <div class="form-section">
-        <form method="POST" action="{{ route('users.store') }}">
+        <form method="POST" action="{{ route('super.store') }}">
             @csrf
             <div class="form-group">
                 <label for="company_id">Company ID</label>
-                <input type="text" id="company_id" name="company_id" class="form-control" 
-                       value="{{ auth()->user()->company_id }}" readonly>
+                <input type="text" id="company_id" name="company_id" class="form-control" placeholder="Please Enter Company ID" required>
             </div>
             <div class="form-group">
                 <label for="name">Name</label>
@@ -54,6 +53,7 @@
                 <label for="role">Role</label>
                 <select id="role" name="role" class="form-control" required>
                     <option value="" disabled selected>Select Role</option>
+                    <option value="superadmin">Super Admin</option>
                     <option value="admin">Admin</option>
                     <option value="clerk">Clerk</option>
                 </select>
@@ -61,7 +61,7 @@
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary btn-custom">Save</button>
                 <button type="reset" class="btn btn-secondary btn-custom">Reset</button>
-                <a href="{{ route('users.index') }}" class="btn btn-secondary btn-custom">Back to list</a>
+                <a href="{{ route('admin.unverifiedUsers') }}" class="btn btn-secondary btn-custom">Back to list</a>
             </div>  
         </form>
     </div>

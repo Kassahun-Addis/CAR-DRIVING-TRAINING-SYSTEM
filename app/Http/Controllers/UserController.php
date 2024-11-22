@@ -27,13 +27,6 @@ class UserController extends Controller
         return view('admin.verify_users', compact('users'));
     }
 
-    // private function notifySuperAdmin($user)
-    // {
-    //     $superAdminEmail = 'superadmin@example.com'; // Replace with actual super admin email
-    //     \Log::info('Sending email to super admin for user: ' . $user->email);
-    //     Mail::to($superAdminEmail)->send(new UserRegistered($user));
-    // }
-
     public function verifyUser(User $user)
     {
         if (!$user->active) {
@@ -59,6 +52,7 @@ class UserController extends Controller
             ->when($search, function ($query) use ($search) {
                 return $query->where('name', 'like', "%{$search}%")
                              ->orWhere('email', 'like', "%{$search}%")
+                             ->orWhere('phone_no', 'like', "%{$search}%")
                              ->orWhere('role', 'like', "%{$search}%");
             })->paginate($perPage);
 
@@ -70,35 +64,63 @@ class UserController extends Controller
         return view('users.create');
     }
 
+    public function supercreate()
+    {
+        return view('admin.create');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'phone_no' => 'required|string|max:255',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|string',
-            'company_id' => 'required|exists:companies,company_id',
+            // 'company_id' => 'required|exists:companies,company_id',
         ]);
-
-        $companyId = app('currentCompanyId');
+        
+        // Get the company_id from the authenticated user
+        $companyId = auth()->user()->company_id;
+        // $companyId = app('currentCompanyId');
 
         // Capture the created user instance
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone_no' => $request->phone_no,
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'company_id' => $companyId,
             'active' => false, // Set user as inactive by default
         ]);
 
-        // Send email to super admin
-       // $this->notifySuperAdmin($user);
-
-        // Send verification email to user
-       // Mail::to($user->email)->send(new UserVerification($user));
-
         return redirect()->route('users.index')->with('success', 'User registered successfully. Awaiting verification.');
+    }
+
+    public function superstore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'phone_no' => 'required|string|max:255',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|string',
+            'company_id' => 'required|exists:companies,company_id',
+        ]);
+    
+        // Capture the created user instance
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone_no' => $request->phone_no,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'company_id' => $request->company_id, // Use the company_id from the request
+            'active' => false, // Set user as inactive by default
+        ]);
+    
+        return redirect()->route('admin.unverifiedUsers')->with('success', 'User registered successfully. Awaiting verification.');
     }
 
     public function edit(User $user)
@@ -109,6 +131,11 @@ class UserController extends Controller
         return view('users.edit', compact('user'));
     }
 
+    public function editUserAsSuperAdmin(User $user)
+   {
+        return view('admin.edit_user', compact('user'));
+    }
+
     public function update(Request $request, User $user)
     {
         // Ensure the user belongs to the current company
@@ -117,13 +144,15 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'phone_no' => 'required|string|max:255',
             'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|string',
-            'company_id' => 'required|exists:companies,company_id', // Validate company_id
+            // 'company_id' => 'required|exists:companies,company_id', // Validate company_id
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->phone_no = $request->phone_no;
         $user->role = $request->role;
         $user->company_id = $request->company_id; // Set company_id
         if ($request->filled('password')) {
@@ -135,6 +164,37 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
+    public function superupdate(Request $request, User $user)
+    {
+        // Check if the authenticated user is a superadmin
+        if (!auth()->user()->isSuperAdmin()) {
+            // Ensure the user belongs to the current company
+            $this->authorizeCompany($user);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'phone_no' => 'required|string|max:255',
+            'password' => 'nullable|string|min:8|confirmed',
+            'role' => 'required|string',
+            'company_id' => 'required|string',
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone_no = $request->phone_no;
+        $user->role = $request->role;
+        $user->company_id = $request->company_id; // Set company_id
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return redirect()->route('admin.unverifiedUsers')->with('success', 'User updated successfully.');
+    }
+
     public function destroy(User $user)
     {
         // Ensure the user belongs to the current company
@@ -142,6 +202,17 @@ class UserController extends Controller
 
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+    }
+
+    public function superdestroy(User $user)
+    {
+        // Check if the authenticated user is a superadmin
+        if (!auth()->user()->isSuperAdmin()) {
+            // Ensure the user belongs to the current company
+            $this->authorizeCompany($user);
+        }
+        $user->delete();
+        return redirect()->route('admin.unverifiedUsers')->with('success', 'User deleted successfully.');
     }
 
     private function authorizeCompany(User $user)

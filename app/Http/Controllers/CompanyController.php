@@ -84,6 +84,7 @@ class CompanyController extends Controller
             'address' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,jfif,svg|max:2048', // No custom error message necessary
             'company_id' => 'required|string|max:255',
+            //'company_id' => 'required|exists:companies,id', // Ensure this matches your table and column names
         ]);
 
         $logoName = null;

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id(); // Primary key
             $table->string('name'); // Name of the user
             $table->string('email')->unique(); // Email, unique for each user
+            $table->string('phone_no'); // User password
             $table->timestamp('email_verified_at')->nullable(); // Email verification timestamp
             $table->string('password'); // User password
             $table->string('role')->default('admin'); // User role, defaulting to 'admin'
