@@ -19,7 +19,9 @@ class UserRegistered extends Mailable
 
     public function build()
     {
-        return $this->subject('New User Registration')
+        return $this->from(config('mail.from.address'), config('mail.from.name'))
+                    ->to('kassahunaddiss6@gmail.com') // Explicitly set the recipient
+                    ->subject('New User Registration')
                     ->view('emails.user_registered');
     }
 }

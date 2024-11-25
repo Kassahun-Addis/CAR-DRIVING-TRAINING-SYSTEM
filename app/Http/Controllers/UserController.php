@@ -77,12 +77,10 @@ class UserController extends Controller
             'phone_no' => 'required|string|max:255',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|string',
-            // 'company_id' => 'required|exists:companies,company_id',
         ]);
-        
+
         // Get the company_id from the authenticated user
         $companyId = auth()->user()->company_id;
-        // $companyId = app('currentCompanyId');
 
         // Capture the created user instance
         $user = User::create([
@@ -94,6 +92,10 @@ class UserController extends Controller
             'company_id' => $companyId,
             'active' => false, // Set user as inactive by default
         ]);
+
+        // Send email notification to the admin
+        $adminEmail = 'kassahunaddiss6@gmail.com'; // Replace with the actual admin email
+        Mail::to($adminEmail)->send(new UserRegistered($user));
 
         return redirect()->route('users.index')->with('success', 'User registered successfully. Awaiting verification.');
     }

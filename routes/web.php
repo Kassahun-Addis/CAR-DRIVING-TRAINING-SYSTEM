@@ -27,17 +27,6 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Auth\RegisterController;
 
 
-
-
-// Route::get('/send-test-email', function () {
-//     Mail::raw('This is a test email using Postmark!', function ($message) {
-//         $message->to('kassahun.addiss-ug@aau.edu.et')
-//                 ->subject('Test Email');
-//     });
-
-//     return 'Test email sent!';
-// });
-
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
@@ -64,7 +53,7 @@ Route::middleware(['redirectIfUnauthenticated'])->group(function () {
 // Admin Login Routes
 Route::middleware('company.context')->group(function () {
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
-Route::get('/admin/login', [LoginController::class, 'showLoginForms'])->name('login');
+Route::get('/admins/login', [LoginController::class, 'showLoginForms'])->name('login');
 Route::post('/admin/login', [AdminLoginController::class, 'login']);
 Route::post('/logout-admin', [AdminLoginController::class, 'logout'])->name('admin.logout');
 });
@@ -283,7 +272,7 @@ Route::middleware('auth:trainee')->group(function () {
 });
 
 // Auth routes (if you are using built-in authentication)
-Auth::routes();
+// Auth::routes();
 
 // Route to display the account management page
 Route::get('/account/manage', [AccountController::class, 'manage'])->name('account.manage');

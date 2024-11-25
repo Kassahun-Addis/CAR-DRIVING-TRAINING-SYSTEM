@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('role')->default('admin'); // User role, defaulting to 'admin'
             $table->boolean('active')->default(false);
             $table->string('company_id')->nullable(); // Company ID
-            $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('set null'); // Foreign key constraint
+            // $table->foreign('company_id')->references('company_id')->on('companies')->onDelete('set null'); // Foreign key constraint
             //$table->string('user_type')->default('admin'); // Adding 'user_type' column with default 'admin'
             $table->rememberToken(); // Remember token for "Remember Me" functionality
             $table->timestamps(); // Timestamps for creation and updates
