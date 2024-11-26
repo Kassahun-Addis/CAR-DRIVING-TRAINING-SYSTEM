@@ -19,3 +19,8 @@ yarn-error.log
 /.idea
 /.vscode
 /.zed
+
+
+/storage/*
+!/storage/.gitignore
+/public/storage
